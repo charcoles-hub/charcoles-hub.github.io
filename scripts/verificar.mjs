@@ -63,12 +63,33 @@ await comprueba('sin scroll horizontal a 1440px', async () => {
   await page.close();
 });
 
-// Spec §8, plan B de rendimiento: solo el primer proyecto va vivo al cargar;
-// los otros dos se quedan en su captura hasta que alguien los toque.
-await comprueba('1 iframe vivo + 2 demos en espera', async () => {
+// Spec §8, plan B de rendimiento: al cargar solo va viva la primera demo (tres
+// iframes a la vez hunden el LCP: 76 de rendimiento con las tres, 95 con una).
+// Las otras dos esperan a ACERCARSE, no a que las toquen — ver PosterVivo.
+// Este test vigila las dos mitades: que arranque con una, y que las tres acaben
+// despertando. Si alguien las pone todas eagerly, cae el rendimiento y lo caza
+// la primera aserción; si alguien rompe el despertar, muere el efecto en dos de
+// los tres proyectos y lo caza la segunda.
+await comprueba('arranca con 1 demo viva y las 3 despiertan al acercarse', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+
+  const alCargar = await page.$$eval('.marco iframe', (els) => els.length);
+  assert.equal(alCargar, 1, `al cargar esperaba 1 iframe, hay ${alCargar}`);
+  const dormidas = await page.$$eval('[data-dormido]', (els) => els.length);
+  assert.equal(dormidas, 2, `esperaba 2 demos dormidas, hay ${dormidas}`);
+
+  // Recorrer la página entera: las tres deben acabar vivas, sin tocar nada.
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
+      window.scrollTo(0, y);
+      await new Promise((r) => setTimeout(r, 60));
+    }
+  });
+  await new Promise((r) => setTimeout(r, 1500));
+
   const srcs = await page.$$eval('.marco iframe', (els) => els.map((e) => e.src));
-  assert.equal(srcs.length, 1, `esperaba 1 iframe vivo, hay ${srcs.length}`);
+  assert.equal(srcs.length, 3, `tras recorrerla esperaba 3 iframes, hay ${srcs.length}`);
+
   // globalThis.URL, no URL a secas: la constante URL de este módulo (línea 6)
   // shadowea el constructor global, y "new URL(...)" rompería con
   // "URL is not a constructor".
@@ -77,8 +98,6 @@ await comprueba('1 iframe vivo + 2 demos en espera', async () => {
     assert.equal(u.origin, new globalThis.URL(URL).origin, `el iframe no es del mismo origen: ${s}`);
     assert.ok(/^\/demo-/.test(u.pathname), `ruta inesperada: ${u.pathname}`);
   }
-  const botones = await page.$$eval('[data-despierta]', (els) => els.length);
-  assert.equal(botones, 2, `esperaba 2 demos en espera, hay ${botones}`);
   await page.close();
 });
 

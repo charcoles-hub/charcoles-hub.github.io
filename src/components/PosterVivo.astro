@@ -49,7 +49,14 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
       </div>
     </div>
 
-  <div class="marco" data-marco data-listo="no" data-alto={proyecto.alto}>
+  <div
+    class="marco"
+    data-marco
+    data-listo="no"
+    data-alto={proyecto.alto}
+    data-dormido={proyecto.vivo ? undefined : proyecto.ruta}
+    data-titulo={`${proyecto.nombre} — ${proyecto.rubro}`}
+  >
     <div class="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full
                 bg-fondo/80 px-2.5 py-1 text-[0.6rem] font-semibold tracking-[0.1em] backdrop-blur-md">
       <span class="punto-vivo size-1.5 rounded-full bg-[#3fb950]"></span>EN VIVO
@@ -65,7 +72,7 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
       decoding="async"
     />
 
-    {proyecto.vivo ? (
+    {proyecto.vivo && (
       <iframe
         src={proyecto.ruta}
         title={`${proyecto.nombre} — ${proyecto.rubro}`}
@@ -73,13 +80,6 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
         tabindex="-1"
         aria-hidden="true"
       ></iframe>
-    ) : (
-      <button
-        type="button"
-        class="absolute inset-0 z-10 h-full w-full cursor-pointer border-0 bg-transparent"
-        data-despierta={proyecto.ruta}
-        aria-label={`Ver ${proyecto.nombre} en movimiento`}
-      ></button>
     )}
     </div>
   </div>
@@ -117,6 +117,48 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
   }
   marcos.forEach((m) => m.querySelector('iframe')?.addEventListener('load', () => preparaDemo(m)));
 
+  // --- Despertar las demos diferidas (plan B de rendimiento, spec §8) ---
+  // Solo la primera demo carga de salida: tres iframes a la vez hunden el LCP
+  // (medido: 76 de rendimiento con las tres, 95 con una). Las otras dos esperan.
+  //
+  // Pero esperan a ACERCARSE, no a que las toquen. Un despertar por toque dejaba
+  // 311vh de scroll sobre una imagen quieta con la barra de progreso marcando un
+  // recorrido que no ocurría: mataba el efecto en dos de los tres proyectos, que
+  // es justo lo que la página existe para enseñar. Con rootMargin, la demo llega
+  // cargada antes de que su sección entre en pantalla y el efecto se conserva
+  // entero, sin pagar el LCP.
+  function despierta(marco: HTMLElement) {
+    const ruta = marco.dataset.dormido;
+    if (!ruta) return;
+    delete marco.dataset.dormido; // que no se despierte dos veces
+    const ifr = document.createElement('iframe');
+    ifr.title = marco.dataset.titulo ?? '';
+    ifr.tabIndex = -1;
+    ifr.setAttribute('aria-hidden', 'true');
+    ifr.addEventListener('load', () => {
+      preparaDemo(marco);
+      // Colocarla YA en su punto del recorrido: nace después del último scroll,
+      // así que sin esto se quedaría en su portada, desincronizada del progreso,
+      // hasta que el visitante volviera a mover el dedo.
+      recorre();
+    });
+    ifr.src = ruta;
+    marco.appendChild(ifr);
+  }
+
+  const io = new IntersectionObserver(
+    (entradas) => {
+      for (const e of entradas) {
+        if (!e.isIntersecting) continue;
+        despierta(e.target as HTMLElement);
+        io.unobserve(e.target);
+      }
+    },
+    // Una pantalla y media de margen: tiempo de sobra para cargar antes de verse.
+    { rootMargin: '150% 0px' }
+  );
+  document.querySelectorAll<HTMLElement>('[data-dormido]').forEach((m) => io.observe(m));
+
   // --- Recorrido: la demo se scrollea por dentro (opción C) ---
   function recorre() {
     document.querySelectorAll<HTMLElement>('[data-proyecto]').forEach((seccion) => {
@@ -146,27 +188,6 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
   }, { passive: true });
   addEventListener('resize', recorre);
   recorre();
-
-  // Plan B: el iframe llega al tocar, no al cargar.
-  document.querySelectorAll<HTMLElement>('[data-despierta]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const url = btn.dataset.despierta;
-      const marco = btn.closest<HTMLElement>('[data-marco]');
-      if (!url || !marco) return;
-      const ifr = document.createElement('iframe');
-      ifr.src = url;
-      ifr.tabIndex = -1;
-      ifr.setAttribute('aria-hidden', 'true');
-      // Mismo remedio que en los iframes que arrancan vivos: sin esto, el
-      // recorrido de esta demo va a tirones en cuanto alguien la despierta.
-      ifr.addEventListener('load', () => preparaDemo(marco));
-      marco.appendChild(ifr);
-      // El ResizeObserver ya observa este marco: forzamos que recalcule --s.
-      marco.style.setProperty('--s', String(marco.getBoundingClientRect().width / 1440));
-      marco.dataset.listo = 'si';
-      btn.remove();
-    }, { once: true });
-  });
 
   // --- Inclinación al puntero (spec §6 punto 5) ---
   // Si se nota, está mal calibrado. El tope son 3 grados.

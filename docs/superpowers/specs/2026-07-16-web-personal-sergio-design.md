@@ -129,7 +129,10 @@ Cada uno costó una sesión de depuración y ninguno se ve leyendo el código. E
 Tres webs completas dentro de otra pesan. El prospecto típico abre esto **con el móvil, con 4G regular, en la sala de espera de su clínica**. Si el wow se convierte en una rueda girando, la web hace lo contrario de lo que se le pide — y encima contradice el argumento de §"Cómo trabajo".
 
 - **Se mide antes de publicar**, en móvil real y con red limitada. No se da por bueno con la sensación de escritorio.
-- **Plan B ya decidido, no se improvisa:** si no aguanta, solo el primer proyecto carga su iframe de salida; los otros dos se quedan en su captura hasta que alguien los toque. Como la captura ya es la base del marco (§5), el plan B no añade nada: solo retrasa. El diseño no cambia ni un píxel.
+- **Plan B APLICADO (2026-07-16).** Con las tres demos cargando de salida: rendimiento **76**, LCP 6,9s. Fuera del listón. Solo la primera carga al entrar; las otras dos esperan.
+- **Pero esperan a ACERCARSE, no a que las toquen.** El plan original decía "hasta que alguien las toque", y eso estaba mal: las secciones siguen midiendo 311vh y 260vh, así que dejaba tres pantallas de scroll ante una imagen quieta con la barra de progreso marcando un recorrido inexistente. Mataba la pieza central en dos de los tres proyectos. Con un `IntersectionObserver` de `rootMargin: 150%`, la demo llega cargada antes de verse: **se conserva el efecto entero y se protege el LCP igual**.
+- **Resultado medido (verificado dos veces, por el implementador y por el controlador):** rendimiento **94-95**, accesibilidad **100**, buenas prácticas 96, SEO 100. LCP 2,8-2,9s, bloqueo 0ms. Las tres demos vivas y recorriéndose; al cargar solo existe un iframe.
+- **Accesibilidad venía en 88, no cerca de 100** como daba por hecho este spec. Dos fallos reales, preexistentes: contraste insuficiente en `--color-tenue` (3,9:1, por debajo del mínimo AA de 4,5:1 → `#6b6f76` pasa a `#7a7e85`, 4,83:1) y ausencia de landmark `<main>`. Corregidos.
 - Objetivo: Lighthouse móvil ≥ 90. Es el listón que Sergio vende; su propia web no puede bajar de ahí.
 - Que la captura sea la base ya juega a favor: es la imagen que pinta primero, y el iframe llega después sin bloquear nada.
 

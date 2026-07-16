@@ -9,11 +9,13 @@ export const site = {
 } as const;
 
 export const bio = {
-  // OJO: aquí no va ninguna cifra que Sergio no haya confirmado. La versión
-  // anterior decía "llevo diez años haciendo webs", que era inventado (él dijo
-  // dos años en la UPC y uno en EY), y "uno lo pasé rompiéndolas", que tampoco:
-  // en EY fue ciber puro, sin tocar web. Ver spec §2.
-  titular: 'Dos años haciendo la web de una escuela de ingeniería. Uno en ciberseguridad. Ahora, la tuya.',
+  // El titular lleva el ARGUMENTO; los párrafos llevan las credenciales. No los
+  // dupliques: la versión anterior repetía los "dos años" que el primer párrafo
+  // ya cuenta, y encima abría por el eje donde Sergio pierde (una agencia siempre
+  // pondrá un número mayor). Esto es lo único que una agencia no puede decir.
+  // OJO: aquí NO va ninguna cifra que Sergio no haya confirmado. Hubo un titular
+  // con "llevo diez años haciendo webs" que era inventado. Ver spec §2.
+  titular: 'Tu web la va a hacer quien está hablando contigo.',
   parrafos: [
     'Durante dos años llevé el diseño y la gestión de contenidos de la web de la EEBE, la escuela de ingeniería de la UPC, con una beca de aprendizaje. No fue una pantalla bonita y adiós: fue mantener algo vivo, todos los días, para una institución exigente.',
     'Después pasé un año en ciberseguridad en EY. Aprendí cómo se rompen las cosas por dentro, y volví al diseño porque es lo que quiero hacer.',
@@ -24,7 +26,10 @@ export const bio = {
 export const metodo = {
   titular: 'Construyo webs que no se pueden romper.',
   parrafos: [
-    'Tu web actual es probablemente WordPress con veinte plugins que llevan meses sin actualizar. Cada uno es una puerta. Cuando una cede, tu dominio acaba redirigiendo a un casino y tus pacientes ven eso en vez de tu clínica. Lo he visto esta semana en una clínica dental de aquí al lado.',
+    // Sin "esta semana": las referencias temporales caducan y esta ya era falsa
+    // (el hallazgo fue del 3 de julio, no de la semana en que se escribió).
+    // Y era "apuestas", no "casino" — si afirmas algo concreto, que sea exacto.
+    'Tu web actual es probablemente WordPress con veinte plugins que llevan meses sin actualizar. Cada uno es una puerta. Cuando una cede, tu dominio acaba redirigiendo a una web de apuestas y tus pacientes ven eso en vez de tu clínica. Le ha pasado a una clínica dental de aquí al lado.',
     'Yo entrego archivos estáticos. No hay base de datos que inyectar, ni plugins que actualizar, ni panel de administración que reventar. No es una promesa de marketing: es que no existe la puerta.',
     'De propina, va rápida. Un archivo estático se sirve desde el borde de la red y aparece antes de que tu visitante se plantee irse.',
   ],

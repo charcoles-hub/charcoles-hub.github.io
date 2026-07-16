@@ -1168,7 +1168,7 @@ git commit -m "feat: sección El trabajo con los tres pósters vivos"
 
 ```ts
 export const bio = {
-  titular: 'Dos años haciendo la web de una escuela de ingeniería. Uno en ciberseguridad. Ahora, la tuya.',
+  titular: 'Tu web la va a hacer quien está hablando contigo.',
   parrafos: [
     'Durante dos años llevé el diseño y la gestión de contenidos de la web de la EEBE, la escuela de ingeniería de la UPC, con una beca de aprendizaje. No fue una pantalla bonita y adiós: fue mantener algo vivo, todos los días, para una institución exigente.',
     'Después pasé un año en ciberseguridad en EY. Aprendí cómo se rompen las cosas por dentro, y volví al diseño porque es lo que quiero hacer.',
@@ -1179,7 +1179,7 @@ export const bio = {
 export const metodo = {
   titular: 'Construyo webs que no se pueden romper.',
   parrafos: [
-    'Tu web actual es probablemente WordPress con veinte plugins que llevan meses sin actualizar. Cada uno es una puerta. Cuando una cede, tu dominio acaba redirigiendo a un casino y tus pacientes ven eso en vez de tu clínica. Lo he visto esta semana en una clínica dental de aquí al lado.',
+    'Tu web actual es probablemente WordPress con veinte plugins que llevan meses sin actualizar. Cada uno es una puerta. Cuando una cede, tu dominio acaba redirigiendo a una web de apuestas y tus pacientes ven eso en vez de tu clínica. Le ha pasado a una clínica dental de aquí al lado.',
     'Yo entrego archivos estáticos. No hay base de datos que inyectar, ni plugins que actualizar, ni panel de administración que reventar. No es una promesa de marketing: es que no existe la puerta.',
     'De propina, va rápida. Un archivo estático se sirve desde el borde de la red y aparece antes de que tu visitante se plantee irse.',
   ],

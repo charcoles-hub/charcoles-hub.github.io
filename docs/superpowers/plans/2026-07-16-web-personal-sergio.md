@@ -63,7 +63,7 @@ El vocabulario de animación queda en cinco puntos: portada, revelado, recorrido
 | `src/components/ComoTrabajo.astro` | Sección 04 |
 | `src/components/Contacto.astro` | Sección 05 |
 | `src/pages/index.astro` | Compone las cinco secciones |
-| `public/posters/*.webp` | Capturas de las tres demos. La base del marco, no un rescate |
+| `src/assets/posters/*.png` | Capturas de las tres demos. La base del marco, no un rescate. Astro las emite en WebP |
 | `scripts/medir-demos.mjs` | Mide el alto real de cada demo → alimenta `alto` en `site.ts` |
 | `scripts/verificar.mjs` | Comprobaciones automáticas (overflow, escalado, recorrido, reduced-motion, etiquetas, datos personales) |
 | `.github/workflows/deploy.yml` | Deploy Pages (se añade en Task 8, no antes) |
@@ -191,9 +191,7 @@ export interface Proyecto {
   url: string;
   /** SIEMPRE 'concepto' mientras el negocio sea inventado. Ver spec §2. */
   etiqueta: 'concepto' | 'cliente';
-  /** Captura estática. Es lo que se ve al instante y si el iframe no llega. */
-  poster: string;
-  /** Slug del repo, para nombrar la captura. */
+  /** Slug del repo. Nombra la captura en `src/assets/posters/<slug>.png`. */
   slug: string;
   /**
    * Alto real de la demo renderizada a 1440px de ancho. MEDIDO, no estimado
@@ -222,7 +220,6 @@ export const proyectos: Proyecto[] = [
       'Una barbería de barrio con alma de taberna. La carta se lee como un menú, el poste gira de verdad y el latón pesa.',
     slug: 'demo-barberia-navaja',
     url: 'https://charcoles-hub.github.io/demo-barberia-navaja/',
-    poster: '/posters/demo-barberia-navaja.webp',
     alto: 4229,
     etiqueta: 'concepto',
   },
@@ -234,7 +231,6 @@ export const proyectos: Proyecto[] = [
       'Ir al dentista da respeto. La web no tenía por qué darlo también: petróleo y porcelana en vez del cian de siempre, y el tratamiento explicado como quien te lo cuenta sentado.',
     slug: 'demo-dental-sereno',
     url: 'https://charcoles-hub.github.io/demo-dental-sereno/',
-    poster: '/posters/demo-dental-sereno.webp',
     alto: 6601,
     etiqueta: 'concepto',
   },
@@ -246,7 +242,6 @@ export const proyectos: Proyecto[] = [
       'Pedir ayuda cuesta. Aquí todo baja el pulso: ciruela y malva, mucho aire, y ni una sola foto de alguien mirando al horizonte.',
     slug: 'demo-psicologia-ancla',
     url: 'https://charcoles-hub.github.io/demo-psicologia-ancla/',
-    poster: '/posters/demo-psicologia-ancla.webp',
     alto: 5224,
     etiqueta: 'concepto',
   },
@@ -632,20 +627,23 @@ El corazón del sitio. Un `iframe` con la demo real, escalado, vivo y neutraliza
 
 El póster estático **no es el plan B: es la base.** Es lo que se ve al instante, lo que aguanta si el iframe no llega, y lo que ve quien tenga JavaScript desactivado. El iframe vivo se funde encima cuando está listo.
 
+Van a `src/assets/`, **no a `public/`**: así pasan por `astro:assets`, que las convierte a WebP y genera `srcset` en el build. Astro ya trae `sharp` dentro, así que no hace falta `cwebp` ni ninguna dependencia nueva.
+
 ```bash
-mkdir -p public/posters
-cd public/posters
+mkdir -p src/assets/posters
 for d in demo-barberia-navaja demo-dental-sereno demo-psicologia-ancla; do
   chromium --headless=new --no-sandbox --virtual-time-budget=5000 \
-    --window-size=1440,900 --screenshot="$d.png" "https://charcoles-hub.github.io/$d/"
-  # WebP: pesan ~5x menos que PNG y son la imagen que carga siempre.
-  cwebp -q 82 "$d.png" -o "$d.webp" && rm "$d.png"
+    --window-size=1440,900 --screenshot="src/assets/posters/$d.png" \
+    "https://charcoles-hub.github.io/$d/"
 done
-cd ../..
-ls -la public/posters/
+ls -la src/assets/posters/
 ```
 
-Esperado: tres `.webp` de 1440×900, cada uno bien por debajo de 200 KB. Ábrelos y **comprueba que cada captura muestra la portada de su demo**, no un error ni una página a medio cargar. Si `cwebp` no está: `sudo pacman -S libwebp`.
+Esperado: tres PNG de 1440×900. **Ábrelos y comprueba que cada uno muestra la portada de su demo**, no un error ni una página a medio cargar — el `--virtual-time-budget` está para eso, sin él salen a media animación. El peso del PNG da igual: Astro emite WebP optimizado en el build y el PNG nunca se publica.
+
+```bash
+xdg-open src/assets/posters/demo-barberia-navaja.png
+```
 
 - [ ] **Step 1: Añadir a `src/styles/global.css` la mecánica del marco**
 
@@ -746,12 +744,15 @@ Por eso el escalado va con `ResizeObserver` — cinco líneas que funcionan en t
 
 ```astro
 ---
+import { Image } from 'astro:assets';
 import { VELOCIDAD, type Proyecto } from '../config/site';
 
 interface Props {
   proyecto: Proyecto;
+  /** La captura importada. La pasa Trabajo.astro para que Astro la optimice. */
+  poster: ImageMetadata;
 }
-const { proyecto } = Astro.props;
+const { proyecto, poster } = Astro.props;
 const esConcepto = proyecto.etiqueta === 'concepto';
 
 // Cuánto scroll necesita este proyecto para recorrerse entero.
@@ -799,12 +800,12 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
       <span class="punto-vivo size-1.5 rounded-full bg-[#3fb950]"></span>EN VIVO
     </div>
 
-    <img
+    <Image
       class="marco__poster"
-      src={proyecto.poster}
+      src={poster}
       alt=""
-      width="1440"
-      height="900"
+      widths={[480, 960, 1440]}
+      sizes="(min-width: 820px) 55vw, 100vw"
       loading="lazy"
       decoding="async"
     />
@@ -919,7 +920,7 @@ Esperado: build OK, sin errores de TypeScript.
 **Nada renderiza este componente todavía** — eso llega en la Task 4, y allí se verifica de verdad (escalado, recorrido, `pointer-events`, etiquetas). Aquí solo se comprueba que el componente compila y que las capturas del Step 0 existen:
 
 ```bash
-ls -la public/posters/*.webp | wc -l
+ls -la src/assets/posters/*.png | wc -l
 ```
 Esperado: `3`.
 
@@ -966,15 +967,29 @@ Nota: aquí el estado inicial **sí** es `opacity: 0`, pero solo dentro de `@med
 
 Sin `gap` ni `data-revela` alrededor de los proyectos: cada uno ya es una sección alta que se fija sola, y **un `transform` en un ancestro rompería el `position:sticky` de dentro**. Es el fallo clásico de este patrón.
 
+Las capturas se importan aquí, explícitamente. Astro necesita imports estáticos para optimizarlas en el build; un `src` construido con una plantilla de texto no pasa por `astro:assets` y se quedaría sin convertir.
+
 ```astro
 ---
 import { proyectos } from '../config/site';
 import PosterVivo from './PosterVivo.astro';
+
+import navaja from '../assets/posters/demo-barberia-navaja.png';
+import sereno from '../assets/posters/demo-dental-sereno.png';
+import ancla from '../assets/posters/demo-psicologia-ancla.png';
+
+const posters: Record<string, ImageMetadata> = {
+  'demo-barberia-navaja': navaja,
+  'demo-dental-sereno': sereno,
+  'demo-psicologia-ancla': ancla,
+};
 ---
 <section class="px-6 md:px-12">
   <h2 class="sr-only">El trabajo</h2>
   <div class="mx-auto max-w-6xl">
-    {proyectos.map((proyecto) => <PosterVivo proyecto={proyecto} />)}
+    {proyectos.map((proyecto) => (
+      <PosterVivo proyecto={proyecto} poster={posters[proyecto.slug]} />
+    ))}
   </div>
 </section>
 ```

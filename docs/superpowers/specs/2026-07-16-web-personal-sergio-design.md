@@ -68,28 +68,37 @@ Las demos **no son capturas: son las webs reales, incrustadas y funcionando**. E
 
 **Verificado (2026-07-16):** las tres devuelven `200` y **no mandan `X-Frame-Options` ni CSP `frame-ancestors`** → se dejan incrustar. Además, con la web en la raíz de `charcoles-hub.github.io`, los iframes son **mismo origen**: cero restricciones.
 
-Mecánica:
-- `iframe` escalado con `transform:scale()` dentro de un marco de proporción fija.
+Mecánica, en capas de abajo arriba:
+- **La captura `.webp` es la base, no el rescate.** Siempre presente, se ve al instante, y es lo que queda si el iframe no llega o si no hay JavaScript. El marco nunca está vacío ni roto.
+- **El iframe se funde encima** cuando está escalado y cargado (`loading="lazy"`). Arranca oculto a propósito: sin el escalado aplicado se vería a tamaño real, que es la versión rota.
+- **Escalado con `ResizeObserver`**, no con CSS — ver el aprendizaje caro de §6.
 - **`pointer-events:none`** — es un póster *vivo*: se ve la web real animándose, pero no atrapa el scroll ni secuestra el dedo en móvil. Sin esto, incrustar webs es infumable en táctil.
-- Indicador "EN VIVO" con punto pulsante.
-- Botón "Abrir de verdad ↗" → la web real en pestaña nueva. Ahí sí se toca.
-- `loading="lazy"` + captura de póster de fondo mientras carga.
+- **El iframe es más alto que el marco** (el alto real de cada demo) y se desplaza con el scroll: ese excedente es el recorrido de §6 punto 3. Como el marco es 1440/900 y el iframe escala por `ancho/1440`, la porción visible es siempre exactamente 900px de demo, en cualquier pantalla. No hay números mágicos.
+- Indicador "EN VIVO" con punto pulsante, y una barra fina de progreso del recorrido.
+- El iframe va con `tabindex="-1"` y `aria-hidden="true"`: es decorativo. Sin eso, quien navegue con teclado queda atrapado dentro de la demo y un lector de pantalla leería tres webs enteras. La vía accesible al mismo contenido es el botón.
+- Botón **"Abrir de verdad ↗"** → la web real en pestaña nueva. Ahí sí se toca.
 
 ## 6. Animaciones (el eje del wow)
 
 Sergio: *"las animaciones son lo que más efecto wow da"*. Vocabulario cerrado, para que no se improvise:
 
-1. **Entrada de portada** — el nombre se compone al cargar: líneas subiendo con desfase y máscara (`clip-path`), no un fade genérico.
-2. **Revelado por scroll** — cada proyecto entra al viewport con desplazamiento y escala sutil. Escalonado: primero el marco, luego el texto.
-3. **Fijado del proyecto** — cada póster vivo se queda fijo mientras su texto pasa al lado. Es lo que da la sensación de "flow" y de página coreografiada en vez de scrolleada.
+1. **Entrada de portada** — el nombre se compone al cargar: líneas subiendo tras una máscara con desfase, no un fade genérico.
+2. **Revelado por scroll** — las secciones de texto entran con desplazamiento y escala sutil, vía `IntersectionObserver` (el patrón que ya usa `demo-barberia-navaja`). No se usa `animation-timeline: view()`: Firefox no lo soporta y dejaría esas secciones quietas.
+3. **Recorrido fijado** — *el corazón del sitio.* El bloque de cada proyecto (texto + póster) se queda fijo mientras su sección pasa, y **la demo se recorre por dentro del marco** al scrollear. No se enseña una portada: se enseña la web entera sin que nadie haga clic. Elegido por Sergio el 2026-07-16 sobre la alternativa sin fijado, viendo las dos funcionando.
+   - Ritmo controlado por la constante `VELOCIDAD` en `src/config/site.ts` (píxeles de demo por píxel de scroll). Es un mando de calibración: se ajusta mirándolo, con Sergio.
+   - Alturas reales de las demos a 1440px, medidas con `scripts/medir-demos.mjs` (2026-07-16): Navaja 4229px, Sereno 6601px, Ancla 5224px. Si una demo cambia, hay que remedir.
 4. **Latido "EN VIVO"** — punto pulsante, el detalle que dice "esto no es una imagen".
-5. **Reacción al puntero** — el marco responde al ratón con inclinación mínima (2-3 grados máximo). Sutil: si se nota el efecto, está mal calibrado.
-6. **Transiciones de enlace** — `@view-transition` nativa del navegador para el paso a las demos.
+5. **Reacción al puntero** — el marco responde al ratón con inclinación mínima (3 grados como tope). Sutil: si se nota el efecto, está mal calibrado. Solo con ratón: en táctil un `pointermove` es el dedo haciendo scroll.
+
+**Descartado: transiciones `@view-transition`.** Exigen que ambos documentos se adhieran (las demos son repos aparte y no lo hacen) y las demos abren en pestaña nueva, donde no hay transición posible. El propio diseño se contradecía.
 
 **Reglas duras:**
-- **`prefers-reduced-motion: reduce` se respeta siempre.** No es opcional ni negociable: hay gente a la que el movimiento le produce mareo real. Con la preferencia activada, todo aparece sin desplazamiento y el póster vivo se queda quieto o pasa a captura.
+- **`prefers-reduced-motion: reduce` se respeta siempre.** No es opcional ni negociable: hay gente a la que el movimiento le produce mareo real. Con la preferencia activada, todo aparece sin desplazamiento y la demo se queda fija en su portada.
+- **Nada puede quedar invisible si una animación no corre.** Los estados iniciales ocultos se activan con una clase que pone el propio JavaScript (`.js-anima`); si el script no corre, no se oculta nada. Un `opacity:0` que dependa de algo no soportado deja la página en blanco.
 - Animación por composición (`transform`/`opacity`), nunca por propiedades que fuercen relayout.
-- Preferir CSS nativo (`animation-timeline: view()`) antes que JavaScript. Sin librerías de animación: son kilobytes para lo que hace el navegador solo.
+- **Sin librerías de animación.** JavaScript propio donde haga falta (el escalado y el recorrido lo necesitan), CSS donde alcance.
+
+**Aprendizaje caro, no lo reintentes:** escalar el iframe con container queries —`transform: scale(calc(100cqw / 1440px))`— **funciona en Chromium y falla en Firefox** (probado el 2026-07-16: `matrix(0.5,…)` vs `none`). Firefox no divide longitud entre longitud dentro de `calc()` y descarta la declaración entera; el iframe se queda a tamaño real y se ve una esquina ampliada de la demo. Sin la unidad `px` falla en los dos. Por eso el escalado va con `ResizeObserver`.
 
 ## 7. Decisiones aplazadas a propósito
 
@@ -102,8 +111,9 @@ Sergio: *"las animaciones son lo que más efecto wow da"*. Vocabulario cerrado, 
 Tres webs completas dentro de otra pesan. El prospecto típico abre esto **con el móvil, con 4G regular, en la sala de espera de su clínica**. Si el wow se convierte en una rueda girando, la web hace lo contrario de lo que se le pide — y encima contradice el argumento de §"Cómo trabajo".
 
 - **Se mide antes de publicar**, en móvil real y con red limitada. No se da por bueno con la sensación de escritorio.
-- **Plan B ya decidido, no se improvisa:** si no aguanta, solo el primer proyecto va vivo y los otros dos son capturas que despiertan al clicar.
+- **Plan B ya decidido, no se improvisa:** si no aguanta, solo el primer proyecto carga su iframe de salida; los otros dos se quedan en su captura hasta que alguien los toque. Como la captura ya es la base del marco (§5), el plan B no añade nada: solo retrasa. El diseño no cambia ni un píxel.
 - Objetivo: Lighthouse móvil ≥ 90. Es el listón que Sergio vende; su propia web no puede bajar de ahí.
+- Que la captura sea la base ya juega a favor: es la imagen que pinta primero, y el iframe llega después sin bloquear nada.
 
 ## 9. Fuera de alcance
 

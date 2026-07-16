@@ -33,9 +33,17 @@ Dos desajustes detectados al cotejar el plan contra el spec. Se corrigen aquí y
 - Las transiciones entre documentos exigen que **ambas** páginas declaren `@view-transition { navigation: auto }`. Las tres demos son repos aparte y no lo declaran → habría que tocar tres repos ajenos a este trabajo.
 - Las demos abren en pestaña nueva (`target="_blank"`), y **una pestaña nueva no tiene transición posible**. El propio diseño se contradecía.
 
-**2. Se invierte el fijado (spec §6 punto 3).** El spec decía "el póster se queda fijo mientras su texto pasa al lado". Es al revés: **se fija el texto y el póster pasa**. Motivo físico, no de gusto: para que un elemento quede fijo, su columna tiene que ser más corta que la contraria, y aquí el texto de cada proyecto son cuatro líneas frente a un póster de 16/10 — el texto es lo corto. Con el póster fijo no habría nada que desplazar y el efecto no existiría. El resultado en pantalla es el mismo "flow" coreografiado, con los papeles cambiados.
+**2. El fijado cambia de mecánica (spec §6 punto 3), y Sergio eligió la nueva mirándola.** El spec decía "el póster se queda fijo mientras su texto pasa al lado". Eso **no funciona**: para que algo quede fijo, su columna tiene que ser más corta que la contraria, y aquí texto y póster miden casi lo mismo → recorrido cero → no se fija nada. El efecto no existía.
 
-El vocabulario de animación queda en los cinco puntos restantes (portada, revelado, fijado, latido, puntero).
+Al arreglarlo apareció una bifurcación real, y como el "flow" es lo que Sergio dijo que más wow le da, se le enseñaron las dos funcionando (2026-07-16). **Eligió esta:**
+
+> El bloque entero del proyecto (texto + póster) se queda fijo, y **la demo se recorre por dentro del marco** al scrollear. No se enseña una portada: se enseña la web entera sin que nadie haga clic.
+
+Cuesta una sección alta por proyecto (la página se alarga a ~11 pantallas con `VELOCIDAD=3`) y el script de recorrido de la Task 3. A cambio, el scroll deja de ser un desfile de portadas y pasa a ser un recorrido por el trabajo.
+
+**3. El revelado pasa de CSS a `IntersectionObserver` (spec §6 punto 2).** `animation-timeline: view()` es más corto, pero Firefox no lo soporta y esas secciones se quedarían quietas. El patrón con observer ya existe en `demo-barberia-navaja` — se reusa.
+
+El vocabulario de animación queda en cinco puntos: portada, revelado, recorrido fijado, latido, puntero.
 
 ---
 
@@ -55,7 +63,9 @@ El vocabulario de animación queda en los cinco puntos restantes (portada, revel
 | `src/components/ComoTrabajo.astro` | Sección 04 |
 | `src/components/Contacto.astro` | Sección 05 |
 | `src/pages/index.astro` | Compone las cinco secciones |
-| `scripts/verificar.mjs` | Comprobaciones automáticas (overflow, reduced-motion, iframes, etiquetas) |
+| `public/posters/*.webp` | Capturas de las tres demos. La base del marco, no un rescate |
+| `scripts/medir-demos.mjs` | Mide el alto real de cada demo → alimenta `alto` en `site.ts` |
+| `scripts/verificar.mjs` | Comprobaciones automáticas (overflow, escalado, recorrido, reduced-motion, etiquetas, datos personales) |
 | `.github/workflows/deploy.yml` | Deploy Pages (se añade en Task 8, no antes) |
 
 ---
@@ -183,9 +193,25 @@ export interface Proyecto {
   etiqueta: 'concepto' | 'cliente';
   /** Captura estática. Es lo que se ve al instante y si el iframe no llega. */
   poster: string;
-  /** Ancho del slug del repo, para nombrar la captura. */
+  /** Slug del repo, para nombrar la captura. */
   slug: string;
+  /**
+   * Alto real de la demo renderizada a 1440px de ancho. MEDIDO, no estimado
+   * (2026-07-16, ver `scripts/medir-demos.mjs`). De aquí sale cuánto scroll
+   * necesita cada proyecto para recorrerse entero. Si retocas una demo,
+   * vuelve a medir: un número obsoleto deja el recorrido corto o pasado.
+   */
+  alto: number;
 }
+
+/**
+ * Cuántos píxeles de demo avanzan por cada píxel de scroll de la página.
+ * ESTE ES EL MANDO DE CALIBRACIÓN del efecto: más alto = recorrido más
+ * rápido y página más corta; más bajo = más pausado y página más larga.
+ * 3 es el punto de partida, no un valor sagrado. Se ajusta MIRÁNDOLO
+ * (Task 4 Step 6), que es la única forma de saber si el ritmo funciona.
+ */
+export const VELOCIDAD = 3;
 
 export const proyectos: Proyecto[] = [
   {
@@ -197,6 +223,7 @@ export const proyectos: Proyecto[] = [
     slug: 'demo-barberia-navaja',
     url: 'https://charcoles-hub.github.io/demo-barberia-navaja/',
     poster: '/posters/demo-barberia-navaja.webp',
+    alto: 4229,
     etiqueta: 'concepto',
   },
   {
@@ -208,6 +235,7 @@ export const proyectos: Proyecto[] = [
     slug: 'demo-dental-sereno',
     url: 'https://charcoles-hub.github.io/demo-dental-sereno/',
     poster: '/posters/demo-dental-sereno.webp',
+    alto: 6601,
     etiqueta: 'concepto',
   },
   {
@@ -219,10 +247,39 @@ export const proyectos: Proyecto[] = [
     slug: 'demo-psicologia-ancla',
     url: 'https://charcoles-hub.github.io/demo-psicologia-ancla/',
     poster: '/posters/demo-psicologia-ancla.webp',
+    alto: 5224,
     etiqueta: 'concepto',
   },
 ];
 ```
+
+- [ ] **Step 6b: Crear `scripts/medir-demos.mjs`**
+
+Los `alto` de arriba salen de aquí. Guárdalo para poder remedir cuando una demo cambie, en vez de estimar a ojo.
+
+```js
+import puppeteer from 'puppeteer-core';
+
+const b = await puppeteer.launch({
+  executablePath: process.env.CHROMIUM ?? '/usr/bin/chromium',
+  headless: 'new',
+  args: ['--no-sandbox'],
+});
+
+for (const slug of ['demo-barberia-navaja', 'demo-dental-sereno', 'demo-psicologia-ancla']) {
+  const p = await b.newPage();
+  await p.setViewport({ width: 1440, height: 900 });
+  await p.goto(`https://charcoles-hub.github.io/${slug}/`, { waitUntil: 'networkidle2' });
+  await new Promise((r) => setTimeout(r, 1500)); // que asienten las animaciones de entrada
+  const alto = await p.evaluate(() => document.documentElement.scrollHeight);
+  console.log(`${slug.padEnd(24)} alto: ${alto}px  (${(alto / 900).toFixed(1)} pantallas)`);
+  await p.close();
+}
+
+await b.close();
+```
+
+Medición del 2026-07-16: Navaja 4229px (4,7 pantallas), Sereno 6601px (7,3), Ancla 5224px (5,8).
 
 - [ ] **Step 7: Crear `src/pages/index.astro` mínimo (andamio temporal)**
 
@@ -425,9 +482,29 @@ const jsonLd = {
   </head>
   <body>
     <slot />
+
+    <script>
+      // La clase habilita los estados iniciales ocultos. Va la primera y por JS:
+      // si este script no corre, nada se oculta nunca. Ver global.css.
+      document.documentElement.classList.add('js-anima');
+
+      const obs = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) {
+            if (!e.isIntersecting) continue;
+            e.target.classList.add('visible');
+            obs.unobserve(e.target);
+          }
+        },
+        { threshold: 0.12 }
+      );
+      document.querySelectorAll('[data-revela]').forEach((el) => obs.observe(el));
+    </script>
   </body>
 </html>
 ```
+
+El `IntersectionObserver` es el mismo patrón que ya usa `demo-barberia-navaja`. Se reusa a propósito en vez de estrenar `animation-timeline: view()`, que Firefox aún no soporta.
 
 - [ ] **Step 2: Añadir a `src/styles/global.css` las animaciones de portada**
 
@@ -584,6 +661,28 @@ Firefox no hace la división longitud/longitud dentro de `calc()`, así que **de
 Por eso el escalado va con `ResizeObserver` — cinco líneas que funcionan en todas partes.
 
 ```css
+/* ---- Proyecto: sección alta + fijado ----
+   La sección es alta (su altura la calcula el componente a partir del alto
+   real de la demo). El bloque interior se queda fijo mientras la sección
+   pasa, y ese recorrido es el que mueve la demo por dentro del marco. */
+.proyecto {
+  position: relative;
+  height: var(--alto-seccion, 200vh);
+}
+.proyecto__fijo {
+  position: sticky;
+  top: 8vh;
+  display: grid;
+  gap: 1.5rem;
+}
+@media (min-width: 820px) {
+  .proyecto__fijo {
+    grid-template-columns: 1fr 1.15fr;
+    gap: 3rem;
+    align-items: center;
+  }
+}
+
 /* ---- Póster vivo ---- */
 .marco {
   position: relative;
@@ -613,18 +712,19 @@ Por eso el escalado va con `ResizeObserver` — cinco líneas que funcionan en t
   object-fit: cover;
 }
 
-/* El iframe: encima, oculto hasta que esté escalado Y cargado. */
+/* El iframe: encima, oculto hasta que esté escalado Y cargado.
+   Mide 1440 × (el alto real de su demo): es más alto que el marco a propósito,
+   y ese excedente es justo lo que se recorre al scrollear. */
 .marco iframe {
   position: absolute;
   top: 0;
   left: 0;
   width: 1440px;
-  height: 900px;
   border: 0;
   transform-origin: 0 0;
-  /* --s lo fija el ResizeObserver. Sin él, `scale(var(--s))` sería inválido
-     y el iframe saldría a tamaño real: por eso arranca oculto. */
-  transform: scale(var(--s, 1));
+  /* --s y --y los fija el script. Sin --s, `scale()` sería inválido y el
+     iframe saldría a tamaño real: por eso arranca oculto. */
+  transform: scale(var(--s, 1)) translateY(var(--y, 0px));
   opacity: 0;
   transition: opacity 0.5s ease;
   /* LA LÍNEA CLAVE: póster vivo, no trampa táctil.
@@ -646,43 +746,54 @@ Por eso el escalado va con `ResizeObserver` — cinco líneas que funcionan en t
 
 ```astro
 ---
-import type { Proyecto } from '../config/site';
+import { VELOCIDAD, type Proyecto } from '../config/site';
 
 interface Props {
   proyecto: Proyecto;
 }
 const { proyecto } = Astro.props;
 const esConcepto = proyecto.etiqueta === 'concepto';
+
+// Cuánto scroll necesita este proyecto para recorrerse entero.
+// El marco enseña 900px de demo; lo que sobra es lo que hay que recorrer,
+// y VELOCIDAD dice a qué ritmo. Sale en vh porque el marco escala con el ancho.
+// Navaja 4229px → 223vh · Sereno 6601px → 311vh · Ancla 5224px → 260vh
+const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOCIDAD);
 ---
-<article class="grid gap-6 md:grid-cols-[1fr_1.15fr] md:gap-12 md:items-start">
-  <div class="md:sticky md:top-[12vh] flex flex-col gap-4">
-    <p class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">
-      Proyecto {proyecto.n} — {esConcepto ? 'concepto' : 'cliente'}
-    </p>
-    <h3 class="font-display text-5xl font-extrabold tracking-[-0.04em] md:text-6xl" style="font-stretch:110%">
-      {proyecto.nombre}
-    </h3>
-    <p class="text-sm uppercase tracking-[0.1em] text-tenue">{proyecto.rubro}</p>
-    <p class="max-w-[44ch] text-balance text-medio">{proyecto.descripcion}</p>
-
-    {esConcepto && (
-      <p class="max-w-[44ch] border-t border-linea pt-4 text-xs leading-relaxed text-tenue">
-        Negocio inventado, diseño real. Lo hice para enseñar cómo trabajo, no para un cliente.
+<section class="proyecto" style={`--alto-seccion:${altoSeccion}vh`} data-proyecto>
+  <div class="proyecto__fijo">
+    <div class="flex flex-col gap-4">
+      <p class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">
+        Proyecto {proyecto.n} — {esConcepto ? 'concepto' : 'cliente'}
       </p>
-    )}
+      <h3 class="font-display text-5xl font-extrabold tracking-[-0.04em] md:text-6xl" style="font-stretch:110%">
+        {proyecto.nombre}
+      </h3>
+      <p class="text-sm uppercase tracking-[0.1em] text-tenue">{proyecto.rubro}</p>
+      <p class="max-w-[44ch] text-balance text-medio">{proyecto.descripcion}</p>
 
-    <a
-      href={proyecto.url}
-      target="_blank"
-      rel="noopener"
-      class="mt-2 w-fit rounded-full bg-tinta px-4 py-2.5 text-xs font-semibold text-fondo
-             transition-transform hover:-translate-y-0.5"
-    >
-      Abrir de verdad ↗
-    </a>
-  </div>
+      {esConcepto && (
+        <p class="max-w-[44ch] border-t border-linea pt-4 text-xs leading-relaxed text-tenue">
+          Negocio inventado, diseño real. Lo hice para enseñar cómo trabajo, no para un cliente.
+        </p>
+      )}
 
-  <div class="marco" data-marco data-listo="no">
+      <a
+        href={proyecto.url}
+        target="_blank"
+        rel="noopener"
+        class="mt-2 w-fit rounded-full bg-tinta px-4 py-2.5 text-xs font-semibold text-fondo
+               transition-transform hover:-translate-y-0.5"
+      >
+        Abrir de verdad ↗
+      </a>
+
+      <div class="mt-2 h-0.5 overflow-hidden rounded-full bg-linea">
+        <i class="block h-full w-0 bg-acento" data-barra></i>
+      </div>
+    </div>
+
+  <div class="marco" data-marco data-listo="no" data-alto={proyecto.alto}>
     <div class="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full
                 bg-fondo/80 px-2.5 py-1 text-[0.6rem] font-semibold tracking-[0.1em] backdrop-blur-md">
       <span class="punto-vivo size-1.5 rounded-full bg-[#3fb950]"></span>EN VIVO
@@ -705,17 +816,20 @@ const esConcepto = proyecto.etiqueta === 'concepto';
       tabindex="-1"
       aria-hidden="true"
     ></iframe>
+    </div>
   </div>
-</article>
+</section>
 ```
 
 Dos decisiones de accesibilidad que no son opcionales:
 - **`tabindex="-1"` + `aria-hidden="true"` en el iframe.** Es decorativo — es un póster. Sin esto, quien navegue con teclado cae dentro de la demo y se queda atrapado sin saber cómo salir, y un lector de pantalla leería tres webs enteras incrustadas. El enlace "Abrir de verdad" es la vía accesible al mismo contenido.
 - **`alt=""` en la captura.** Es decorativa: duplica lo que ya dice el `h3` y el párrafo de al lado. Un `alt` descriptivo aquí sería ruido para quien use lector de pantalla.
 
-- [ ] **Step 3: Añadir el script del marco (escalado + inclinación)**
+- [ ] **Step 3: Añadir el script del marco (escalado + recorrido + inclinación)**
 
-Un único script para las dos cosas que necesitan JavaScript. El escalado es obligatorio (ver la tabla del Step 1); la inclinación es el punto 5 del vocabulario de animaciones del spec.
+Un único script para las tres cosas que necesitan JavaScript: el escalado (obligatorio, ver la tabla del Step 1), el recorrido de la demo (la opción C que eligió Sergio) y la inclinación (punto 5 del vocabulario del spec).
+
+**La cuenta del recorrido, porque no es evidente:** el marco tiene proporción 1440/900, así que su alto siempre es `ancho × 0.625`. Como el iframe va escalado por `s = ancho/1440`, la porción de demo visible es *siempre exactamente 900px*, sea cual sea el ancho de pantalla. Lo que sobra por debajo — `alto − 900` — es lo que hay que recorrer. Y como el `translateY` va dentro del `scale()`, se expresa en píxeles de demo sin escalar. Por eso no hay ni un número mágico.
 
 Añade al final de `src/components/PosterVivo.astro`:
 
@@ -728,11 +842,41 @@ Añade al final de `src/components/PosterVivo.astro`:
   const ro = new ResizeObserver((entradas) => {
     for (const e of entradas) {
       const marco = e.target as HTMLElement;
+      const ifr = marco.querySelector('iframe');
+      if (!ifr) continue;
+      ifr.style.height = `${marco.dataset.alto}px`;
       marco.style.setProperty('--s', String(e.contentRect.width / 1440));
       marco.dataset.listo = 'si';
     }
   });
   marcos.forEach((m) => ro.observe(m));
+
+  // --- Recorrido: la demo se mueve por dentro del marco (opción C) ---
+  function recorre() {
+    document.querySelectorAll<HTMLElement>('[data-proyecto]').forEach((seccion) => {
+      const marco = seccion.querySelector<HTMLElement>('[data-marco]');
+      const barra = seccion.querySelector<HTMLElement>('[data-barra]');
+      if (!marco) return;
+
+      const r = seccion.getBoundingClientRect();
+      const total = r.height - window.innerHeight;
+      const p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+
+      // El marco enseña siempre 900px de demo; lo que sobra es el recorrido.
+      const sobra = Math.max(0, (Number(marco.dataset.alto) || 900) - 900);
+      marco.style.setProperty('--y', reduce.matches ? '0px' : `${-p * sobra}px`);
+      if (barra) barra.style.width = `${(p * 100).toFixed(1)}%`;
+    });
+  }
+
+  let pendiente = false;
+  addEventListener('scroll', () => {
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(() => { recorre(); pendiente = false; });
+  }, { passive: true });
+  addEventListener('resize', recorre);
+  recorre();
 
   // --- Inclinación al puntero (spec §6 punto 5) ---
   // Si se nota, está mal calibrado. El tope son 3 grados.
@@ -765,33 +909,19 @@ Detalles que parecen menores y no lo son:
 - **`e.pointerType !== 'mouse'`.** En táctil, un `pointermove` es el dedo arrastrando para hacer scroll: inclinar el marco ahí es mareante y absurdo.
 - **La guarda de `prefers-reduced-motion` va en JavaScript** porque la animación vive en JavaScript. La regla dura del spec §6 aplica igual aquí que en CSS.
 
-- [ ] **Step 4: Añadir a `scripts/verificar.mjs` la regresión del escalado**
+- [ ] **Step 4: Comprobar que compila**
 
-**Este test existe por un bug concreto**, no por completismo: el enfoque CSS original se descartaba entero en Firefox y dejaba el iframe a tamaño real. Si alguien "simplifica" el ResizeObserver de vuelta a CSS, esto lo caza. Añádelo antes de `await browser.close();`:
-
-```js
-// El iframe DEBE quedar escalado al ancho del marco. Ver la tabla del plan, Task 3 Step 1.
-await comprueba('los iframes están escalados al marco', async () => {
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
-  await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
-  const medidas = await page.$$eval('.marco', (marcos) =>
-    marcos.map((m) => {
-      const ifr = m.querySelector('iframe');
-      return {
-        anchoMarco: m.getBoundingClientRect().width,
-        anchoIframe: ifr ? ifr.getBoundingClientRect().width : 0,
-      };
-    })
-  );
-  for (const { anchoMarco, anchoIframe } of medidas) {
-    assert.ok(
-      Math.abs(anchoIframe - anchoMarco) < 2,
-      `iframe de ${Math.round(anchoIframe)}px en un marco de ${Math.round(anchoMarco)}px — no está escalado`
-    );
-  }
-  await page.close();
-});
+```bash
+npm run build
 ```
+Esperado: build OK, sin errores de TypeScript.
+
+**Nada renderiza este componente todavía** — eso llega en la Task 4, y allí se verifica de verdad (escalado, recorrido, `pointer-events`, etiquetas). Aquí solo se comprueba que el componente compila y que las capturas del Step 0 existen:
+
+```bash
+ls -la public/posters/*.webp | wc -l
+```
+Esperado: `3`.
 
 - [ ] **Step 5: Commit**
 
@@ -814,41 +944,37 @@ git commit -m "feat: componente PosterVivo con iframe escalado por container que
 
 - [ ] **Step 1: Añadir a `src/styles/global.css` el revelado por scroll**
 
-Aquí está la degradación crítica. `animation-timeline: view()` no está en todos los navegadores (Firefox aún no). La doble guarda `@supports` + `@media` significa que quien no lo soporte ve el contenido **visible y quieto**, nunca en blanco. Si inviertes esto y pones `opacity:0` por defecto, rompes la página entera en Firefox.
+**Se usa `IntersectionObserver`, no `animation-timeline: view()`.** La vía CSS pura es más corta, pero Firefox no la soporta y esas secciones se quedarían completamente quietas — justo lo contrario de lo que Sergio pidió. Además el patrón con observer **ya existe en su código** (`demo-barberia-navaja/src/layouts/Layout.astro`): reusarlo es más barato que inventar otro y funciona en todos los navegadores.
+
+Nota: aquí el estado inicial **sí** es `opacity: 0`, pero solo dentro de `@media (prefers-reduced-motion: no-preference)` y aplicado con una clase que pone el propio JavaScript (`.js-anima`, ver Task 2). Si el script no corre, la clase no se añade y todo queda visible. Nunca al revés.
 
 ```css
-/* ---- Revelado por scroll (progressive enhancement) ---- */
+/* ---- Revelado por scroll ---- */
 @keyframes revela {
   from { opacity: 0; transform: translateY(40px) scale(0.97); }
   to   { opacity: 1; transform: none; }
 }
 
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    [data-revela] {
-      animation: revela linear both;
-      animation-timeline: view();
-      animation-range: entry 5% cover 30%;
-    }
-  }
+@media (prefers-reduced-motion: no-preference) {
+  /* .js-anima lo pone el script del Layout: sin JS, nada se oculta. */
+  .js-anima [data-revela] { opacity: 0; }
+  .js-anima [data-revela].visible { animation: revela 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
 }
 ```
 
 - [ ] **Step 2: Crear `src/components/Trabajo.astro`**
+
+Sin `gap` ni `data-revela` alrededor de los proyectos: cada uno ya es una sección alta que se fija sola, y **un `transform` en un ancestro rompería el `position:sticky` de dentro**. Es el fallo clásico de este patrón.
 
 ```astro
 ---
 import { proyectos } from '../config/site';
 import PosterVivo from './PosterVivo.astro';
 ---
-<section class="px-6 py-24 md:px-12 md:py-32">
+<section class="px-6 md:px-12">
   <h2 class="sr-only">El trabajo</h2>
-  <div class="mx-auto flex max-w-6xl flex-col gap-28 md:gap-44">
-    {proyectos.map((proyecto) => (
-      <div data-revela>
-        <PosterVivo proyecto={proyecto} />
-      </div>
-    ))}
+  <div class="mx-auto max-w-6xl">
+    {proyectos.map((proyecto) => <PosterVivo proyecto={proyecto} />)}
   </div>
 </section>
 ```
@@ -907,6 +1033,49 @@ await comprueba('los conceptos se declaran conceptos', async () => {
   await page.close();
 });
 
+// REGRESIÓN de un bug concreto, no completismo: el enfoque CSS original
+// (scale con container queries) se descartaba entero en Firefox y dejaba el
+// iframe a tamaño real. Si alguien "simplifica" el ResizeObserver de vuelta
+// a CSS, esto lo caza. Ver la tabla de la Task 3 Step 1.
+await comprueba('los iframes están escalados al marco', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
+  const medidas = await page.$$eval('.marco', (marcos) =>
+    marcos.map((m) => {
+      const ifr = m.querySelector('iframe');
+      return {
+        anchoMarco: m.getBoundingClientRect().width,
+        anchoIframe: ifr ? ifr.getBoundingClientRect().width : 0,
+      };
+    })
+  );
+  assert.ok(medidas.length > 0, 'no hay marcos que medir');
+  for (const { anchoMarco, anchoIframe } of medidas) {
+    assert.ok(
+      Math.abs(anchoIframe - anchoMarco) < 2,
+      `iframe de ${Math.round(anchoIframe)}px en un marco de ${Math.round(anchoMarco)}px — no está escalado`
+    );
+  }
+  await page.close();
+});
+
+// La opción C: la demo DEBE moverse por dentro al scrollear. Es el centro del sitio.
+await comprueba('la demo se recorre al scrollear', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
+  const leerY = () =>
+    page.$eval('.marco', (m) => m.style.getPropertyValue('--y') || '0px');
+
+  const antes = await leerY();
+  await page.evaluate(() => window.scrollBy(0, window.innerHeight * 1.2));
+  await new Promise((r) => setTimeout(r, 400));
+  const despues = await leerY();
+
+  assert.notEqual(despues, antes, `--y no cambió al scrollear (sigue en ${antes})`);
+  assert.ok(parseFloat(despues) < 0, `--y debería ser negativo, es ${despues}`);
+  await page.close();
+});
+
 // Regla dura del spec §6: nada invisible si la animación no corre.
 await comprueba('con prefers-reduced-motion todo sigue visible', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false, reducirMovimiento: true });
@@ -927,20 +1096,23 @@ Esperado: seis comprobaciones en `ok`, `Todo en verde.`
 
 Si falla `los iframes no capturan el puntero`, revisa que `pointer-events:none` esté en `.marco iframe` y no lo pise una utilidad de Tailwind.
 
-- [ ] **Step 6: Validar visualmente el fijado y el scroll — GATE DE SERGIO**
+- [ ] **Step 6: Calibrar el recorrido y validarlo — GATE DE SERGIO**
 
-Esto no lo puede juzgar una aserción: **el "flow" es exactamente lo que Sergio dijo que más wow le da.** Hay que verlo moverse.
+Esto no lo juzga ninguna aserción: **el "flow" es exactamente lo que Sergio dijo que más wow le da**, y eligió la opción C sobre la A mirándolas. Hay que verlo moverse.
 
 ```bash
 npm run preview &
 xdg-open http://localhost:4321/
 ```
 
-Comprueba con tus propios ojos, y luego enséñaselo a Sergio:
-1. Las tres demos cargan y se ven **animándose solas** dentro de sus marcos.
-2. El texto de cada proyecto se queda **fijo** mientras el póster pasa al lado.
+Comprueba con tus propios ojos:
+1. Las tres demos cargan y se ven **recorriéndose por dentro** al scrollear, con la barrita avanzando.
+2. El bloque de cada proyecto se queda **fijo** mientras su sección pasa.
 3. En móvil (DevTools a 390px) **el dedo no se queda atrapado** dentro de ninguna demo.
 4. "Abrir de verdad" abre la demo real en pestaña nueva.
+5. Cada demo llega **justo al final** de su recorrido cuando su sección termina — ni se queda a medias ni topa antes de tiempo.
+
+**Luego calibra `VELOCIDAD` en `src/config/site.ts`.** Es el mando del efecto y el 3 es solo un punto de partida: más alto acelera el recorrido y acorta la página, más bajo lo hace pausado y la alarga. Con 3, la página completa ronda las once pantallas de scroll. Prueba 2, 3 y 4, y **enséñale las tres a Sergio** — el ritmo es cuestión de gusto y ya dijo que no quiere que las decisiones de diseño visibles se tomen sin él. Su número manda.
 
 - [ ] **Step 7: Commit**
 
@@ -1267,11 +1439,12 @@ Y **ajusta los tests que dejan de ser ciertos** en `scripts/verificar.mjs` — u
 
 Vuelve al Step 1 y remide.
 
-- [ ] **Step 4: Actualizar el spec**
+- [ ] **Step 4: Cerrar el spec con los números reales**
 
-Dos ediciones en `docs/superpowers/specs/2026-07-16-web-personal-sergio-design.md`:
-1. Borra el punto 6 de §6 (las `@view-transition`) y anota por qué: exigen que ambos documentos se adhieran, y las demos abren en pestaña nueva, donde no hay transición posible.
-2. En §8, escribe los números reales de Lighthouse y si se aplicó el plan B.
+El spec ya recoge las correcciones de mecánica (recorrido, `ResizeObserver`, revelado con observer, fuera las `@view-transition`). Falta lo que solo se sabe al medir. En `docs/superpowers/specs/2026-07-16-web-personal-sergio-design.md`, §8:
+
+1. Escribe las cuatro puntuaciones reales de Lighthouse.
+2. Anota si se aplicó el plan B, y con qué `VELOCIDAD` final se quedó Sergio.
 
 - [ ] **Step 5: Verificación final completa**
 

@@ -1,0 +1,120 @@
+# Web personal de Sergio García Ortiz — diseño
+
+**Fecha:** 2026-07-16
+**Estado:** diseño validado, pendiente de plan de implementación
+**Repo destino:** `charcoles-hub/charcoles-hub.github.io` (GitHub Pages, sitio de usuario → raíz)
+
+---
+
+## 1. Qué es esto y para qué
+
+One-pager personal de Sergio García Ortiz como diseñador web freelance. Dos trabajos, decididos explícitamente:
+
+- **Cerrar.** El prospecto recibe un email frío de la campaña de captación, busca a Sergio, y necesita comprobar que existe y es real antes de contestar. La web es la prueba de legitimidad.
+- **Concentrar.** Un único destino al que apuntar desde Workana, Fiverr, email e Instagram, en lugar de repartir enlaces sueltos a demos.
+
+**No es objetivo: captar por SEO.** Descartado explícitamente. Posicionar "diseñador web Barcelona" exige contenido sostenido durante meses contra agencias con presupuesto, y el motor de captación actual (email frío, 700+ leads) ya funciona. Se aplica solo el SEO gratuito de una página bien hecha —`title`, meta description, `h1` honesto, Open Graph, JSON-LD `Person`— y nada más. Sin blog, sin landings por ciudad. Si dentro de seis meses el email frío se agota, el SEO será otro proyecto con su propio brainstorming.
+
+## 2. Restricciones de honestidad (las decisiones que mandan)
+
+Estas no son preferencias estéticas. Son el contrato de la web, y cualquier decisión posterior se subordina a ellas.
+
+- **Las demos son conceptos, y se dicen conceptos.** Navaja, Sereno y Ancla son negocios inventados. Se etiquetan como proyectos de concepto, visiblemente, sin letra pequeña. El trabajo especulativo es normal en diseño; lo que quema la credibilidad es fingir que fue un encargo.
+- **Fisioymés no aparece hasta que cierre.** Hoy es un prospecto avanzado (web construida y desplegada, pendiente de que el cliente confirme), no un cliente. Cuando cierre entra como *cliente*; si no cierra, o entra como concepto anonimizado ("clínica de fisioterapia en Sant Cugat", sin marca ni capturas identificables) o no entra.
+- **No se publica sin permiso de Fisioymés** si aparece con su marca. El permiso hace falta al desplegar, no al diseñar.
+- **EY no se vende como servicio.** Un año de ciberseguridad no hace experto en seguridad. Aparece como recorrido, en una línea. El argumento técnico vive en *cómo* construye Sergio, nunca en el menú de servicios.
+- **Sergio es una persona, no un estudio.** Primera persona, "yo". Nada de "nosotros" ni marca de agencia: se cae en la primera videollamada, y además ser una persona es la ventaja competitiva frente a agencias con gestor de cuentas de por medio.
+
+## 3. Contenido
+
+### Portada
+Nombre a tamaño de cartel. Una frase de lo que hace. Sin foto de stock, sin "bienvenido".
+
+### El trabajo — tres proyectos
+| Proyecto | Rubro | Paleta propia | Por qué está |
+|---|---|---|---|
+| Navaja | Barbería | Oxblood + latón | El listón premium del catálogo |
+| Sereno | Dental | Petróleo + porcelana + arcilla | Apunta al segmento mayor: 27 de las clínicas del CSV son dentales |
+| Ancla | Psicología | Ciruela + malva | Tercera vertical, demuestra rango |
+
+Tres, no once. Once demos se leen como catálogo de plantillas; tres bien elegidas se leen como criterio. Cada una con dos líneas sobre el problema resuelto, no sobre la tecnología.
+
+### Quién soy
+Hechos verificados con Sergio, redactados sin inflar:
+
+- **UPC EEBE, dos años, beca de aprendizaje:** llevó el diseño y la gestión de contenidos de la web de la escuela. Es el activo fuerte de la bio: encargo real, institucional, sostenido en el tiempo. "Dos años" y "gestión de contenidos" son las palabras que importan — dicen que mantuvo algo vivo, no que entregó un pantallazo.
+- **EY, un año, ciberseguridad pura, cero web.** Una línea. Justifica el hueco entre la UPC y el freelance y aporta señal de entorno profesional serio.
+
+### Cómo trabajo
+Donde aterriza el argumento de EY sin venderlo: construcción estática (Astro), sin base de datos, sin plugins, sin panel de administración que reventar. El contraste es real y comprobable — `clinicadentalciurana.es`, del propio CSV de leads, tiene el dominio secuestrado redirigiendo a apuestas. No es marketing, es arquitectura.
+
+### Hablamos
+`scharcoles@gmail.com`, grande y clicable. **Sin formulario** (fricción y una pieza que se rompe en silencio; el único inbound real llegó por WhatsApp, no por formulario). **Sin teléfono en esta iteración** — ver §7.
+
+## 4. Dirección visual: galería oscura
+
+Elegida por Sergio sobre "cabina técnica" (monoespaciada; memorable pero grita *programador* y pierde a la fisio de Sant Cugat) y "editorial claro" (elegante pero mundano, y crema+serif está en la lista propia de defaults de IA a evitar).
+
+**El problema de diseño que la justifica:** las tres demos ya traen paletas fuertes y muy distintas. Si la web personal añade una cuarta gritando, la página son cuatro identidades peleándose y no gana ninguna. Las galerías pintan las paredes neutras para que los cuadros canten.
+
+- Casi negro (`~#0a0b0d`), tipografía grande de palo seco con tracking negativo, **un solo acento cálido**.
+- **Las demos son la única fuente de color de la página.**
+- El wow viene del movimiento, la tipografía y el oficio. Nunca de un color más.
+- Anti-slop heredado del proyecto: nada de crema+serif+terracota, negro+verde ácido, cian clínico, eyebrows en cada sección, ni tarjetas idénticas en rejilla.
+
+## 5. El póster vivo (la jugada central)
+
+Las demos **no son capturas: son las webs reales, incrustadas y funcionando**. Están desplegadas y son de Sergio. Un pantallazo dice "hice esto"; una web latiendo lo demuestra. Encaja con el eje de honestidad: pruebas en vez de afirmaciones.
+
+**Verificado (2026-07-16):** las tres devuelven `200` y **no mandan `X-Frame-Options` ni CSP `frame-ancestors`** → se dejan incrustar. Además, con la web en la raíz de `charcoles-hub.github.io`, los iframes son **mismo origen**: cero restricciones.
+
+Mecánica:
+- `iframe` escalado con `transform:scale()` dentro de un marco de proporción fija.
+- **`pointer-events:none`** — es un póster *vivo*: se ve la web real animándose, pero no atrapa el scroll ni secuestra el dedo en móvil. Sin esto, incrustar webs es infumable en táctil.
+- Indicador "EN VIVO" con punto pulsante.
+- Botón "Abrir de verdad ↗" → la web real en pestaña nueva. Ahí sí se toca.
+- `loading="lazy"` + captura de póster de fondo mientras carga.
+
+## 6. Animaciones (el eje del wow)
+
+Sergio: *"las animaciones son lo que más efecto wow da"*. Vocabulario cerrado, para que no se improvise:
+
+1. **Entrada de portada** — el nombre se compone al cargar: líneas subiendo con desfase y máscara (`clip-path`), no un fade genérico.
+2. **Revelado por scroll** — cada proyecto entra al viewport con desplazamiento y escala sutil. Escalonado: primero el marco, luego el texto.
+3. **Fijado del proyecto** — cada póster vivo se queda fijo mientras su texto pasa al lado. Es lo que da la sensación de "flow" y de página coreografiada en vez de scrolleada.
+4. **Latido "EN VIVO"** — punto pulsante, el detalle que dice "esto no es una imagen".
+5. **Reacción al puntero** — el marco responde al ratón con inclinación mínima (2-3 grados máximo). Sutil: si se nota el efecto, está mal calibrado.
+6. **Transiciones de enlace** — `@view-transition` nativa del navegador para el paso a las demos.
+
+**Reglas duras:**
+- **`prefers-reduced-motion: reduce` se respeta siempre.** No es opcional ni negociable: hay gente a la que el movimiento le produce mareo real. Con la preferencia activada, todo aparece sin desplazamiento y el póster vivo se queda quieto o pasa a captura.
+- Animación por composición (`transform`/`opacity`), nunca por propiedades que fuercen relayout.
+- Preferir CSS nativo (`animation-timeline: view()`) antes que JavaScript. Sin librerías de animación: son kilobytes para lo que hace el navegador solo.
+
+## 7. Decisiones aplazadas a propósito
+
+- **Dominio.** Hoy `charcoles-hub.github.io`. El repo se llama exactamente igual que el usuario para publicar en **raíz**, lo que evita el infierno de `BASE_URL` que hubo en Fisioymés (allí, por vivir en subruta, hubo que prefijar cada ruta y cada asset) y hace que migrar a dominio propio el día de mañana sea un simple CNAME, con cero reescritura. Un dominio propio son ~12€/año y es el gasto que más rinde: un diseñador cuyo portfolio vive en `github.io` se desmonta solo. Aplazado por Sergio, no descartado.
+- **Teléfono / WhatsApp.** No entra ahora. Publicar un número es irreversible: los bots lo recogen en días y queda en cachés, archive.org y listas de spam que se revenden; se puede quitar de la web, no de donde ya lo copiaron. Como no se publica todavía, la decisión no urge. El bloque de contacto se diseña con hueco para el botón. Al publicar se elige entre: línea nueva de prepago (~5€), **WhatsApp Business con número aparte (recomendado)**, o seguir solo con email.
+- **Fisioymés como cuarto proyecto.** El bloque de trabajo se diseña para que quepa un cuarto. Cuando cierre, entra arriba y con etiqueta *cliente*. Salto de credibilidad sin tocar la estructura.
+
+## 8. Presupuesto de rendimiento (riesgo real)
+
+Tres webs completas dentro de otra pesan. El prospecto típico abre esto **con el móvil, con 4G regular, en la sala de espera de su clínica**. Si el wow se convierte en una rueda girando, la web hace lo contrario de lo que se le pide — y encima contradice el argumento de §"Cómo trabajo".
+
+- **Se mide antes de publicar**, en móvil real y con red limitada. No se da por bueno con la sensación de escritorio.
+- **Plan B ya decidido, no se improvisa:** si no aguanta, solo el primer proyecto va vivo y los otros dos son capturas que despiertan al clicar.
+- Objetivo: Lighthouse móvil ≥ 90. Es el listón que Sergio vende; su propia web no puede bajar de ahí.
+
+## 9. Fuera de alcance
+
+Blog. Formulario de contacto. Menú de navegación (el scroll es la navegación). Modo claro. Multiidioma. CMS. Analytics. Las once demos completas. Cualquier "estudio" o marca corporativa.
+
+## 10. Criterios de aceptación
+
+1. Un desconocido entiende en cinco segundos quién es Sergio y qué hace.
+2. Las tres demos se ven vivas y se abren de verdad.
+3. Ningún visitante puede confundir un concepto con un cliente.
+4. Lighthouse móvil ≥ 90 con las tres cargadas, o plan B aplicado.
+5. `prefers-reduced-motion` respetado y comprobado.
+6. Sin scroll horizontal a 390px (gotcha conocido de Fisioymés: el menú off-canvas exigía `overflow-x:hidden` en `html`/`body`).
+7. Cero datos personales publicados que no se hayan decidido a conciencia.

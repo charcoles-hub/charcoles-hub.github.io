@@ -14,7 +14,7 @@ const posters: Record<string, ImageMetadata> = {
 ---
 <section class="px-6 md:px-12">
   <h2 class="sr-only">El trabajo</h2>
-  <div class="mx-auto max-w-6xl">
+  <div class="mx-auto max-w-[1600px]">
     {proyectos.map((proyecto) => (
       <PosterVivo proyecto={proyecto} poster={posters[proyecto.slug]} />
     ))}

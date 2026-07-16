@@ -96,8 +96,21 @@ body {
 }
 @media (min-width: 820px) {
   .proyecto__fijo {
-    grid-template-columns: 1fr 1.15fr;
-    gap: 3rem;
+    /* Centrado vertical de verdad: el bloque fijo ocupa la pantalla entera y
+       centra su contenido dentro. Con `top: 8vh` quedaba descolgado arriba
+       (94px por encima, 244px por debajo). Así se centra en cualquier monitor
+       sin depender de un número calculado a ojo. */
+    top: 0;
+    min-height: 100svh;
+    align-content: center;
+    /* El marco manda: se dimensiona por ALTURA DE VIEWPORT (ver .marco abajo) y
+       su columna se ajusta a lo que ocupe. El texto se queda con el resto.
+       Antes era `1fr 1.15fr` dentro de un contenedor topado a 1152px: el marco
+       salía a ~590px de ancho = 370px de alto, el 41% de la pantalla, dejando
+       media pantalla en negro. Lo que la página existe para enseñar era lo más
+       pequeño de ella. */
+    grid-template-columns: minmax(16rem, 1fr) auto;
+    gap: 2.5rem;
     align-items: center;
   }
 }
@@ -111,6 +124,20 @@ body {
   background: var(--color-fondo-2);
   box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+}
+
+@media (min-width: 820px) {
+  /* En escritorio manda la ALTURA, no el ancho: el ancho lo deriva el
+     aspect-ratio. Fracción del viewport, nunca píxeles fijos, para que cuadre
+     igual en un portátil que en un monitor grande.
+     El tope de 56vw evita que en pantallas bajas y anchas se coma el texto. */
+  .marco {
+    width: auto;
+    /* -2rem: deja sitio al distintivo EN VIVO que ahora vive encima del marco,
+       para que el conjunto siga cabiendo en la pantalla. */
+    height: min(calc(66vh - 2rem), 56vw);
+  }
 }
 .marco::after {
   content: "";

@@ -49,6 +49,15 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
       </div>
     </div>
 
+  <div class="flex flex-col gap-2">
+    {/* El distintivo va FUERA del marco. Dentro tapaba el contenido de la demo
+        —el logo de Navaja, sin ir más lejos— y no hay esquina segura: las cuatro
+        están ocupadas en alguna de las tres demos, y además la demo se desplaza
+        al scrollear, así que lo que hoy está libre mañana no. */}
+    <div class="flex items-center gap-1.5 self-end text-[0.6rem] font-semibold tracking-[0.1em] text-tenue">
+      <span class="punto-vivo size-1.5 rounded-full bg-[#3fb950]"></span>EN VIVO
+    </div>
+
   <div
     class="marco"
     data-marco
@@ -57,10 +66,6 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
     data-dormido={proyecto.vivo ? undefined : proyecto.ruta}
     data-titulo={`${proyecto.nombre} — ${proyecto.rubro}`}
   >
-    <div class="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full
-                bg-fondo/80 px-2.5 py-1 text-[0.6rem] font-semibold tracking-[0.1em] backdrop-blur-md">
-      <span class="punto-vivo size-1.5 rounded-full bg-[#3fb950]"></span>EN VIVO
-    </div>
 
     <Image
       class="marco__poster"
@@ -82,6 +87,7 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
       ></iframe>
     )}
     </div>
+  </div>
   </div>
 </section>
 

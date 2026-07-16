@@ -1,0 +1,17 @@
+---
+import { metodo } from '../config/site';
+---
+<section class="border-t border-linea bg-fondo-2 px-6 py-24 md:px-12 md:py-32">
+  <div class="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1fr_1.3fr] md:gap-16">
+    <h2
+      data-revela
+      class="font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.04em] text-balance md:text-5xl"
+      style="font-stretch:110%"
+    >
+      {metodo.titular}
+    </h2>
+    <div data-revela class="flex flex-col gap-5 text-medio md:text-lg">
+      {metodo.parrafos.map((p) => <p class="max-w-[58ch] text-pretty">{p}</p>)}
+    </div>
+  </div>
+</section>

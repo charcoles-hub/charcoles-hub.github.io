@@ -8,6 +8,24 @@ export const site = {
   email: 'scharcoles@gmail.com',
 } as const;
 
+export const bio = {
+  titular: 'Llevo diez años haciendo webs. Uno lo pasé rompiéndolas.',
+  parrafos: [
+    'Durante dos años llevé el diseño y la gestión de contenidos de la web de la EEBE, la escuela de ingeniería de la UPC, con una beca de aprendizaje. No fue una pantalla bonita y adiós: fue mantener algo vivo, todos los días, para una institución exigente.',
+    'Después pasé un año en ciberseguridad en EY. Aprendí cómo se rompen las cosas por dentro, y volví al diseño porque es lo que quiero hacer.',
+    'Ahora trabajo por mi cuenta. Cuando me escribes, te contesto yo. Cuando hacemos la llamada, estoy yo. No hay un gestor de cuentas en medio ni un becario montándote la web mientras el comercial te enseña otra cosa.',
+  ],
+} as const;
+
+export const metodo = {
+  titular: 'Construyo webs que no se pueden romper.',
+  parrafos: [
+    'Tu web actual es probablemente WordPress con veinte plugins que llevan meses sin actualizar. Cada uno es una puerta. Cuando una cede, tu dominio acaba redirigiendo a un casino y tus pacientes ven eso en vez de tu clínica. Lo he visto esta semana en una clínica dental de aquí al lado.',
+    'Yo entrego archivos estáticos. No hay base de datos que inyectar, ni plugins que actualizar, ni panel de administración que reventar. No es una promesa de marketing: es que no existe la puerta.',
+    'De propina, va rápida. Un archivo estático se sirve desde el borde de la red y aparece antes de que tu visitante se plantee irse.',
+  ],
+} as const;
+
 export interface Proyecto {
   n: string;
   nombre: string;

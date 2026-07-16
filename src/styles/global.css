@@ -26,3 +26,27 @@ body {
   background: var(--color-fondo);
   -webkit-font-smoothing: antialiased;
 }
+
+/* ---- Portada: las líneas suben tras una máscara ---- */
+@keyframes sube-linea {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
+}
+@keyframes aparece {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.mascara { display: block; overflow: hidden; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .mascara > span {
+    display: block;
+    animation: sube-linea 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 110ms);
+  }
+  .entra {
+    animation: aparece 0.9s ease both;
+    animation-delay: calc(var(--i, 0) * 110ms);
+  }
+}

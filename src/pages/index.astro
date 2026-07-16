@@ -1,15 +1,7 @@
 ---
-import '../styles/global.css';
-import { site } from '../config/site';
+import Layout from '../layouts/Layout.astro';
+import Portada from '../components/Portada.astro';
 ---
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{site.titulo}</title>
-  </head>
-  <body>
-    <h1 data-andamio>{site.nombre}</h1>
-  </body>
-</html>
+<Layout>
+  <Portada />
+</Layout>

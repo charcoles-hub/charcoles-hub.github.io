@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+import { site } from '../config/site';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+}
+const { titulo = site.titulo, descripcion = site.descripcion } = Astro.props;
+const canonica = new URL(Astro.url.pathname, Astro.site).href;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.nombre,
+  jobTitle: site.rol,
+  email: `mailto:${site.email}`,
+  url: canonica,
+  address: { '@type': 'PostalAddress', addressLocality: site.lugar, addressCountry: 'ES' },
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Universitat Politècnica de Catalunya — EEBE',
+  },
+};
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonica} />
+    <title>{titulo}</title>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonica} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <slot />
+
+    <script>
+      // La clase habilita los estados iniciales ocultos. Va la primera y por JS:
+      // si este script no corre, nada se oculta nunca. Ver global.css.
+      document.documentElement.classList.add('js-anima');
+
+      const obs = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) {
+            if (!e.isIntersecting) continue;
+            e.target.classList.add('visible');
+            obs.unobserve(e.target);
+          }
+        },
+        { threshold: 0.12 }
+      );
+      document.querySelectorAll('[data-revela]').forEach((el) => obs.observe(el));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* TEMA — Galería oscura. Las paredes son neutras para que los cuadros canten. */
+@theme {
+  --color-fondo:    #0a0b0d;
+  --color-fondo-2:  #101216;
+  --color-linea:    #1e2127;
+  --color-tinta:    #f2f2f0;
+  --color-tenue:    #6b6f76;
+  --color-medio:    #8b9099;
+  --color-acento:   #ff5c37;
+
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    "Archivo", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background: var(--color-fondo);
+  /* Gotcha Fisioymés: sin esto, cualquier elemento ancho provoca scroll lateral en móvil. */
+  overflow-x: hidden;
+}
+body {
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  color: var(--color-tinta);
+  background: var(--color-fondo);
+  -webkit-font-smoothing: antialiased;
+}

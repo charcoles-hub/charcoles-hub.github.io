@@ -49,7 +49,9 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
-    <slot />
+    <main>
+      <slot />
+    </main>
 
     <script>
       // La clase habilita los estados iniciales ocultos. Va la primera y por JS:

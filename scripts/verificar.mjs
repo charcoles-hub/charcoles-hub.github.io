@@ -63,11 +63,12 @@ await comprueba('sin scroll horizontal a 1440px', async () => {
   await page.close();
 });
 
-// Spec §5: las tres demos incrustadas y vivas.
-await comprueba('los 3 iframes apuntan a las demos reales', async () => {
+// Spec §8, plan B de rendimiento: solo el primer proyecto va vivo al cargar;
+// los otros dos se quedan en su captura hasta que alguien los toque.
+await comprueba('1 iframe vivo + 2 demos en espera', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
   const srcs = await page.$$eval('.marco iframe', (els) => els.map((e) => e.src));
-  assert.equal(srcs.length, 3, `esperaba 3 iframes, hay ${srcs.length}`);
+  assert.equal(srcs.length, 1, `esperaba 1 iframe vivo, hay ${srcs.length}`);
   // globalThis.URL, no URL a secas: la constante URL de este módulo (línea 6)
   // shadowea el constructor global, y "new URL(...)" rompería con
   // "URL is not a constructor".
@@ -76,6 +77,8 @@ await comprueba('los 3 iframes apuntan a las demos reales', async () => {
     assert.equal(u.origin, new globalThis.URL(URL).origin, `el iframe no es del mismo origen: ${s}`);
     assert.ok(/^\/demo-/.test(u.pathname), `ruta inesperada: ${u.pathname}`);
   }
+  const botones = await page.$$eval('[data-despierta]', (els) => els.length);
+  assert.equal(botones, 2, `esperaba 2 demos en espera, hay ${botones}`);
   await page.close();
 });
 
@@ -107,7 +110,9 @@ await comprueba('los conceptos se declaran conceptos', async () => {
 await comprueba('los iframes están escalados al marco', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
   await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
-  const medidas = await page.$$eval('.marco', (marcos) =>
+  // Plan B (spec §8): solo el marco con iframe vivo tiene algo que medir aquí;
+  // los otros dos siguen en captura hasta que alguien los toque.
+  const medidas = await page.$$eval('.marco:has(iframe)', (marcos) =>
     marcos.map((m) => {
       const ifr = m.querySelector('iframe');
       return {

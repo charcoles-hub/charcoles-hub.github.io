@@ -133,6 +133,36 @@ Tres webs completas dentro de otra pesan. El prospecto típico abre esto **con e
 - Objetivo: Lighthouse móvil ≥ 90. Es el listón que Sergio vende; su propia web no puede bajar de ahí.
 - Que la captura sea la base ya juega a favor: es la imagen que pinta primero, y el iframe llega después sin bloquear nada.
 
+### Medición real (2026-07-16, Task 7)
+
+Lighthouse móvil contra `npm run servir` (dist/ + proxy de `/demo-*` a producción, igual que GitHub Pages), throttling simulado, Chrome headless v13.
+
+**Primera pasada, con los 3 iframes vivos al cargar:**
+
+| Categoría | Puntuación |
+|---|---|
+| Performance | 76 |
+| Accessibility | 88 |
+| Best Practices | 96 |
+| SEO | 100 |
+
+Performance por debajo del listón (76 < 90) — LCP en 6.9s, arrastrado por los tres iframes de salida cargando en paralelo. **Se aplicó el plan B**: solo Navaja (`vivo: true`) carga su iframe al entrar en la página; Sereno y Ancla (`vivo: false`) se quedan en su captura hasta que alguien toca el botón que los despierta.
+
+De paso, accesibilidad en 88 no estaba "cerca de 100" como se esperaba: dos hallazgos reales, no ruido — contraste insuficiente en `--color-tenue` (3.9:1, subido a `#7a7e85` → 4.83:1) y ausencia de landmark `<main>` (añadido en `Layout.astro`). Ambos corregidos.
+
+**Segunda pasada, con el plan B aplicado y los fixes de accesibilidad:**
+
+| Categoría | Puntuación |
+|---|---|
+| Performance | 95 |
+| Accessibility | 100 |
+| Best Practices | 96 |
+| SEO | 100 |
+
+Performance ≥ 90 cumplido. Best Practices se queda en 96 por un `favicon.ico` inexistente (404 en consola) — preexistente, fuera del alcance de esta tarea, no bloquea el criterio de aceptación.
+
+**`VELOCIDAD` se queda en 3** — el spec dice explícitamente que es un mando de calibración humana (Task 4 Step 6) y esta tarea no lo toca.
+
 ## 9. Fuera de alcance
 
 Blog. Formulario de contacto. Menú de navegación (el scroll es la navegación). Modo claro. Multiidioma. CMS. Analytics. Las once demos completas. Cualquier "estudio" o marca corporativa.

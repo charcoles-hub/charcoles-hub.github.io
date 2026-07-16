@@ -65,13 +65,22 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
       decoding="async"
     />
 
-    <iframe
-      src={proyecto.ruta}
-      title={`${proyecto.nombre} — ${proyecto.rubro}`}
-      loading="lazy"
-      tabindex="-1"
-      aria-hidden="true"
-    ></iframe>
+    {proyecto.vivo ? (
+      <iframe
+        src={proyecto.ruta}
+        title={`${proyecto.nombre} — ${proyecto.rubro}`}
+        loading="lazy"
+        tabindex="-1"
+        aria-hidden="true"
+      ></iframe>
+    ) : (
+      <button
+        type="button"
+        class="absolute inset-0 z-10 h-full w-full cursor-pointer border-0 bg-transparent"
+        data-despierta={proyecto.ruta}
+        aria-label={`Ver ${proyecto.nombre} en movimiento`}
+      ></button>
+    )}
     </div>
   </div>
 </section>
@@ -137,6 +146,27 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
   }, { passive: true });
   addEventListener('resize', recorre);
   recorre();
+
+  // Plan B: el iframe llega al tocar, no al cargar.
+  document.querySelectorAll<HTMLElement>('[data-despierta]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const url = btn.dataset.despierta;
+      const marco = btn.closest<HTMLElement>('[data-marco]');
+      if (!url || !marco) return;
+      const ifr = document.createElement('iframe');
+      ifr.src = url;
+      ifr.tabIndex = -1;
+      ifr.setAttribute('aria-hidden', 'true');
+      // Mismo remedio que en los iframes que arrancan vivos: sin esto, el
+      // recorrido de esta demo va a tirones en cuanto alguien la despierta.
+      ifr.addEventListener('load', () => preparaDemo(marco));
+      marco.appendChild(ifr);
+      // El ResizeObserver ya observa este marco: forzamos que recalcule --s.
+      marco.style.setProperty('--s', String(marco.getBoundingClientRect().width / 1440));
+      marco.dataset.listo = 'si';
+      btn.remove();
+    }, { once: true });
+  });
 
   // --- Inclinación al puntero (spec §6 punto 5) ---
   // Si se nota, está mal calibrado. El tope son 3 grados.

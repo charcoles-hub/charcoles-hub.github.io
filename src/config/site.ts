@@ -52,6 +52,13 @@ export interface Proyecto {
   /** Slug del repo. Nombra la captura en `src/assets/posters/<slug>.png`. */
   slug: string;
   /**
+   * Plan B de rendimiento (spec §8): solo el primer proyecto carga su iframe
+   * al entrar en la página. Los demás se quedan en su captura hasta que
+   * alguien los toque — la captura ya es la base del marco, así que no se
+   * pierde nada visible, solo se retrasa la carga.
+   */
+  vivo: boolean;
+  /**
    * Alto real de la demo renderizada a 1440px de ancho. MEDIDO, no estimado
    * (2026-07-16, ver `scripts/medir-demos.mjs`). De aquí sale cuánto scroll
    * necesita cada proyecto para recorrerse entero. Si retocas una demo,
@@ -81,6 +88,7 @@ export const proyectos: Proyecto[] = [
     ruta: '/demo-barberia-navaja/',
     alto: 4229,
     etiqueta: 'concepto',
+    vivo: true,
   },
   {
     n: '02',
@@ -93,6 +101,7 @@ export const proyectos: Proyecto[] = [
     ruta: '/demo-dental-sereno/',
     alto: 6601,
     etiqueta: 'concepto',
+    vivo: false,
   },
   {
     n: '03',
@@ -105,5 +114,6 @@ export const proyectos: Proyecto[] = [
     ruta: '/demo-psicologia-ancla/',
     alto: 5224,
     etiqueta: 'concepto',
+    vivo: false,
   },
 ];

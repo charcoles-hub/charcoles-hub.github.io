@@ -66,7 +66,7 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
     />
 
     <iframe
-      src={proyecto.url}
+      src={proyecto.ruta}
       title={`${proyecto.nombre} — ${proyecto.rubro}`}
       loading="lazy"
       tabindex="-1"
@@ -84,16 +84,31 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
   const ro = new ResizeObserver((entradas) => {
     for (const e of entradas) {
       const marco = e.target as HTMLElement;
-      const ifr = marco.querySelector('iframe');
-      if (!ifr) continue;
-      ifr.style.height = `${marco.dataset.alto}px`;
       marco.style.setProperty('--s', String(e.contentRect.width / 1440));
       marco.dataset.listo = 'si';
     }
   });
   marcos.forEach((m) => ro.observe(m));
 
-  // --- Recorrido: la demo se mueve por dentro del marco (opción C) ---
+  // Las demos llevan `html { scroll-behavior: smooth }`: sin esto, cada scrollTo
+  // se ANIMA y el recorrido va a tirones y con retraso. Hay que matarlo en cuanto
+  // el documento del iframe exista.
+  function preparaDemo(marco: HTMLElement) {
+    const ifr = marco.querySelector('iframe');
+    try {
+      const doc = ifr?.contentDocument;
+      if (!doc) return null;
+      doc.documentElement.style.scrollBehavior = 'auto';
+      return ifr;
+    } catch {
+      // Cross-origin: no debería pasar (la ruta es relativa), pero si pasa el
+      // póster estático sigue debajo y la página no se rompe.
+      return null;
+    }
+  }
+  marcos.forEach((m) => m.querySelector('iframe')?.addEventListener('load', () => preparaDemo(m)));
+
+  // --- Recorrido: la demo se scrollea por dentro (opción C) ---
   function recorre() {
     document.querySelectorAll<HTMLElement>('[data-proyecto]').forEach((seccion) => {
       const marco = seccion.querySelector<HTMLElement>('[data-marco]');
@@ -106,7 +121,10 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
 
       // El marco enseña siempre 900px de demo; lo que sobra es el recorrido.
       const sobra = Math.max(0, (Number(marco.dataset.alto) || 900) - 900);
-      marco.style.setProperty('--y', reduce.matches ? '0px' : `${-p * sobra}px`);
+      const ifr = marco.querySelector('iframe');
+      try {
+        ifr?.contentWindow?.scrollTo(0, reduce.matches ? 0 : p * sobra);
+      } catch { /* cross-origin: el póster aguanta */ }
       if (barra) barra.style.width = `${(p * 100).toFixed(1)}%`;
     });
   }

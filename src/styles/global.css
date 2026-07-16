@@ -132,18 +132,19 @@ body {
 }
 
 /* El iframe: encima, oculto hasta que esté escalado Y cargado.
-   Mide 1440 × (el alto real de su demo): es más alto que el marco a propósito,
-   y ese excedente es justo lo que se recorre al scrollear. */
+   Mide 1440×900 = un viewport de verdad. Si se le da el alto real de la demo,
+   dentro de él 100vh pasa a valer ese alto y la demo se estira (Navaja: +69%).
+   El recorrido NO se hace moviendo el iframe, sino scrolleando su documento. */
 .marco iframe {
   position: absolute;
   top: 0;
   left: 0;
   width: 1440px;
+  height: 900px;
   border: 0;
   transform-origin: 0 0;
-  /* --s y --y los fija el script. Sin --s, `scale()` sería inválido y el
-     iframe saldría a tamaño real: por eso arranca oculto. */
-  transform: scale(var(--s, 1)) translateY(var(--y, 0px));
+  /* --s lo fija el script. Arranca oculto: sin escala se vería a tamaño real. */
+  transform: scale(var(--s, 1));
   opacity: 0;
   transition: opacity 0.5s ease;
   /* LA LÍNEA CLAVE: póster vivo, no trampa táctil.

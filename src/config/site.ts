@@ -14,6 +14,12 @@ export interface Proyecto {
   rubro: string;
   descripcion: string;
   url: string;
+  /**
+   * Ruta relativa a la demo. ES LO QUE USA EL IFRAME, y tiene que ser relativa:
+   * en producción y bajo un dominio propio resuelve al mismo origen, que es lo
+   * que permite scrollear la demo por dentro. Con la URL absoluta se rompería.
+   */
+  ruta: string;
   /** SIEMPRE 'concepto' mientras el negocio sea inventado. Ver spec §2. */
   etiqueta: 'concepto' | 'cliente';
   /** Slug del repo. Nombra la captura en `src/assets/posters/<slug>.png`. */
@@ -45,6 +51,7 @@ export const proyectos: Proyecto[] = [
       'Una barbería de barrio con alma de taberna. La carta se lee como un menú, el poste gira de verdad y el latón pesa.',
     slug: 'demo-barberia-navaja',
     url: 'https://charcoles-hub.github.io/demo-barberia-navaja/',
+    ruta: '/demo-barberia-navaja/',
     alto: 4229,
     etiqueta: 'concepto',
   },
@@ -56,6 +63,7 @@ export const proyectos: Proyecto[] = [
       'Ir al dentista da respeto. La web no tenía por qué darlo también: petróleo y porcelana en vez del cian de siempre, y el tratamiento explicado como quien te lo cuenta sentado.',
     slug: 'demo-dental-sereno',
     url: 'https://charcoles-hub.github.io/demo-dental-sereno/',
+    ruta: '/demo-dental-sereno/',
     alto: 6601,
     etiqueta: 'concepto',
   },
@@ -67,6 +75,7 @@ export const proyectos: Proyecto[] = [
       'Pedir ayuda cuesta. Aquí todo baja el pulso: ciruela y malva, mucho aire, y ni una sola foto de alguien mirando al horizonte.',
     slug: 'demo-psicologia-ancla',
     url: 'https://charcoles-hub.github.io/demo-psicologia-ancla/',
+    ruta: '/demo-psicologia-ancla/',
     alto: 5224,
     etiqueta: 'concepto',
   },

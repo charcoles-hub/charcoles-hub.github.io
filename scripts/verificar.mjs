@@ -1,3 +1,6 @@
+// Lanza contra `npm run servir` (dist/ + proxy de /demo-*), NO contra
+// `npm run preview`: astro preview no aplica el proxy de Vite, así que no
+// resuelve /demo-* y los iframes se quedarían cross-origin.
 import puppeteer from 'puppeteer-core';
 import assert from 'node:assert/strict';
 
@@ -65,11 +68,13 @@ await comprueba('los 3 iframes apuntan a las demos reales', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
   const srcs = await page.$$eval('.marco iframe', (els) => els.map((e) => e.src));
   assert.equal(srcs.length, 3, `esperaba 3 iframes, hay ${srcs.length}`);
+  // globalThis.URL, no URL a secas: la constante URL de este módulo (línea 6)
+  // shadowea el constructor global, y "new URL(...)" rompería con
+  // "URL is not a constructor".
   for (const s of srcs) {
-    assert.ok(
-      s.startsWith('https://charcoles-hub.github.io/demo-'),
-      `src inesperado: ${s}`
-    );
+    const u = new globalThis.URL(s);
+    assert.equal(u.origin, new globalThis.URL(URL).origin, `el iframe no es del mismo origen: ${s}`);
+    assert.ok(/^\/demo-/.test(u.pathname), `ruta inesperada: ${u.pathname}`);
   }
   await page.close();
 });
@@ -122,19 +127,22 @@ await comprueba('los iframes están escalados al marco', async () => {
 });
 
 // La opción C: la demo DEBE moverse por dentro al scrollear. Es el centro del sitio.
+// Si el iframe fuera cross-origin, contentWindow.scrollY lanzaría y el test
+// fallaría — que es exactamente lo que queremos que pase.
 await comprueba('la demo se recorre al scrollear', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
   await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
-  const leerY = () =>
-    page.$eval('.marco', (m) => m.style.getPropertyValue('--y') || '0px');
+  await new Promise((r) => setTimeout(r, 800)); // que carguen los iframes
 
-  const antes = await leerY();
-  await page.evaluate(() => window.scrollBy(0, window.innerHeight * 1.2));
-  await new Promise((r) => setTimeout(r, 400));
-  const despues = await leerY();
+  const leerScroll = () =>
+    page.$eval('.marco iframe', (f) => f.contentWindow.scrollY);
 
-  assert.notEqual(despues, antes, `--y no cambió al scrollear (sigue en ${antes})`);
-  assert.ok(parseFloat(despues) < 0, `--y debería ser negativo, es ${despues}`);
+  const antes = await leerScroll();
+  await page.evaluate(() => window.scrollBy(0, window.innerHeight * 1.5));
+  await new Promise((r) => setTimeout(r, 500));
+  const despues = await leerScroll();
+
+  assert.ok(despues > antes, `la demo no se movió por dentro (${antes} -> ${despues})`);
   await page.close();
 });
 

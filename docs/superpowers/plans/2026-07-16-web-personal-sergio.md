@@ -181,6 +181,10 @@ export interface Proyecto {
   url: string;
   /** SIEMPRE 'concepto' mientras el negocio sea inventado. Ver spec §2. */
   etiqueta: 'concepto' | 'cliente';
+  /** Captura estática. Es lo que se ve al instante y si el iframe no llega. */
+  poster: string;
+  /** Ancho del slug del repo, para nombrar la captura. */
+  slug: string;
 }
 
 export const proyectos: Proyecto[] = [
@@ -190,7 +194,9 @@ export const proyectos: Proyecto[] = [
     rubro: 'Barbería',
     descripcion:
       'Una barbería de barrio con alma de taberna. La carta se lee como un menú, el poste gira de verdad y el latón pesa.',
+    slug: 'demo-barberia-navaja',
     url: 'https://charcoles-hub.github.io/demo-barberia-navaja/',
+    poster: '/posters/demo-barberia-navaja.webp',
     etiqueta: 'concepto',
   },
   {
@@ -199,7 +205,9 @@ export const proyectos: Proyecto[] = [
     rubro: 'Clínica dental',
     descripcion:
       'Ir al dentista da respeto. La web no tenía por qué darlo también: petróleo y porcelana en vez del cian de siempre, y el tratamiento explicado como quien te lo cuenta sentado.',
+    slug: 'demo-dental-sereno',
     url: 'https://charcoles-hub.github.io/demo-dental-sereno/',
+    poster: '/posters/demo-dental-sereno.webp',
     etiqueta: 'concepto',
   },
   {
@@ -208,7 +216,9 @@ export const proyectos: Proyecto[] = [
     rubro: 'Psicología',
     descripcion:
       'Pedir ayuda cuesta. Aquí todo baja el pulso: ciruela y malva, mucho aire, y ni una sola foto de alguien mirando al horizonte.',
+    slug: 'demo-psicologia-ancla',
     url: 'https://charcoles-hub.github.io/demo-psicologia-ancla/',
+    poster: '/posters/demo-psicologia-ancla.webp',
     etiqueta: 'concepto',
   },
 ];
@@ -541,39 +551,87 @@ El corazón del sitio. Un `iframe` con la demo real, escalado, vivo y neutraliza
 - Consumes: interfaz `Proyecto` de `src/config/site.ts` (Task 1)
 - Produces: `PosterVivo.astro` con props `{ proyecto: Proyecto }`. Lo consume `Trabajo.astro` (Task 4).
 
+- [ ] **Step 0: Generar las capturas de póster**
+
+El póster estático **no es el plan B: es la base.** Es lo que se ve al instante, lo que aguanta si el iframe no llega, y lo que ve quien tenga JavaScript desactivado. El iframe vivo se funde encima cuando está listo.
+
+```bash
+mkdir -p public/posters
+cd public/posters
+for d in demo-barberia-navaja demo-dental-sereno demo-psicologia-ancla; do
+  chromium --headless=new --no-sandbox --virtual-time-budget=5000 \
+    --window-size=1440,900 --screenshot="$d.png" "https://charcoles-hub.github.io/$d/"
+  # WebP: pesan ~5x menos que PNG y son la imagen que carga siempre.
+  cwebp -q 82 "$d.png" -o "$d.webp" && rm "$d.png"
+done
+cd ../..
+ls -la public/posters/
+```
+
+Esperado: tres `.webp` de 1440×900, cada uno bien por debajo de 200 KB. Ábrelos y **comprueba que cada captura muestra la portada de su demo**, no un error ni una página a medio cargar. Si `cwebp` no está: `sudo pacman -S libwebp`.
+
 - [ ] **Step 1: Añadir a `src/styles/global.css` la mecánica del marco**
 
-El escalado es **CSS puro con container queries**, sin una línea de JavaScript. La cuenta: el marco declara `container-type:inline-size`; el iframe mide 1440×900 fijos y se escala por `100cqw / 1440`. Como el marco tiene `aspect-ratio:1440/900`, el iframe escalado encaja exacto a cualquier ancho. Responsive gratis.
+**Aviso, y es la trampa más cara de este plan:** la vía elegante —escalar con container queries, `transform: scale(calc(100cqw / 1440px))`— **está descartada y no la reintentes.** Se probó en los dos motores el 2026-07-16:
+
+| Navegador | Resultado |
+|---|---|
+| Chromium 141 | `matrix(0.5, 0, 0, 0.5, 0, 0)` ✓ |
+| Firefox 152 | **`none`** ✗ |
+
+Firefox no hace la división longitud/longitud dentro de `calc()`, así que **descarta la declaración entera**. Y el fallo no degrada: el iframe se queda a 1440×900 dentro de un marco con `overflow:hidden`, y el visitante ve la esquina superior izquierda de la demo ampliada. El póster vivo, roto, en el navegador de una cuarta parte de la gente. Sin el `px` es aún peor: `none` **en los dos**.
+
+Por eso el escalado va con `ResizeObserver` — cinco líneas que funcionan en todas partes.
 
 ```css
 /* ---- Póster vivo ---- */
 .marco {
-  container-type: inline-size;
   position: relative;
   aspect-ratio: 1440 / 900;
   overflow: hidden;
   border-radius: 10px;
   background: var(--color-fondo-2);
   box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .marco::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   border-radius: 10px;
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.09);
   pointer-events: none;
 }
+
+/* La captura: siempre presente, debajo. Es el suelo del que nada se cae. */
+.marco__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* El iframe: encima, oculto hasta que esté escalado Y cargado. */
 .marco iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 1440px;
   height: 900px;
   border: 0;
-  transform: scale(calc(100cqw / 1440));
   transform-origin: 0 0;
+  /* --s lo fija el ResizeObserver. Sin él, `scale(var(--s))` sería inválido
+     y el iframe saldría a tamaño real: por eso arranca oculto. */
+  transform: scale(var(--s, 1));
+  opacity: 0;
+  transition: opacity 0.5s ease;
   /* LA LÍNEA CLAVE: póster vivo, no trampa táctil.
      Sin esto el iframe se traga el scroll del dedo en móvil. */
   pointer-events: none;
 }
+.marco[data-listo="si"] iframe { opacity: 1; }
 
 @keyframes late {
   0%, 100% { opacity: 1; }
@@ -624,11 +682,22 @@ const esConcepto = proyecto.etiqueta === 'concepto';
     </a>
   </div>
 
-  <div class="marco" data-marco>
+  <div class="marco" data-marco data-listo="no">
     <div class="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full
                 bg-fondo/80 px-2.5 py-1 text-[0.6rem] font-semibold tracking-[0.1em] backdrop-blur-md">
       <span class="punto-vivo size-1.5 rounded-full bg-[#3fb950]"></span>EN VIVO
     </div>
+
+    <img
+      class="marco__poster"
+      src={proyecto.poster}
+      alt=""
+      width="1440"
+      height="900"
+      loading="lazy"
+      decoding="async"
+    />
+
     <iframe
       src={proyecto.url}
       title={`${proyecto.nombre} — ${proyecto.rubro}`}
@@ -640,19 +709,34 @@ const esConcepto = proyecto.etiqueta === 'concepto';
 </article>
 ```
 
-Nota sobre `tabindex="-1"` + `aria-hidden="true"`: el iframe es decorativo — es un póster. Sin esto, quien navegue con teclado cae dentro de la demo y se queda atrapado, y un lector de pantalla leería tres webs enteras incrustadas. El enlace "Abrir de verdad" es la vía accesible al mismo contenido.
+Dos decisiones de accesibilidad que no son opcionales:
+- **`tabindex="-1"` + `aria-hidden="true"` en el iframe.** Es decorativo — es un póster. Sin esto, quien navegue con teclado cae dentro de la demo y se queda atrapado sin saber cómo salir, y un lector de pantalla leería tres webs enteras incrustadas. El enlace "Abrir de verdad" es la vía accesible al mismo contenido.
+- **`alt=""` en la captura.** Es decorativa: duplica lo que ya dice el `h3` y el párrafo de al lado. Un `alt` descriptivo aquí sería ruido para quien use lector de pantalla.
 
-- [ ] **Step 3: Añadir la reacción al puntero (spec §6 punto 5)**
+- [ ] **Step 3: Añadir el script del marco (escalado + inclinación)**
 
-El único trozo de JavaScript del sitio, y el más fácil de estropear: **si se nota, está mal calibrado.** El tope son 3 grados. Es un efecto que el visitante debe sentir sin saber que está ahí.
+Un único script para las dos cosas que necesitan JavaScript. El escalado es obligatorio (ver la tabla del Step 1); la inclinación es el punto 5 del vocabulario de animaciones del spec.
 
 Añade al final de `src/components/PosterVivo.astro`:
 
 ```astro
 <script>
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const marcos = document.querySelectorAll<HTMLElement>('[data-marco]');
 
-  document.querySelectorAll<HTMLElement>('[data-marco]').forEach((marco) => {
+  // --- Escalado: lo que en CSS puro no funciona en Firefox ---
+  const ro = new ResizeObserver((entradas) => {
+    for (const e of entradas) {
+      const marco = e.target as HTMLElement;
+      marco.style.setProperty('--s', String(e.contentRect.width / 1440));
+      marco.dataset.listo = 'si';
+    }
+  });
+  marcos.forEach((m) => ro.observe(m));
+
+  // --- Inclinación al puntero (spec §6 punto 5) ---
+  // Si se nota, está mal calibrado. El tope son 3 grados.
+  marcos.forEach((marco) => {
     let raf = 0;
 
     marco.addEventListener('pointermove', (e) => {
@@ -675,19 +759,41 @@ Añade al final de `src/components/PosterVivo.astro`:
 </script>
 ```
 
-El `e.pointerType !== 'mouse'` importa: en táctil un `pointermove` es el dedo arrastrando para hacer scroll, y ahí inclinar el marco es mareante y absurdo. La guarda de `prefers-reduced-motion` va en JavaScript porque la animación también vive en JavaScript — la regla dura del spec §6 aplica igual aquí que en CSS.
+Detalles que parecen menores y no lo son:
 
-Añade la transición de vuelta en `src/styles/global.css`, dentro del bloque `.marco` que creaste en el Step 1:
+- **`marco.dataset.listo = 'si'` es lo que revela el iframe.** Arranca oculto a propósito: si el script no corre —JavaScript desactivado, error de red, un bloqueador— el iframe nunca aparece y el visitante se queda con la captura. Que es exactamente lo que debe pasar. La alternativa (iframe visible por defecto) enseña la esquina ampliada de la demo, que es la versión rota.
+- **`e.pointerType !== 'mouse'`.** En táctil, un `pointermove` es el dedo arrastrando para hacer scroll: inclinar el marco ahí es mareante y absurdo.
+- **La guarda de `prefers-reduced-motion` va en JavaScript** porque la animación vive en JavaScript. La regla dura del spec §6 aplica igual aquí que en CSS.
 
-```css
-.marco {
-  /* …lo ya escrito… */
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
-}
+- [ ] **Step 4: Añadir a `scripts/verificar.mjs` la regresión del escalado**
+
+**Este test existe por un bug concreto**, no por completismo: el enfoque CSS original se descartaba entero en Firefox y dejaba el iframe a tamaño real. Si alguien "simplifica" el ResizeObserver de vuelta a CSS, esto lo caza. Añádelo antes de `await browser.close();`:
+
+```js
+// El iframe DEBE quedar escalado al ancho del marco. Ver la tabla del plan, Task 3 Step 1.
+await comprueba('los iframes están escalados al marco', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
+  const medidas = await page.$$eval('.marco', (marcos) =>
+    marcos.map((m) => {
+      const ifr = m.querySelector('iframe');
+      return {
+        anchoMarco: m.getBoundingClientRect().width,
+        anchoIframe: ifr ? ifr.getBoundingClientRect().width : 0,
+      };
+    })
+  );
+  for (const { anchoMarco, anchoIframe } of medidas) {
+    assert.ok(
+      Math.abs(anchoIframe - anchoMarco) < 2,
+      `iframe de ${Math.round(anchoIframe)}px en un marco de ${Math.round(anchoMarco)}px — no está escalado`
+    );
+  }
+  await page.close();
+});
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -1108,28 +1214,13 @@ Apunta los cuatro números. **El listón del spec es rendimiento ≥ 90 en móvi
 
 - [ ] **Step 3: Plan B (solo si el Step 2 lo exige)**
 
-Genera las capturas de los proyectos 2 y 3:
+Como la captura ya es la base del marco (Task 3), el plan B **no añade nada: quita**. Solo el primer proyecto carga su iframe de salida; los otros dos se quedan en su captura hasta que alguien los toque. El diseño no cambia ni un píxel — cambia cuándo llega el iframe.
 
-```bash
-mkdir -p public/posters
-for d in demo-dental-sereno demo-psicologia-ancla; do
-  chromium --headless=new --virtual-time-budget=5000 --window-size=1440,900 \
-    --screenshot=public/posters/$d.png "https://charcoles-hub.github.io/$d/"
-done
-```
+Añade `vivo: boolean` a la interfaz `Proyecto` en `src/config/site.ts`: `true` en Navaja, `false` en Sereno y Ancla.
 
-Añade `vivo: boolean` y `poster?: string` a la interfaz `Proyecto` en `src/config/site.ts`: `vivo: true` solo en Navaja; los otros dos con `vivo: false` y su `poster`.
-
-En `PosterVivo.astro`, sustituye el bloque del iframe por:
+En `PosterVivo.astro`, cambia el iframe por su versión diferida y añade el botón que lo despierta:
 
 ```astro
-  <div class="marco" data-marco>
-    <div class="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full
-                bg-fondo/80 px-2.5 py-1 text-[0.6rem] font-semibold tracking-[0.1em] backdrop-blur-md">
-      <span class:list={['size-1.5 rounded-full bg-[#3fb950]', proyecto.vivo && 'punto-vivo']}></span>
-      {proyecto.vivo ? 'EN VIVO' : 'DESPIERTA AL TOCAR'}
-    </div>
-
     {proyecto.vivo ? (
       <iframe
         src={proyecto.url}
@@ -1141,35 +1232,38 @@ En `PosterVivo.astro`, sustituye el bloque del iframe por:
     ) : (
       <button
         type="button"
-        class="absolute inset-0 h-full w-full cursor-pointer border-0 p-0"
+        class="absolute inset-0 z-10 h-full w-full cursor-pointer border-0 bg-transparent"
         data-despierta={proyecto.url}
-        aria-label={`Cargar ${proyecto.nombre} en vivo`}
-      >
-        <img src={proyecto.poster} alt="" width="1440" height="900" loading="lazy" class="h-full w-full object-cover" />
-      </button>
+        aria-label={`Ver ${proyecto.nombre} en movimiento`}
+      ></button>
     )}
-  </div>
 ```
 
-Y al final del componente, el script que lo despierta:
+Y en el script del componente, antes del bloque de inclinación:
 
-```astro
-<script>
-  document.querySelectorAll('[data-despierta]').forEach((btn) => {
+```js
+  // Plan B: el iframe llega al tocar, no al cargar.
+  document.querySelectorAll<HTMLElement>('[data-despierta]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const url = btn.getAttribute('data-despierta');
-      if (!url) return;
-      const iframe = document.createElement('iframe');
-      iframe.src = url;
-      iframe.tabIndex = -1;
-      iframe.setAttribute('aria-hidden', 'true');
-      btn.replaceWith(iframe);
+      const url = btn.dataset.despierta;
+      const marco = btn.closest<HTMLElement>('[data-marco]');
+      if (!url || !marco) return;
+      const ifr = document.createElement('iframe');
+      ifr.src = url;
+      ifr.tabIndex = -1;
+      ifr.setAttribute('aria-hidden', 'true');
+      marco.appendChild(ifr);
+      // El ResizeObserver ya observa este marco: forzamos que recalcule --s.
+      marco.style.setProperty('--s', String(marco.getBoundingClientRect().width / 1440));
+      marco.dataset.listo = 'si';
+      btn.remove();
     }, { once: true });
   });
-</script>
 ```
 
-Si aplicas el plan B, **relaja la aserción de los 3 iframes** en `scripts/verificar.mjs`: pasa a comprobar que hay `1` iframe y `2` botones `[data-despierta]`. Un test que miente es peor que no tenerlo.
+Y **ajusta los tests que dejan de ser ciertos** en `scripts/verificar.mjs` — un test que miente es peor que no tenerlo:
+- `los 3 iframes apuntan a las demos reales` → pasa a esperar **1** iframe y **2** elementos `[data-despierta]`.
+- `los iframes están escalados al marco` → mide solo los marcos que tengan iframe.
 
 Vuelve al Step 1 y remide.
 

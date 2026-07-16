@@ -29,7 +29,10 @@ body {
 
 /* ---- Portada: las líneas suben tras una máscara ---- */
 @keyframes sube-linea {
-  from { transform: translateY(110%); }
+  /* 140%, no 110%: la máscara recorta 0.2em por debajo de la caja de línea
+     para dejar salir los descendentes, así que la línea tiene que empezar
+     más abajo de ese margen o asomaría antes de subir. Ver .mascara. */
+  from { transform: translateY(140%); }
   to   { transform: translateY(0); }
 }
 @keyframes aparece {
@@ -37,7 +40,16 @@ body {
   to   { opacity: 1; }
 }
 
-.mascara { display: block; overflow: hidden; }
+/* `clip` + `overflow-clip-margin` en vez de `hidden`: la máscara tiene que
+   ocultar la línea antes de que suba, PERO sin comerse el rabo de la `g`
+   (interlineado 0.88, más apretado que el hueco que Archivo reserva debajo
+   de la base). El margen de recorte deja salir los descendentes sin tocar
+   la maquetación. Verificado a 1440px: sin esto la `g` sale cortada en plano. */
+.mascara {
+  display: block;
+  overflow: clip;
+  overflow-clip-margin: 0.2em;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .mascara > span {

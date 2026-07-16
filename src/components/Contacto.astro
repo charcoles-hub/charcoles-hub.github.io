@@ -1,0 +1,40 @@
+---
+import { site } from '../config/site';
+---
+<section class="border-t border-linea px-6 py-24 md:px-12 md:py-32">
+  <div class="mx-auto flex max-w-6xl flex-col gap-8">
+    <p data-revela class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">
+      Hablamos
+    </p>
+    <h2
+      data-revela
+      class="font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.04em] text-balance md:text-6xl"
+      style="font-stretch:110%"
+    >
+      ¿Tu web se parece a la de todos?
+    </h2>
+    <p data-revela class="max-w-[46ch] text-balance text-medio md:text-lg">
+      Cuéntame qué tienes y qué te gustaría. Te digo qué haría y cuánto cuesta, sin compromiso y sin rodeos.
+    </p>
+
+    <a
+      data-revela
+      href={`mailto:${site.email}`}
+      class="group flex w-fit items-baseline gap-3 font-display text-2xl font-bold
+             tracking-[-0.03em] text-tinta underline decoration-linea decoration-2
+             underline-offset-8 transition-colors hover:decoration-acento md:text-4xl"
+    >
+      {site.email}
+      <span class="text-acento transition-transform group-hover:translate-x-1">↗</span>
+    </a>
+
+    {/* Hueco reservado para el botón de WhatsApp. NO lo añadas sin decisión
+        explícita de Sergio sobre qué número: publicar un teléfono es irreversible
+        (los bots lo recogen en días y queda en cachés y listas de spam). Ver spec §7. */}
+  </div>
+
+  <footer class="mx-auto mt-24 flex max-w-6xl items-center justify-between border-t border-linea pt-8 text-xs text-tenue">
+    <span>{site.nombre}</span>
+    <span>{site.lugar}</span>
+  </footer>
+</section>

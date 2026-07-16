@@ -156,6 +156,28 @@ await comprueba('con prefers-reduced-motion todo sigue visible', async () => {
   await page.close();
 });
 
+// Criterio 7: sin teléfono publicado en esta iteración (spec §7).
+await comprueba('sin teléfono publicado', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const html = await page.content();
+  assert.ok(!/href=["']tel:/i.test(html), 'hay un enlace tel: en la página');
+  assert.ok(
+    !/\b(?:\+34[\s.-]?)?[6-7]\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}\b/.test(
+      await page.evaluate(() => document.body.innerText)
+    ),
+    'hay algo con pinta de móvil español en el texto'
+  );
+  await page.close();
+});
+
+// Spec §3: sin formulario.
+await comprueba('sin formulario de contacto', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const forms = await page.$$eval('form, input[type="email"]', (e) => e.length);
+  assert.equal(forms, 0, `hay ${forms} elemento(s) de formulario`);
+  await page.close();
+});
+
 await browser.close();
 
 console.log('');

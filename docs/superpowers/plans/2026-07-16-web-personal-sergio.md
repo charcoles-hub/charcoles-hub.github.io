@@ -1168,7 +1168,7 @@ git commit -m "feat: sección El trabajo con los tres pósters vivos"
 
 ```ts
 export const bio = {
-  titular: 'Llevo diez años haciendo webs. Uno lo pasé rompiéndolas.',
+  titular: 'Dos años haciendo la web de una escuela de ingeniería. Uno en ciberseguridad. Ahora, la tuya.',
   parrafos: [
     'Durante dos años llevé el diseño y la gestión de contenidos de la web de la EEBE, la escuela de ingeniería de la UPC, con una beca de aprendizaje. No fue una pantalla bonita y adiós: fue mantener algo vivo, todos los días, para una institución exigente.',
     'Después pasé un año en ciberseguridad en EY. Aprendí cómo se rompen las cosas por dentro, y volví al diseño porque es lo que quiero hacer.',

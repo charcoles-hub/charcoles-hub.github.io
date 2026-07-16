@@ -9,7 +9,11 @@ export const site = {
 } as const;
 
 export const bio = {
-  titular: 'Llevo diez años haciendo webs. Uno lo pasé rompiéndolas.',
+  // OJO: aquí no va ninguna cifra que Sergio no haya confirmado. La versión
+  // anterior decía "llevo diez años haciendo webs", que era inventado (él dijo
+  // dos años en la UPC y uno en EY), y "uno lo pasé rompiéndolas", que tampoco:
+  // en EY fue ciber puro, sin tocar web. Ver spec §2.
+  titular: 'Dos años haciendo la web de una escuela de ingeniería. Uno en ciberseguridad. Ahora, la tuya.',
   parrafos: [
     'Durante dos años llevé el diseño y la gestión de contenidos de la web de la EEBE, la escuela de ingeniería de la UPC, con una beca de aprendizaje. No fue una pantalla bonita y adiós: fue mantener algo vivo, todos los días, para una institución exigente.',
     'Después pasé un año en ciberseguridad en EY. Aprendí cómo se rompen las cosas por dentro, y volví al diseño porque es lo que quiero hacer.',

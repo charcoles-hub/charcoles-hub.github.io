@@ -646,7 +646,7 @@ Van a `src/assets/`, **no a `public/`**: así pasan por `astro:assets`, que las 
 ```bash
 mkdir -p src/assets/posters
 for d in demo-barberia-navaja demo-dental-sereno demo-psicologia-ancla; do
-  chromium --headless=new --no-sandbox --virtual-time-budget=5000 \
+  chromium --headless=new --no-sandbox --hide-scrollbars --virtual-time-budget=5000 \
     --window-size=1440,900 --screenshot="src/assets/posters/$d.png" \
     "https://charcoles-hub.github.io/$d/"
 done
@@ -942,7 +942,7 @@ Esperado: `3`.
 
 ```bash
 git add -A
-git commit -m "feat: componente PosterVivo con iframe escalado por container query"
+git commit -m "feat: componente PosterVivo con iframe escalado por ResizeObserver"
 ```
 
 ---

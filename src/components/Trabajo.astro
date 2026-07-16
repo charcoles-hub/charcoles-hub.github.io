@@ -1,0 +1,22 @@
+---
+import { proyectos } from '../config/site';
+import PosterVivo from './PosterVivo.astro';
+
+import navaja from '../assets/posters/demo-barberia-navaja.png';
+import sereno from '../assets/posters/demo-dental-sereno.png';
+import ancla from '../assets/posters/demo-psicologia-ancla.png';
+
+const posters: Record<string, ImageMetadata> = {
+  'demo-barberia-navaja': navaja,
+  'demo-dental-sereno': sereno,
+  'demo-psicologia-ancla': ancla,
+};
+---
+<section class="px-6 md:px-12">
+  <h2 class="sr-only">El trabajo</h2>
+  <div class="mx-auto max-w-6xl">
+    {proyectos.map((proyecto) => (
+      <PosterVivo proyecto={proyecto} poster={posters[proyecto.slug]} />
+    ))}
+  </div>
+</section>

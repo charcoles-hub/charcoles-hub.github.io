@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* ---- Revelado por scroll ---- */
+@keyframes revela {
+  from { opacity: 0; transform: translateY(40px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* .js-anima lo pone el script del Layout: sin JS, nada se oculta. */
+  .js-anima [data-revela] { opacity: 0; }
+  .js-anima [data-revela].visible { animation: revela 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+}
+
 /* TEMA — Galería oscura. Las paredes son neutras para que los cuadros canten. */
 @theme {
   --color-fondo:    #0a0b0d;
@@ -16,11 +28,16 @@
 
 html {
   background: var(--color-fondo);
-  /* Gotcha Fisioymés: sin esto, cualquier elemento ancho provoca scroll lateral en móvil. */
-  overflow-x: hidden;
 }
 body {
-  overflow-x: hidden;
+  /* ponytail: NO overflow-x:hidden aquí. Por la regla de overflow de CSS,
+     overflow-x:hidden en <html>/<body> fuerza overflow-y a "auto" en ambos,
+     y eso rompe position:sticky en todo lo que cuelga de ellos (confirmado
+     con Trabajo.astro: .proyecto__fijo dejaba de fijarse y se veía negro al
+     scrollear). El .marco ya recorta su iframe de 1440px con overflow:hidden
+     propio, así que no hace falta el guard global; el harness
+     ("sin scroll horizontal a 390/1440px") es la red de seguridad si algo
+     nuevo se sale de madre. */
   font-family: var(--font-sans);
   color: var(--color-tinta);
   background: var(--color-fondo);

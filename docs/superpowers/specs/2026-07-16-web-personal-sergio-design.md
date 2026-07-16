@@ -71,12 +71,14 @@ Las demos **no son capturas: son las webs reales, incrustadas y funcionando**. E
 Mecánica, en capas de abajo arriba:
 - **La captura `.webp` es la base, no el rescate.** Siempre presente, se ve al instante, y es lo que queda si el iframe no llega o si no hay JavaScript. El marco nunca está vacío ni roto.
 - **El iframe se funde encima** cuando está escalado y cargado (`loading="lazy"`). Arranca oculto a propósito: sin el escalado aplicado se vería a tamaño real, que es la versión rota.
-- **Escalado con `ResizeObserver`**, no con CSS — ver el aprendizaje caro de §6.
+- **Escalado con `ResizeObserver`**, no con CSS — ver los aprendizajes caros de §6.
 - **`pointer-events:none`** — es un póster *vivo*: se ve la web real animándose, pero no atrapa el scroll ni secuestra el dedo en móvil. Sin esto, incrustar webs es infumable en táctil.
-- **El iframe es más alto que el marco** (el alto real de cada demo) y se desplaza con el scroll: ese excedente es el recorrido de §6 punto 3. Como el marco es 1440/900 y el iframe escala por `ancho/1440`, la porción visible es siempre exactamente 900px de demo, en cualquier pantalla. No hay números mágicos.
+- **El iframe mide 1440×900: un viewport de verdad.** No el alto de la demo — ver el aprendizaje caro de §6. El recorrido de §6 punto 3 se hace **scrolleando el documento de dentro** (`contentWindow.scrollTo`), no moviendo el iframe.
+- **El `src` del iframe es una ruta relativa** (`/demo-barberia-navaja/`), nunca la URL absoluta. De ahí sale el mismo origen que permite scrollearlo: en producción las demos son *project pages* del mismo usuario y GitHub Pages las sirve en `/demo-x/` del propio dominio. En local lo replica el proxy de `scripts/servir.mjs`. **Bonus: cuando Sergio compre dominio, las project pages pasan a servirse bajo él también, así que la ruta relativa sigue valiendo sin tocar nada** — con URLs absolutas se habría roto.
 - Indicador "EN VIVO" con punto pulsante, y una barra fina de progreso del recorrido.
 - El iframe va con `tabindex="-1"` y `aria-hidden="true"`: es decorativo. Sin eso, quien navegue con teclado queda atrapado dentro de la demo y un lector de pantalla leería tres webs enteras. La vía accesible al mismo contenido es el botón.
 - Botón **"Abrir de verdad ↗"** → la web real en pestaña nueva. Ahí sí se toca.
+- Todo acceso a `contentWindow`/`contentDocument` va en `try/catch`: si algún día quedara cross-origin, el póster estático aguanta y la página no se rompe.
 
 ## 6. Animaciones (el eje del wow)
 
@@ -98,7 +100,23 @@ Sergio: *"las animaciones son lo que más efecto wow da"*. Vocabulario cerrado, 
 - Animación por composición (`transform`/`opacity`), nunca por propiedades que fuercen relayout.
 - **Sin librerías de animación.** JavaScript propio donde haga falta (el escalado y el recorrido lo necesitan), CSS donde alcance.
 
-**Aprendizaje caro, no lo reintentes:** escalar el iframe con container queries —`transform: scale(calc(100cqw / 1440px))`— **funciona en Chromium y falla en Firefox** (probado el 2026-07-16: `matrix(0.5,…)` vs `none`). Firefox no divide longitud entre longitud dentro de `calc()` y descarta la declaración entera; el iframe se queda a tamaño real y se ve una esquina ampliada de la demo. Sin la unidad `px` falla en los dos. Por eso el escalado va con `ResizeObserver`.
+## Aprendizajes caros (2026-07-16) — no los reintentes
+
+Cada uno costó una sesión de depuración y ninguno se ve leyendo el código. Están aquí para que la próxima vez que alguien piense "esto se simplifica", lea esto primero.
+
+1. **Escalar el iframe con container queries no vale.** `transform: scale(calc(100cqw / 1440px))` funciona en Chromium (`matrix(0.5,…)`) y devuelve **`none` en Firefox 152**: no divide longitud entre longitud dentro de `calc()` y descarta la declaración entera, así que el iframe se queda a tamaño real y se ve una esquina ampliada. Sin la unidad `px` falla en los dos. Por eso el escalado va con `ResizeObserver`.
+
+2. **El iframe NO puede medir el alto de la demo.** Fue el diseño original y estira las demos: dentro de un iframe de 4229px de alto, `100vh` vale 4229px, y las demos usan unidades de viewport. Medido: Navaja 4229px → **7159px (+69%)**, Sereno 6601 → 7036, Ancla 5224 → 5224. El síntoma visible era el marco de Navaja casi vacío (se veía la franja superior de un hero de ~3700px). El iframe mide 1440×900 y la demo se scrollea por dentro.
+
+3. **Las demos llevan `html { scroll-behavior: smooth }`.** Con eso, `scrollTo(0,y)` **anima** en vez de saltar y el recorrido va a tirones y con retraso. Hay que forzar `scrollBehavior = 'auto'` en el documento del iframe al cargar.
+
+4. **`overflow-x: hidden` en `<html>`/`<body>` rompe `position: sticky`.** Por la regla de overflow de CSS, fuerza `overflow-y` a `auto`, y los elementos fijos pasan a fijarse respecto a ese contenedor en vez de al viewport: el fijado deja de existir en silencio, y solo se nota al scrollear. Estaba en el tema original como guardia anti-scroll-horizontal; se quitó y **el arnés es ahora la red** (verificado: caza un desbordamiento real sin la muleta).
+
+5. **`overflow` + interlineado apretado se come los descendentes.** `overflow: hidden` en la máscara de la portada, con `leading-[0.88]`, cortaba en plano el rabo de la `g` de "Sergio". Se arregla con `overflow: clip` + `overflow-clip-margin`, y entonces el viaje de la animación tiene que crecer o la línea asoma por el hueco nuevo.
+
+6. **Las capturas se generan con `--hide-scrollbars`.** Sin la bandera, la barra de scroll del navegador queda incrustada en el póster y lo delata como captura de pantalla justo cuando queremos que parezca una web viva.
+
+7. **`astro preview` no sirve para este proyecto.** No resuelve `/demo-*`. El arnés y Lighthouse se lanzan contra `npm run servir` (`scripts/servir.mjs`), que sirve `dist/` y hace de proxy de las demos, replicando lo que hace GitHub Pages.
 
 ## 7. Decisiones aplazadas a propósito
 

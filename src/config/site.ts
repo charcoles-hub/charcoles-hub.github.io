@@ -52,13 +52,6 @@ export interface Proyecto {
   /** Slug del repo. Nombra la captura en `src/assets/posters/<slug>.png`. */
   slug: string;
   /**
-   * Plan B de rendimiento (spec §8): solo el primer proyecto carga su iframe
-   * al entrar en la página. Los demás se quedan en su captura hasta que
-   * alguien los toque — la captura ya es la base del marco, así que no se
-   * pierde nada visible, solo se retrasa la carga.
-   */
-  vivo: boolean;
-  /**
    * Alto real de la demo renderizada a 1440px de ancho. MEDIDO, no estimado
    * (2026-07-16, ver `scripts/medir-demos.mjs`). De aquí sale cuánto scroll
    * necesita cada proyecto para recorrerse entero. Si retocas una demo,
@@ -78,7 +71,22 @@ export const VELOCIDAD = 3;
 
 export const proyectos: Proyecto[] = [
   {
+    // EL ÚNICO CLIENTE REAL. Va primero y con etiqueta 'cliente' — ver spec §2.
+    // Sergio confirmó el 2026-07-16 que Fisioymés dio permiso para publicarla.
+    // Sin ese permiso, esto NO puede llevar su marca: se anonimiza o se saca.
     n: '01',
+    nombre: 'Fisioymés',
+    rubro: 'Fisioterapia · Sant Cugat del Vallès',
+    descripcion:
+      'Vinieron con una queja concreta: en el móvil su web era todo letra y scroll sin fin. La rehíce entera en catalán y castellano, con las lesiones en rejilla y los tratamientos en fichas — y sin tocarles el sistema de reservas que ya usaban.',
+    slug: 'fisioymes',
+    url: 'https://charcoles-hub.github.io/fisioymes/',
+    ruta: '/fisioymes/',
+    alto: 4687,
+    etiqueta: 'cliente',
+  },
+  {
+    n: '02',
     nombre: 'Navaja',
     rubro: 'Barbería',
     descripcion:
@@ -88,10 +96,9 @@ export const proyectos: Proyecto[] = [
     ruta: '/demo-barberia-navaja/',
     alto: 4229,
     etiqueta: 'concepto',
-    vivo: true,
   },
   {
-    n: '02',
+    n: '03',
     nombre: 'Sereno',
     rubro: 'Clínica dental',
     descripcion:
@@ -101,10 +108,9 @@ export const proyectos: Proyecto[] = [
     ruta: '/demo-dental-sereno/',
     alto: 6601,
     etiqueta: 'concepto',
-    vivo: false,
   },
   {
-    n: '03',
+    n: '04',
     nombre: 'Ancla',
     rubro: 'Psicología',
     descripcion:
@@ -114,6 +120,5 @@ export const proyectos: Proyecto[] = [
     ruta: '/demo-psicologia-ancla/',
     alto: 5224,
     etiqueta: 'concepto',
-    vivo: false,
   },
 ];

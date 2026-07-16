@@ -19,20 +19,30 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
 <section class="proyecto" style={`--alto-seccion:${altoSeccion}vh`} data-proyecto>
   <div class="proyecto__fijo">
     <div class="flex flex-col gap-4">
-      <p class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">
-        Proyecto {proyecto.n} — {esConcepto ? 'concepto' : 'cliente'}
-      </p>
+      {/* El cliente real se distingue a simple vista: chapa rellena, no texto
+          suelto como los conceptos. Si los dos se vieran igual, la única prueba
+          de trabajo pagado de la página se perdería entre los inventados. */}
+      {esConcepto ? (
+        <p class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">
+          Proyecto {proyecto.n} — concepto
+        </p>
+      ) : (
+        <p class="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em]">
+          <span class="rounded-full bg-acento px-2 py-1 text-fondo">Cliente</span>
+          <span class="text-tenue">Proyecto {proyecto.n}</span>
+        </p>
+      )}
       <h3 class="font-display text-5xl font-extrabold tracking-[-0.04em] md:text-6xl" style="font-stretch:110%">
         {proyecto.nombre}
       </h3>
       <p class="text-sm uppercase tracking-[0.1em] text-tenue">{proyecto.rubro}</p>
       <p class="max-w-[44ch] text-balance text-medio">{proyecto.descripcion}</p>
 
-      {esConcepto && (
-        <p class="max-w-[44ch] border-t border-linea pt-4 text-xs leading-relaxed text-tenue">
-          Negocio inventado, diseño real. Lo hice para enseñar cómo trabajo, no para un cliente.
-        </p>
-      )}
+      <p class="max-w-[44ch] border-t border-linea pt-4 text-xs leading-relaxed text-tenue">
+        {esConcepto
+          ? 'Negocio inventado, diseño real. Lo hice para enseñar cómo trabajo, no para un cliente.'
+          : 'Encargo real, en producción. Publicado aquí con su permiso.'}
+      </p>
 
       <a
         href={proyecto.url}
@@ -63,7 +73,7 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
     data-marco
     data-listo="no"
     data-alto={proyecto.alto}
-    data-dormido={proyecto.vivo ? undefined : proyecto.ruta}
+    data-dormido={proyecto.ruta}
     data-titulo={`${proyecto.nombre} — ${proyecto.rubro}`}
   >
 
@@ -76,16 +86,6 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
       loading="lazy"
       decoding="async"
     />
-
-    {proyecto.vivo && (
-      <iframe
-        src={proyecto.ruta}
-        title={`${proyecto.nombre} — ${proyecto.rubro}`}
-        loading="lazy"
-        tabindex="-1"
-        aria-hidden="true"
-      ></iframe>
-    )}
     </div>
   </div>
   </div>
@@ -163,7 +163,17 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
     // Una pantalla y media de margen: tiempo de sobra para cargar antes de verse.
     { rootMargin: '150% 0px' }
   );
-  document.querySelectorAll<HTMLElement>('[data-dormido]').forEach((m) => io.observe(m));
+
+  // Después de `load`, nunca antes: ninguna demo compite con el primer pintado.
+  // Con la primera cargando de salida el LCP se iba a 4,6s (rendimiento 83) —
+  // y empeoró justo al poner a Fisioymés la primera, que pesa más que las demos
+  // porque lleva fotos reales de la clínica. El póster ya está ahí desde el
+  // primer frame, así que no se ve ningún hueco: la demo se funde encima cuando
+  // llega.
+  const arranca = () =>
+    document.querySelectorAll<HTMLElement>('[data-dormido]').forEach((m) => io.observe(m));
+  if (document.readyState === 'complete') arranca();
+  else addEventListener('load', arranca, { once: true });
 
   // --- Recorrido: la demo se scrollea por dentro (opción C) ---
   function recorre() {

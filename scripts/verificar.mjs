@@ -63,41 +63,65 @@ await comprueba('sin scroll horizontal a 1440px', async () => {
   await page.close();
 });
 
-// Spec §8, plan B de rendimiento: al cargar solo va viva la primera demo (tres
-// iframes a la vez hunden el LCP: 76 de rendimiento con las tres, 95 con una).
-// Las otras dos esperan a ACERCARSE, no a que las toquen — ver PosterVivo.
-// Este test vigila las dos mitades: que arranque con una, y que las tres acaben
-// despertando. Si alguien las pone todas eagerly, cae el rendimiento y lo caza
-// la primera aserción; si alguien rompe el despertar, muere el efecto en dos de
-// los tres proyectos y lo caza la segunda.
-await comprueba('arranca con 1 demo viva y las 3 despiertan al acercarse', async () => {
+// Spec §8, rendimiento: NINGUNA demo carga antes de `load` — con una sola
+// cargando de salida el LCP se iba a 4,6s (rendimiento 83). Todas despiertan
+// después, al acercarse su sección. Este test vigila las dos mitades: que el
+// primer pintado no arrastre ningún iframe, y que las cuatro acaben vivas sin
+// que nadie toque nada. Si alguien las pone eager, cae el rendimiento y lo caza
+// la primera aserción; si alguien rompe el despertar, muere el efecto entero y
+// lo caza la segunda.
+await comprueba('ninguna demo bloquea el pintado y las 4 despiertan solas', async () => {
+  // El HTML servido, sin navegador de por medio: mirar el DOM tras
+  // `domcontentloaded` era una carrera — `load` podía dispararse en el hueco
+  // entre que puppeteer resuelve y nosotros consultamos, y el test fallaba solo.
+  // El invariante de verdad es que el HTML no traiga ningún iframe.
+  const html = await (await fetch(URL)).text();
+  const enHtml = (html.match(/<iframe/g) ?? []).length;
+  assert.equal(enHtml, 0, `el HTML servido trae ${enHtml} iframe(s); deben crearse tras load`);
+
+  // También en el HTML: las cuatro nacen dormidas. En el DOM ya no sirve
+  // contarlas — para cuando puppeteer devuelve el control, `load` ha corrido y
+  // la primera ya despertó (está a la vista, y eso es lo correcto).
+  const dormidas = (html.match(/data-dormido=/g) ?? []).length;
+  assert.equal(dormidas, 4, `el HTML debería traer 4 demos dormidas, trae ${dormidas}`);
+
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
 
-  const alCargar = await page.$$eval('.marco iframe', (els) => els.length);
-  assert.equal(alCargar, 1, `al cargar esperaba 1 iframe, hay ${alCargar}`);
-  const dormidas = await page.$$eval('[data-dormido]', (els) => els.length);
-  assert.equal(dormidas, 2, `esperaba 2 demos dormidas, hay ${dormidas}`);
-
-  // Recorrer la página entera: las tres deben acabar vivas, sin tocar nada.
+  // Recorrer la página entera: las cuatro deben acabar vivas, sin tocar nada.
   await page.evaluate(async () => {
     for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
       window.scrollTo(0, y);
       await new Promise((r) => setTimeout(r, 60));
     }
   });
-  await new Promise((r) => setTimeout(r, 1500));
+  await new Promise((r) => setTimeout(r, 2000));
 
   const srcs = await page.$$eval('.marco iframe', (els) => els.map((e) => e.src));
-  assert.equal(srcs.length, 3, `tras recorrerla esperaba 3 iframes, hay ${srcs.length}`);
+  assert.equal(srcs.length, 4, `tras recorrerla esperaba 4 iframes, hay ${srcs.length}`);
 
-  // globalThis.URL, no URL a secas: la constante URL de este módulo (línea 6)
-  // shadowea el constructor global, y "new URL(...)" rompería con
-  // "URL is not a constructor".
+  // globalThis.URL, no URL a secas: la constante URL de este módulo shadowea el
+  // constructor global y "new URL(...)" rompería con "URL is not a constructor".
   for (const s of srcs) {
     const u = new globalThis.URL(s);
     assert.equal(u.origin, new globalThis.URL(URL).origin, `el iframe no es del mismo origen: ${s}`);
-    assert.ok(/^\/demo-/.test(u.pathname), `ruta inesperada: ${u.pathname}`);
+    assert.ok(/^\/(demo-|fisioymes)/.test(u.pathname), `ruta inesperada: ${u.pathname}`);
   }
+  await page.close();
+});
+
+// El cliente real no puede confundirse con los conceptos inventados (spec §2).
+await comprueba('el cliente real se distingue de los conceptos', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const texto = await page.evaluate(() => document.body.innerText);
+  // Sin la /i esto falla: innerText devuelve el texto RENDERIZADO y la chapa
+  // lleva `uppercase`, así que en pantalla pone "CLIENTE".
+  assert.ok(/cliente/i.test(texto), 'no aparece la etiqueta Cliente por ningún lado');
+  assert.ok(
+    texto.includes('Encargo real, en producción. Publicado aquí con su permiso.'),
+    'falta la nota de encargo real con permiso'
+  );
+  const conceptos = (texto.match(/— concepto/gi) ?? []).length;
+  assert.equal(conceptos, 3, `esperaba 3 conceptos etiquetados, hay ${conceptos}`);
   await page.close();
 });
 
@@ -156,7 +180,8 @@ await comprueba('los iframes están escalados al marco', async () => {
 await comprueba('la demo se recorre al scrollear', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
   await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
-  await new Promise((r) => setTimeout(r, 800)); // que carguen los iframes
+  await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+  await new Promise((r) => setTimeout(r, 2500)); // que despierten y carguen
 
   const leerScroll = () =>
     page.$eval('.marco iframe', (f) => f.contentWindow.scrollY);

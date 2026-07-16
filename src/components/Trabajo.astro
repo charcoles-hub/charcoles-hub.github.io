@@ -2,11 +2,13 @@
 import { proyectos } from '../config/site';
 import PosterVivo from './PosterVivo.astro';
 
+import fisioymes from '../assets/posters/fisioymes.png';
 import navaja from '../assets/posters/demo-barberia-navaja.png';
 import sereno from '../assets/posters/demo-dental-sereno.png';
 import ancla from '../assets/posters/demo-psicologia-ancla.png';
 
 const posters: Record<string, ImageMetadata> = {
+  'fisioymes': fisioymes,
   'demo-barberia-navaja': navaja,
   'demo-dental-sereno': sereno,
   'demo-psicologia-ancla': ancla,

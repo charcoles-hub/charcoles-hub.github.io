@@ -6,6 +6,12 @@ const PUERTO = Number(process.env.PUERTO ?? 4321);
 const RAIZ = new URL('../dist/', import.meta.url).pathname;
 const ORIGEN_DEMOS = 'https://charcoles-hub.github.io';
 
+// Rutas que NO son de este sitio, sino de otros repos publicados en el mismo
+// usuario de GitHub Pages. En producción las sirve GitHub en el mismo origen;
+// aquí las traemos para replicarlo. Al añadir un cliente nuevo, mételo aquí y
+// en el proxy de astro.config.mjs, o su iframe cargará un 404 en local.
+const ES_PROYECTO = /^\/(demo-|fisioymes)/;
+
 const TIPOS = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -25,7 +31,7 @@ createServer(async (req, res) => {
   const ruta = decodeURIComponent(new URL(req.url, 'http://x').pathname);
 
   // Las demos: igual que en producción, mismo origen.
-  if (ruta.startsWith('/demo-')) {
+  if (ES_PROYECTO.test(ruta)) {
     const upstream = await fetch(ORIGEN_DEMOS + ruta, { redirect: 'follow' });
     res.writeHead(upstream.status, {
       'content-type': upstream.headers.get('content-type') ?? 'application/octet-stream',

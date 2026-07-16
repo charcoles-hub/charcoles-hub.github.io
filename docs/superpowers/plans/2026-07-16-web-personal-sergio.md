@@ -341,8 +341,15 @@ console.log(`\nVerificando ${URL}\n`);
 // Criterio 6 del spec: sin scroll horizontal a 390px.
 await comprueba('sin scroll horizontal a 390px', async () => {
   const page = await abrir({ ancho: 390 });
+  // GOTCHA REAL (cazado por el Step 10 el 2026-07-16): con overflow-x:hidden
+  // en <html> Y <body> a la vez — que es lo que pone el tema del Step 5 y es
+  // correcto — `documentElement.scrollWidth` se queda clavado en innerWidth y
+  // NO ve el desbordamiento de sus descendientes. El test daba verde sobre una
+  // página visiblemente rota. Hay que mirar también body.scrollWidth.
   const exceso = await page.evaluate(
-    () => document.documentElement.scrollWidth - window.innerWidth
+    () =>
+      Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) -
+      window.innerWidth
   );
   assert.ok(exceso <= 0, `sobran ${exceso}px de ancho`);
   await page.close();
@@ -351,8 +358,15 @@ await comprueba('sin scroll horizontal a 390px', async () => {
 // Mismo criterio, en escritorio.
 await comprueba('sin scroll horizontal a 1440px', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  // GOTCHA REAL (cazado por el Step 10 el 2026-07-16): con overflow-x:hidden
+  // en <html> Y <body> a la vez — que es lo que pone el tema del Step 5 y es
+  // correcto — `documentElement.scrollWidth` se queda clavado en innerWidth y
+  // NO ve el desbordamiento de sus descendientes. El test daba verde sobre una
+  // página visiblemente rota. Hay que mirar también body.scrollWidth.
   const exceso = await page.evaluate(
-    () => document.documentElement.scrollWidth - window.innerWidth
+    () =>
+      Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) -
+      window.innerWidth
   );
   assert.ok(exceso <= 0, `sobran ${exceso}px de ancho`);
   await page.close();

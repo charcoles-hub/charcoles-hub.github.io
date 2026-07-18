@@ -1,20 +1,22 @@
 ---
-import { site } from '../config/site';
+import { contenido, type Lang } from '../config/site';
+const { lang } = Astro.props as { lang: Lang };
+const { site, contacto } = contenido[lang];
 ---
 <section class="border-t border-linea px-6 py-24 md:px-12 md:py-32">
   <div class="mx-auto flex max-w-6xl flex-col gap-8">
     <p data-revela class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">
-      Hablamos
+      {contacto.eyebrow}
     </p>
     <h2
       data-revela
       class="font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.04em] text-balance md:text-6xl"
       style="font-stretch:110%"
     >
-      ¿Tu web se parece a la de todos?
+      {contacto.titular}
     </h2>
     <p data-revela class="max-w-[46ch] text-balance text-medio md:text-lg">
-      Cuéntame qué tienes y qué te gustaría. Te digo qué haría y cuánto cuesta, sin compromiso y sin rodeos.
+      {contacto.texto}
     </p>
 
     <a

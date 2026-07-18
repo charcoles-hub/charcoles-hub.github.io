@@ -1,10 +1,43 @@
 ---
-import { site } from '../config/site';
+import { contenido, rutas, type Lang } from '../config/site';
+const { lang } = Astro.props as { lang: Lang };
+const { site, portadaPie } = contenido[lang];
+
+// Selector de idioma: enlaces reales a la otra ruta estática, no un conmutador
+// por JS. Cada versión tiene que poder abrirse, enlazarse e indexarse sola.
+const idiomas: { codigo: Lang; etiqueta: string }[] = [
+  { codigo: 'es', etiqueta: 'ES' },
+  { codigo: 'en', etiqueta: 'EN' },
+];
 ---
 <section class="min-h-[100svh] flex flex-col justify-between px-6 py-8 md:px-12 md:py-12">
-  <p class="entra text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-acento" style="--i:0">
-    {site.rol} · {site.lugar}
-  </p>
+  <div class="entra flex items-center justify-between gap-4" style="--i:0">
+    <p class="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-acento">
+      {site.rol} · {site.lugar}
+    </p>
+    <nav
+      aria-label={lang === 'es' ? 'Idioma' : 'Language'}
+      class="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em]"
+    >
+      {idiomas.map((i, n) => (
+        <>
+          {n > 0 && <span aria-hidden="true" class="text-linea">/</span>}
+          <a
+            href={rutas[i.codigo]}
+            hreflang={i.codigo}
+            aria-current={i.codigo === lang ? 'true' : undefined}
+            class={
+              i.codigo === lang
+                ? 'text-tinta'
+                : 'text-tenue transition-colors hover:text-tinta'
+            }
+          >
+            {i.etiqueta}
+          </a>
+        </>
+      ))}
+    </nav>
+  </div>
 
   <h1
     class="font-display font-extrabold leading-[0.88] tracking-[-0.045em]
@@ -20,7 +53,7 @@ import { site } from '../config/site';
       {site.descripcion}
     </p>
     <p class="entra text-[0.62rem] uppercase tracking-[0.12em] text-tenue" style="--i:4">
-      Tres proyectos · en vivo ↓
+      {portadaPie}
     </p>
   </div>
 </section>

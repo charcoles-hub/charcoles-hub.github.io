@@ -1,22 +1,32 @@
 ---
 import '../styles/global.css';
-import { site } from '../config/site';
+import { contenido, rutas, ogLocale, type Lang } from '../config/site';
 
 interface Props {
+  lang: Lang;
   titulo?: string;
   descripcion?: string;
 }
-const { titulo = site.titulo, descripcion = site.descripcion } = Astro.props;
+const { lang } = Astro.props;
+const C = contenido[lang];
+const { titulo = C.site.titulo, descripcion = C.site.descripcion } = Astro.props;
 const canonica = new URL(Astro.url.pathname, Astro.site).href;
+
+// hreflang recíprocos: cada versión declara las dos rutas, y las dos existen
+// como HTML estático. Sin esto Google trata /en/ como duplicado de la raíz.
+const alternas = (Object.keys(rutas) as Lang[]).map((l) => ({
+  codigo: l,
+  href: new URL(rutas[l], Astro.site).href,
+}));
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: site.nombre,
-  jobTitle: site.rol,
-  email: `mailto:${site.email}`,
+  name: C.site.nombre,
+  jobTitle: C.site.rol,
+  email: `mailto:${C.site.email}`,
   url: canonica,
-  address: { '@type': 'PostalAddress', addressLocality: site.lugar, addressCountry: 'ES' },
+  address: { '@type': 'PostalAddress', addressLocality: 'Barcelona', addressCountry: 'ES' },
   alumniOf: {
     '@type': 'CollegeOrUniversity',
     name: 'Universitat Politècnica de Catalunya — EEBE',
@@ -25,7 +35,7 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -33,10 +43,14 @@ const jsonLd = {
     <link rel="canonical" href={canonica} />
     <title>{titulo}</title>
 
+    {alternas.map((a) => <link rel="alternate" hreflang={a.codigo} href={a.href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(rutas.es, Astro.site).href} />
+
     <meta property="og:type" content="website" />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonica} />
+    <meta property="og:locale" content={ogLocale[lang]} />
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />

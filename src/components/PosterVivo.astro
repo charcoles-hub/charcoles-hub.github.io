@@ -1,13 +1,15 @@
 ---
 import { Image } from 'astro:assets';
-import { VELOCIDAD, type Proyecto } from '../config/site';
+import { VELOCIDAD, contenido, type Lang, type Proyecto } from '../config/site';
 
 interface Props {
   proyecto: Proyecto;
   /** La captura importada. La pasa Trabajo.astro para que Astro la optimice. */
   poster: ImageMetadata;
+  lang: Lang;
 }
-const { proyecto, poster } = Astro.props;
+const { proyecto, poster, lang } = Astro.props;
+const txt = contenido[lang].proyecto;
 const esConcepto = proyecto.etiqueta === 'concepto';
 
 // Cuánto scroll necesita este proyecto para recorrerse entero.
@@ -24,12 +26,12 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
           de trabajo pagado de la página se perdería entre los inventados. */}
       {esConcepto ? (
         <p class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">
-          Proyecto {proyecto.n} — concepto
+          {txt.concepto(proyecto.n)}
         </p>
       ) : (
         <p class="flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em]">
-          <span class="rounded-full bg-acento px-2 py-1 text-fondo">Cliente</span>
-          <span class="text-tenue">Proyecto {proyecto.n}</span>
+          <span class="rounded-full bg-acento px-2 py-1 text-fondo">{txt.cliente}</span>
+          <span class="text-tenue">{txt.proyectoN(proyecto.n)}</span>
         </p>
       )}
       <h3 class="font-display text-5xl font-extrabold tracking-[-0.04em] md:text-6xl" style="font-stretch:110%">
@@ -39,9 +41,7 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
       <p class="max-w-[44ch] text-balance text-medio">{proyecto.descripcion}</p>
 
       <p class="max-w-[44ch] border-t border-linea pt-4 text-xs leading-relaxed text-tenue">
-        {esConcepto
-          ? 'Negocio inventado, diseño real. Lo hice para enseñar cómo trabajo, no para un cliente.'
-          : 'Encargo real, en producción. Publicado aquí con su permiso.'}
+        {esConcepto ? txt.notaConcepto : txt.notaCliente}
       </p>
 
       <a
@@ -51,7 +51,7 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
         class="mt-2 w-fit rounded-full bg-tinta px-4 py-2.5 text-xs font-semibold text-fondo
                transition-transform hover:-translate-y-0.5"
       >
-        Abrir de verdad ↗
+        {txt.abrir}
       </a>
 
       <div class="mt-2 h-0.5 overflow-hidden rounded-full bg-linea">
@@ -65,7 +65,7 @@ const altoSeccion = Math.round(100 + ((proyecto.alto - 900) / 900) * 100 / VELOC
         están ocupadas en alguna de las tres demos, y además la demo se desplaza
         al scrollear, así que lo que hoy está libre mañana no. */}
     <div class="flex items-center gap-1.5 self-end text-[0.6rem] font-semibold tracking-[0.1em] text-tenue">
-      <span class="punto-vivo size-1.5 rounded-full bg-[#3fb950]"></span>EN VIVO
+      <span class="punto-vivo size-1.5 rounded-full bg-[#3fb950]"></span>{txt.envivo}
     </div>
 
   <div

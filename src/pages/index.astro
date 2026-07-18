@@ -1,15 +1,19 @@
 ---
+// Español, en la RAÍZ. Es lo que ya está indexado y no se mueve. El inglés vive
+// en src/pages/en/index.astro; las dos son HTML estático, sin conmutar por JS.
 import Layout from '../layouts/Layout.astro';
 import Portada from '../components/Portada.astro';
 import Trabajo from '../components/Trabajo.astro';
 import Bio from '../components/Bio.astro';
 import ComoTrabajo from '../components/ComoTrabajo.astro';
 import Contacto from '../components/Contacto.astro';
+
+const lang = 'es' as const;
 ---
-<Layout>
-  <Portada />
-  <Trabajo />
-  <Bio />
-  <ComoTrabajo />
-  <Contacto />
+<Layout lang={lang}>
+  <Portada lang={lang} />
+  <Trabajo lang={lang} />
+  <Bio lang={lang} />
+  <ComoTrabajo lang={lang} />
+  <Contacto lang={lang} />
 </Layout>

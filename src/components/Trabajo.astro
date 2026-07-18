@@ -1,24 +1,33 @@
 ---
-import { proyectos } from '../config/site';
+import { contenido, type Lang } from '../config/site';
 import PosterVivo from './PosterVivo.astro';
 
 import fisioymes from '../assets/posters/fisioymes.png';
 import navaja from '../assets/posters/demo-barberia-navaja.png';
 import sereno from '../assets/posters/demo-dental-sereno.png';
 import ancla from '../assets/posters/demo-psicologia-ancla.png';
+import dentalUs from '../assets/posters/demo-dental-us.png';
+import lawfirmUs from '../assets/posters/demo-lawfirm-us.png';
 
+// Al añadir un proyecto: captura en src/assets/posters/<slug>.png (la genera
+// `node scripts/medir-demos.mjs <slug> --poster`) y una entrada aquí.
 const posters: Record<string, ImageMetadata> = {
   'fisioymes': fisioymes,
   'demo-barberia-navaja': navaja,
   'demo-dental-sereno': sereno,
   'demo-psicologia-ancla': ancla,
+  'demo-dental-us': dentalUs,
+  'demo-lawfirm-us': lawfirmUs,
 };
+
+const { lang } = Astro.props as { lang: Lang };
+const { proyectos, proyecto: txt } = contenido[lang];
 ---
 <section class="px-6 md:px-12">
-  <h2 class="sr-only">El trabajo</h2>
+  <h2 class="sr-only">{txt.trabajo}</h2>
   <div class="mx-auto max-w-[1600px]">
     {proyectos.map((proyecto) => (
-      <PosterVivo proyecto={proyecto} poster={posters[proyecto.slug]} />
+      <PosterVivo proyecto={proyecto} poster={posters[proyecto.slug]} lang={lang} />
     ))}
   </div>
 </section>

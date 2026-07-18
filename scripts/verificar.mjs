@@ -30,11 +30,49 @@ async function abrir({ ancho = 390, alto = 844, movil = true, reducirMovimiento 
   if (reducirMovimiento) {
     await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   }
+  // Se engancha ANTES de navegar: un error durante el primer pintado no se
+  // recupera después.
+  page.errores = [];
+  // El 404 de /favicon.ico no lo pide la página: lo pide el navegador solo, en
+  // cualquier sitio sin favicon. No es un error nuestro y taparía los que sí.
+  // Si algún día se añade un favicon, este filtro sobra.
+  page.on(
+    'requestfailed',
+    (r) => !/favicon\.ico$/.test(r.url()) && page.errores.push(`${r.url()} falló`)
+  );
+  page.on('response', (r) => {
+    if (r.status() >= 400 && !/favicon\.ico$/.test(r.url())) {
+      page.errores.push(`${r.status()} en ${r.url()}`);
+    }
+  });
+  page.on('console', (m) => {
+    // El mensaje genérico del 404 del favicon no trae URL; se descarta por el
+    // listener de `response`, que sí la tiene.
+    if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) {
+      page.errores.push(m.text());
+    }
+  });
+  page.on('pageerror', (e) => page.errores.push(String(e)));
   await page.goto(URL, { waitUntil: 'networkidle2', timeout: 60_000 });
   return page;
 }
 
 console.log(`\nVerificando ${URL}\n`);
+
+// Cero errores de consola, recorriendo la página entera (las demos despiertan
+// al scrollear, así que un error suyo no aparece hasta que se las visita).
+await comprueba('sin errores de consola', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
+      window.scrollTo(0, y);
+      await new Promise((r) => setTimeout(r, 60));
+    }
+  });
+  await new Promise((r) => setTimeout(r, 2000));
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
 
 // Criterio 6 del spec: sin scroll horizontal a 390px.
 // Gotcha: con overflow-x:hidden en <html> Y <body> a la vez (tema, Step 5),
@@ -70,7 +108,7 @@ await comprueba('sin scroll horizontal a 1440px', async () => {
 // que nadie toque nada. Si alguien las pone eager, cae el rendimiento y lo caza
 // la primera aserción; si alguien rompe el despertar, muere el efecto entero y
 // lo caza la segunda.
-await comprueba('ninguna demo bloquea el pintado y las 4 despiertan solas', async () => {
+await comprueba('ninguna demo bloquea el pintado y todas despiertan solas', async () => {
   // El HTML servido, sin navegador de por medio: mirar el DOM tras
   // `domcontentloaded` era una carrera — `load` podía dispararse en el hueco
   // entre que puppeteer resuelve y nosotros consultamos, y el test fallaba solo.
@@ -79,15 +117,22 @@ await comprueba('ninguna demo bloquea el pintado y las 4 despiertan solas', asyn
   const enHtml = (html.match(/<iframe/g) ?? []).length;
   assert.equal(enHtml, 0, `el HTML servido trae ${enHtml} iframe(s); deben crearse tras load`);
 
-  // También en el HTML: las cuatro nacen dormidas. En el DOM ya no sirve
-  // contarlas — para cuando puppeteer devuelve el control, `load` ha corrido y
-  // la primera ya despertó (está a la vista, y eso es lo correcto).
+  // También en el HTML: TODAS nacen dormidas. En el DOM ya no sirve contarlas —
+  // para cuando puppeteer devuelve el control, `load` ha corrido y la primera ya
+  // despertó (está a la vista, y eso es lo correcto).
   const dormidas = (html.match(/data-dormido=/g) ?? []).length;
-  assert.equal(dormidas, 4, `el HTML debería traer 4 demos dormidas, trae ${dormidas}`);
 
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
 
-  // Recorrer la página entera: las cuatro deben acabar vivas, sin tocar nada.
+  // El número sale de la propia página, no de una constante: /en/ enseña otros
+  // proyectos que la raíz, y un número fijo obligaba a tocar el test por idioma.
+  // Contado en el DOM, no con una regex sobre el HTML: "data-proyecto" aparece
+  // también en el selector del script y salía uno de más.
+  const n = await page.$$eval('[data-proyecto]', (e) => e.length);
+  assert.ok(n >= 3, `esperaba 3+ proyectos en la página, hay ${n}`);
+  assert.equal(dormidas, n, `el HTML debería traer ${n} demos dormidas, trae ${dormidas}`);
+
+  // Recorrer la página entera: todas deben acabar vivas, sin tocar nada.
   await page.evaluate(async () => {
     for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
       window.scrollTo(0, y);
@@ -97,7 +142,7 @@ await comprueba('ninguna demo bloquea el pintado y las 4 despiertan solas', asyn
   await new Promise((r) => setTimeout(r, 2000));
 
   const srcs = await page.$$eval('.marco iframe', (els) => els.map((e) => e.src));
-  assert.equal(srcs.length, 4, `tras recorrerla esperaba 4 iframes, hay ${srcs.length}`);
+  assert.equal(srcs.length, n, `tras recorrerla esperaba ${n} iframes, hay ${srcs.length}`);
 
   // globalThis.URL, no URL a secas: la constante URL de este módulo shadowea el
   // constructor global y "new URL(...)" rompería con "URL is not a constructor".
@@ -115,13 +160,58 @@ await comprueba('el cliente real se distingue de los conceptos', async () => {
   const texto = await page.evaluate(() => document.body.innerText);
   // Sin la /i esto falla: innerText devuelve el texto RENDERIZADO y la chapa
   // lleva `uppercase`, así que en pantalla pone "CLIENTE".
-  assert.ok(/cliente/i.test(texto), 'no aparece la etiqueta Cliente por ningún lado');
+  const lang = await page.evaluate(() => document.documentElement.lang);
+  assert.ok(/cliente|client/i.test(texto), 'no aparece la etiqueta Cliente/Client por ningún lado');
   assert.ok(
-    texto.includes('Encargo real, en producción. Publicado aquí con su permiso.'),
+    texto.includes(
+      lang === 'en'
+        ? 'Real engagement, in production. Published here with their permission.'
+        : 'Encargo real, en producción. Publicado aquí con su permiso.'
+    ),
     'falta la nota de encargo real con permiso'
   );
-  const conceptos = (texto.match(/— concepto/gi) ?? []).length;
-  assert.equal(conceptos, 3, `esperaba 3 conceptos etiquetados, hay ${conceptos}`);
+  // "concept" casa también con "concepto": una sola expresión para los dos idiomas.
+  const conceptos = (texto.match(/— concept/gi) ?? []).length;
+  const proyectos = await page.$$eval('[data-proyecto]', (e) => e.length);
+  assert.equal(
+    conceptos,
+    proyectos - 1,
+    `${proyectos} proyectos y ${conceptos} conceptos: solo Fisioymés puede ir sin etiqueta de concepto`
+  );
+  await page.close();
+});
+
+// Las dos versiones tienen que ser rutas reales, indexables por separado, y
+// declararse la una a la otra. Si alguien convierte esto en un conmutador por JS
+// o deja un hreflang apuntando a una URL que no existe, cae aquí.
+await comprueba('hreflang recíprocos y lang correcto', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const { lang, alternas } = await page.evaluate(() => ({
+    lang: document.documentElement.lang,
+    alternas: [...document.querySelectorAll('link[rel=alternate][hreflang]')].map((l) => ({
+      hreflang: l.hreflang,
+      href: l.href,
+    })),
+  }));
+  assert.ok(['es', 'en'].includes(lang), `lang del <html> inesperado: "${lang}"`);
+  for (const codigo of ['es', 'en', 'x-default']) {
+    assert.ok(
+      alternas.some((a) => a.hreflang === codigo),
+      `falta el hreflang "${codigo}"`
+    );
+  }
+  // Cada alterna tiene que existir de verdad, en el origen que se está probando.
+  const origen = new globalThis.URL(URL).origin;
+  for (const a of alternas) {
+    const destino = origen + new globalThis.URL(a.href).pathname;
+    const res = await fetch(destino);
+    assert.equal(res.status, 200, `hreflang ${a.hreflang} apunta a ${destino} y da ${res.status}`);
+  }
+  // Y el selector de idioma tiene que ser un enlace real, no un botón con JS.
+  const enlaces = await page.$$eval('nav a[hreflang]', (els) =>
+    els.map((e) => new URL(e.href).pathname)
+  );
+  assert.deepEqual(enlaces.sort(), ['/', '/en/'], `selector de idioma inesperado: ${enlaces}`);
   await page.close();
 });
 
@@ -140,9 +230,11 @@ await comprueba('los iframes no capturan el puntero', async () => {
 await comprueba('los conceptos se declaran conceptos', async () => {
   const page = await abrir({ ancho: 1440, alto: 900, movil: false });
   const texto = await page.evaluate(() => document.body.innerText.toLowerCase());
-  const conceptos = (texto.match(/concepto/g) ?? []).length;
-  assert.ok(conceptos >= 3, `solo ${conceptos} menciones de "concepto", esperaba 3+`);
+  // /concept/ casa con "concepto" y con "concept": vale para los dos idiomas.
+  const conceptos = (texto.match(/concept/g) ?? []).length;
+  assert.ok(conceptos >= 2, `solo ${conceptos} menciones de "concepto", esperaba 2+`);
   assert.ok(!texto.includes('cliente satisfecho'), 'lenguaje de cliente en una demo inventada');
+  assert.ok(!texto.includes('happy client'), 'lenguaje de cliente en una demo inventada');
   await page.close();
 });
 

@@ -1,5 +1,7 @@
 ---
-import { metodo } from '../config/site';
+import { contenido, type Lang } from '../config/site';
+const { lang } = Astro.props as { lang: Lang };
+const metodo = contenido[lang].metodo;
 ---
 <section class="border-t border-linea bg-fondo-2 px-6 py-24 md:px-12 md:py-32">
   <div class="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1fr_1.3fr] md:gap-16">

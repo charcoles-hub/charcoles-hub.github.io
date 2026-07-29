@@ -20,7 +20,8 @@ Decisiones ya tomadas con Sergio (no reabrir sin motivo):
 - **3D completo en PC y móvil**, con pantalla de carga cuidada de unos segundos que absorba la descarga.
 - **Se continúa desde `spike/galeria-3d`**, no se empieza de cero.
 - **Todo el recorrido es 3D**: héroe, demos, bio y contacto son paradas del viaje.
-- **Bilingüe ES/EN con toggle en vivo** (sin recarga; sustituye a la ruta `/en/`).
+- **Bilingüe ES/EN con toggle en vivo** que cambia textos **y demos**: ES tiene 4 paradas de proyecto (fisio + barbería + dental + psicología), EN tiene 3 (fisio + dental US + law firm US), como hoy. La escena se reconfigura al cambiar de idioma, sin recarga, conservando el progreso fraccional del scroll.
+- **`/en/` sirve la misma experiencia 3D arrancada en inglés** (no redirige): las dos rutas quedan indexables con hreflang, y el fallback estático de cada ruta va en su idioma.
 - **Textos en híbrido**: titulares de sección flotando en 3D (CSS3D), texto de lectura en HUD fijo (DOM normal superpuesto).
 - **Pantalla de carga = la escena se ensambla ante ti**, con progreso real.
 
@@ -29,7 +30,7 @@ Decisiones ya tomadas con Sergio (no reabrir sin motivo):
 Fondo oscuro coherente con la identidad actual (casi negro, un solo acento cálido). El scroll alterna **viaje** (la cámara se mueve entre paradas, easing cúbico) y **lectura** (cámara quieta, el contenido se despliega), con el mismo modelo de segmentos y `LERP_SCROLL` de la Fase 1. Paradas:
 
 1. **Héroe** — la cámara arranca en plano general (establishing, como en la Fase 1). Titular flotante en 3D: "Diseño y construyo webs a medida para negocios que están hartos de parecer una plantilla". En HUD: subtítulo ("Estáticas, rápidas y sin nada que se pueda romper") y pista de scroll ("baja para empezar").
-2. **Las 4 demos** — cada una es una pantalla viva (iframe real, `pointer-events: none` para no robar la rueda — lección del spike) en la composición en curva existente. Titular de proyecto flotante junto a su pantalla (p. ej. "Fisioterapia · Sant Cugat del Vallès", "Barbería", "Clínica dental", "Psicología"). En HUD durante su parada: descripción completa, badge EN VIVO / concepto y enlace "Abrir de verdad ↗". En su segmento de lectura, la demo scrollea por dentro (mecanismo ya implementado).
+2. **Las demos** — cada una es una pantalla viva (iframe real, `pointer-events: none` para no robar la rueda — lección del spike) en la composición en curva existente. **ES tiene 4 paradas de proyecto** (Fisioymés, Navaja/barbería, Sereno/dental, Ancla/psicología); **EN tiene 3** (Fisioymés, dental US, law firm US) — es la oferta curada que ya existe en `site.ts`. Titular de proyecto flotante junto a su pantalla (nombre y rubro). En HUD durante su parada: descripción completa, badge EN VIVO / concepto y enlace "Abrir de verdad ↗". En su segmento de lectura, la demo scrollea por dentro (mecanismo ya implementado).
 3. **Bio** — parada con titular flotante ("Quién soy" o similar). Los tres bloques actuales (EEBE/UPC, EY ciberseguridad, freelance) aparecen sucesivamente en HUD conforme avanza el scroll dentro del segmento.
 4. **Contacto** — parada final: "Hablamos" flotante grande; en HUD el texto de cierre y el email `scharcoles@gmail.com` como CTA.
 
@@ -40,7 +41,7 @@ Fondo oscuro coherente con la identidad actual (casi negro, un solo acento cáli
 No es una cortinilla: es la primera escena. Al entrar, fondo negro y empieza el montaje en este orden:
 
 1. Aparecen las partículas de fondo (fade-in).
-2. Las 4 pantallas entran volando una a una desde fuera de campo a sus posiciones de la curva.
+2. Las pantallas del idioma activo (4 en ES, 3 en EN) entran volando una a una desde fuera de campo a sus posiciones de la curva.
 3. Un indicador discreto muestra **progreso real**: módulo de three.js cargado + cada demo que termina de cargar su iframe (p. ej. "montando 3/4").
 
 Reglas de tiempo:
@@ -59,8 +60,8 @@ Reglas de tiempo:
   - `titulares.js` — titulares flotantes como objetos CSS3D (héroe, proyectos, bio, contacto).
   - `carga.js` — secuencia de montaje + progreso real + reglas de tiempo de §3.
   - `hud.js` — textos DOM superpuestos, visibilidad por segmento, toggle ES/EN en vivo.
-- `src/pages/index.astro` pasa a ser la experiencia 3D. La ruta `/en/` deja de generarse como página separada; se sustituye por una redirección estática `/en/` → `/` por si hay enlaces viejos circulando.
-- **Textos: única fuente `src/config/site.ts`** (ya bilingüe). El toggle ES/EN re-renderiza los textos del HUD y los titulares flotantes sin recargar; los iframes de las demos no se tocan (su contenido ya es bilingüe o monolingüe según la demo, igual que hoy).
+- `src/pages/index.astro` pasa a ser la experiencia 3D arrancada en español y `src/pages/en/index.astro` la misma experiencia arrancada en inglés (mismo componente de página, distinto idioma por defecto). Las dos rutas se generan como HTML estático, conservan los hreflang recíprocos y su contenido de fallback va en su idioma. Ya no hay redirección de `/en/` a `/`.
+- **Textos: única fuente `src/config/site.ts`** (ya bilingüe). El toggle ES/EN en vivo re-renderiza los textos del HUD y los titulares flotantes **y reconstruye las paradas de proyecto**: se retiran las pantallas del idioma saliente y se crean las del entrante (ES 4 / EN 3, con sus iframes), se recalculan los segmentos viaje/lectura y se conserva el progreso fraccional del scroll (`scrollY / totalPx` antes = después), sin recargar la página. Las demos nuevas cargan en segundo plano; si el usuario llega a una parada cuya demo aún no ha cargado, la pantalla muestra su estado de carga (mismo tratamiento que en el montaje inicial).
 - **SEO/accesibilidad**: todo el contenido textual existe en el DOM real (el HUD). Los iframes llevan `title`. `<noscript>` con el contenido en texto plano.
 
 ## 5. Móvil, rendimiento y accesibilidad
@@ -76,11 +77,12 @@ Se extiende `scripts/verificar.mjs` (Puppeteer contra `npm run servir`, ya arnes
 
 1. El canvas WebGL y el contenedor CSS3D existen en el DOM tras cargar.
 2. Cero errores de consola con la escena activa.
-3. Las 4 demos cargan (`__galeria.demosLoaded()`).
+3. Las demos del idioma activo cargan (`__galeria.demosLoaded()`): 4 en ES, 3 en EN.
 4. La API `__galeria` (ya existente, se mantiene) expone las paradas; el scroll de lectura mueve el scroll interno de la demo (`getDemoScrollY`).
-5. El toggle ES/EN cambia los textos del HUD y los titulares sin recargar la página.
-6. Con `prefers-reduced-motion: reduce` emulado, se sirve el fallback estático (sin canvas, sin errores).
+5. El toggle ES/EN, sin recargar la página: cambia los textos del HUD y los titulares, reconstruye las paradas (EN deja 3 pantallas, con `demo-dental-us` y `demo-lawfirm-us`) y conserva el progreso fraccional del scroll.
+6. Con `prefers-reduced-motion: reduce` emulado, se sirve el fallback estático (sin canvas, sin errores, contenido completo visible).
 7. La pantalla de carga aparece primero, muestra progreso y desemboca en el héroe sin salto de cámara.
+8. `/en/` sirve la experiencia 3D arrancada en inglés (textos en inglés, 3 demos) y los hreflang recíprocos siguen apuntando a rutas reales que responden 200.
 
 Medición manual antes de publicar: FPS en móvil real o emulado exigente, y pasada completa del recorrido en desktop y móvil.
 
@@ -100,4 +102,4 @@ Medición manual antes de publicar: FPS en móvil real o emulado exigente, y pas
 4. Misma experiencia en móvil y desktop, con encuadres correctos en ambos y FPS ≥ 50 en móvil de gama media.
 5. `prefers-reduced-motion` y ausencia de WebGL sirven el fallback estático completo, sin errores.
 6. Todos los checks de `scripts/verificar.mjs` en verde.
-7. `/en/` redirige a `/`.
+7. `/en/` sirve la misma experiencia 3D arrancada en inglés (3 demos, textos EN), con hreflang recíprocos válidos.

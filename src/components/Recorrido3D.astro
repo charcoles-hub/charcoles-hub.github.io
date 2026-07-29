@@ -1,0 +1,62 @@
+---
+// La home como viaje 3D (spec 2026-07-29-recorrido-3d-design.md).
+// Estático primero: #estatico trae el contenido de verdad (SEO, lectores de
+// pantalla, reduced-motion, no-WebGL). El 3D es una capa que se añade con la
+// clase html.viaje3d cuando main.js da el visto bueno.
+import Portada from './Portada.astro';
+import Trabajo from './Trabajo.astro';
+import Bio from './Bio.astro';
+import ComoTrabajo from './ComoTrabajo.astro';
+import Contacto from './Contacto.astro';
+import { contenido, type Lang } from '../config/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+
+// Los formatters de site.ts (concepto(n), proyectoN(n)) son funciones y no
+// cruzan define:vars — se pre-calculan aquí por proyecto.
+function datosLang(l: Lang) {
+  const C = contenido[l];
+  return {
+    site: C.site,
+    portadaPie: C.portadaPie,
+    bio: C.bio,
+    metodo: C.metodo,
+    contacto: C.contacto,
+    proyecto: {
+      trabajo: C.proyecto.trabajo,
+      cliente: C.proyecto.cliente,
+      notaConcepto: C.proyecto.notaConcepto,
+      notaCliente: C.proyecto.notaCliente,
+      abrir: C.proyecto.abrir,
+      envivo: C.proyecto.envivo,
+    },
+    proyectos: C.proyectos.map((p) => ({
+      ...p,
+      tituloFicha: p.etiqueta === 'cliente' ? C.proyecto.cliente : C.proyecto.concepto(p.n),
+    })),
+  };
+}
+const datos = { es: datosLang('es'), en: datosLang('en') };
+---
+
+<div id="estatico">
+  <Portada lang={lang} />
+  <Trabajo lang={lang} />
+  <Bio lang={lang} />
+  <ComoTrabajo lang={lang} />
+  <Contacto lang={lang} />
+</div>
+
+<canvas id="webgl" aria-hidden="true"></canvas>
+<div id="css3d-container" aria-hidden="true"></div>
+<div id="carga" aria-hidden="true"><span id="carga-texto"></span></div>
+<div id="hud"></div>
+
+<script define:vars={{ datos, langInicial: lang }}>
+  window.__VIAJE_CONFIG = { datos, lang: langInicial };
+</script>
+<script>
+  import { iniciar } from '../scripts/viaje/main.js';
+  iniciar();
+</script>

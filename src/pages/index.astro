@@ -1,19 +1,9 @@
 ---
-// Español, en la RAÍZ. Es lo que ya está indexado y no se mueve. El inglés vive
-// en src/pages/en/index.astro; las dos son HTML estático, sin conmutar por JS.
+// Español, en la RAÍZ: es lo indexado y no se mueve. La experiencia 3D con
+// fallback estático vive en Recorrido3D; /en/ es la misma arrancada en inglés.
 import Layout from '../layouts/Layout.astro';
-import Portada from '../components/Portada.astro';
-import Trabajo from '../components/Trabajo.astro';
-import Bio from '../components/Bio.astro';
-import ComoTrabajo from '../components/ComoTrabajo.astro';
-import Contacto from '../components/Contacto.astro';
-
-const lang = 'es' as const;
+import Recorrido3D from '../components/Recorrido3D.astro';
 ---
-<Layout lang={lang}>
-  <Portada lang={lang} />
-  <Trabajo lang={lang} />
-  <Bio lang={lang} />
-  <ComoTrabajo lang={lang} />
-  <Contacto lang={lang} />
+<Layout lang="es">
+  <Recorrido3D lang="es" />
 </Layout>

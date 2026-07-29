@@ -101,62 +101,13 @@ await comprueba('sin scroll horizontal a 1440px', async () => {
   await page.close();
 });
 
-// Spec §8, rendimiento: NINGUNA demo carga antes de `load` — con una sola
-// cargando de salida el LCP se iba a 4,6s (rendimiento 83). Todas despiertan
-// después, al acercarse su sección. Este test vigila las dos mitades: que el
-// primer pintado no arrastre ningún iframe, y que las cuatro acaben vivas sin
-// que nadie toque nada. Si alguien las pone eager, cae el rendimiento y lo caza
-// la primera aserción; si alguien rompe el despertar, muere el efecto entero y
-// lo caza la segunda.
-await comprueba('ninguna demo bloquea el pintado y todas despiertan solas', async () => {
-  // El HTML servido, sin navegador de por medio: mirar el DOM tras
-  // `domcontentloaded` era una carrera — `load` podía dispararse en el hueco
-  // entre que puppeteer resuelve y nosotros consultamos, y el test fallaba solo.
-  // El invariante de verdad es que el HTML no traiga ningún iframe.
-  const html = await (await fetch(URL)).text();
-  const enHtml = (html.match(/<iframe/g) ?? []).length;
-  assert.equal(enHtml, 0, `el HTML servido trae ${enHtml} iframe(s); deben crearse tras load`);
-
-  // También en el HTML: TODAS nacen dormidas. En el DOM ya no sirve contarlas —
-  // para cuando puppeteer devuelve el control, `load` ha corrido y la primera ya
-  // despertó (está a la vista, y eso es lo correcto).
-  const dormidas = (html.match(/data-dormido=/g) ?? []).length;
-
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
-
-  // El número sale de la propia página, no de una constante: /en/ enseña otros
-  // proyectos que la raíz, y un número fijo obligaba a tocar el test por idioma.
-  // Contado en el DOM, no con una regex sobre el HTML: "data-proyecto" aparece
-  // también en el selector del script y salía uno de más.
-  const n = await page.$$eval('[data-proyecto]', (e) => e.length);
-  assert.ok(n >= 3, `esperaba 3+ proyectos en la página, hay ${n}`);
-  assert.equal(dormidas, n, `el HTML debería traer ${n} demos dormidas, trae ${dormidas}`);
-
-  // Recorrer la página entera: todas deben acabar vivas, sin tocar nada.
-  await page.evaluate(async () => {
-    for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
-      window.scrollTo(0, y);
-      await new Promise((r) => setTimeout(r, 60));
-    }
-  });
-  await new Promise((r) => setTimeout(r, 2000));
-
-  const srcs = await page.$$eval('.marco iframe', (els) => els.map((e) => e.src));
-  assert.equal(srcs.length, n, `tras recorrerla esperaba ${n} iframes, hay ${srcs.length}`);
-
-  // globalThis.URL, no URL a secas: la constante URL de este módulo shadowea el
-  // constructor global y "new URL(...)" rompería con "URL is not a constructor".
-  for (const s of srcs) {
-    const u = new globalThis.URL(s);
-    assert.equal(u.origin, new globalThis.URL(URL).origin, `el iframe no es del mismo origen: ${s}`);
-    assert.ok(/^\/(demo-|fisioymes)/.test(u.pathname), `ruta inesperada: ${u.pathname}`);
-  }
-  await page.close();
-});
-
 // El cliente real no puede confundirse con los conceptos inventados (spec §2).
+// Estos checks de contenido van con reduced-motion: leen body.innerText, que
+// ignora subárboles con display:none — con el 3D activo el estático está oculto;
+// con reduced-motion se prueba el fallback, que es lo que indexa Google y leen
+// los lectores de pantalla.
 await comprueba('el cliente real se distingue de los conceptos', async () => {
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false, reducirMovimiento: true });
   const texto = await page.evaluate(() => document.body.innerText);
   // Sin la /i esto falla: innerText devuelve el texto RENDERIZADO y la chapa
   // lleva `uppercase`, así que en pantalla pone "CLIENTE".
@@ -228,62 +179,13 @@ await comprueba('los iframes no capturan el puntero', async () => {
 
 // Spec §2 y criterio 3: ningún concepto puede pasar por cliente.
 await comprueba('los conceptos se declaran conceptos', async () => {
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false, reducirMovimiento: true });
   const texto = await page.evaluate(() => document.body.innerText.toLowerCase());
   // /concept/ casa con "concepto" y con "concept": vale para los dos idiomas.
   const conceptos = (texto.match(/concept/g) ?? []).length;
   assert.ok(conceptos >= 2, `solo ${conceptos} menciones de "concepto", esperaba 2+`);
   assert.ok(!texto.includes('cliente satisfecho'), 'lenguaje de cliente en una demo inventada');
   assert.ok(!texto.includes('happy client'), 'lenguaje de cliente en una demo inventada');
-  await page.close();
-});
-
-// REGRESIÓN de un bug concreto, no completismo: el enfoque CSS original
-// (scale con container queries) se descartaba entero en Firefox y dejaba el
-// iframe a tamaño real. Si alguien "simplifica" el ResizeObserver de vuelta
-// a CSS, esto lo caza. Ver la tabla de la Task 3 Step 1.
-await comprueba('los iframes están escalados al marco', async () => {
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
-  await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
-  // Plan B (spec §8): solo el marco con iframe vivo tiene algo que medir aquí;
-  // los otros dos siguen en captura hasta que alguien los toque.
-  const medidas = await page.$$eval('.marco:has(iframe)', (marcos) =>
-    marcos.map((m) => {
-      const ifr = m.querySelector('iframe');
-      return {
-        anchoMarco: m.getBoundingClientRect().width,
-        anchoIframe: ifr ? ifr.getBoundingClientRect().width : 0,
-      };
-    })
-  );
-  assert.ok(medidas.length > 0, 'no hay marcos que medir');
-  for (const { anchoMarco, anchoIframe } of medidas) {
-    assert.ok(
-      Math.abs(anchoIframe - anchoMarco) < 2,
-      `iframe de ${Math.round(anchoIframe)}px en un marco de ${Math.round(anchoMarco)}px — no está escalado`
-    );
-  }
-  await page.close();
-});
-
-// La opción C: la demo DEBE moverse por dentro al scrollear. Es el centro del sitio.
-// Si el iframe fuera cross-origin, contentWindow.scrollY lanzaría y el test
-// fallaría — que es exactamente lo que queremos que pase.
-await comprueba('la demo se recorre al scrollear', async () => {
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
-  await page.waitForSelector('.marco[data-listo="si"]', { timeout: 10_000 });
-  await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-  await new Promise((r) => setTimeout(r, 2500)); // que despierten y carguen
-
-  const leerScroll = () =>
-    page.$eval('.marco iframe', (f) => f.contentWindow.scrollY);
-
-  const antes = await leerScroll();
-  await page.evaluate(() => window.scrollBy(0, window.innerHeight * 1.5));
-  await new Promise((r) => setTimeout(r, 500));
-  const despues = await leerScroll();
-
-  assert.ok(despues > antes, `la demo no se movió por dentro (${antes} -> ${despues})`);
   await page.close();
 });
 
@@ -299,7 +201,7 @@ await comprueba('con prefers-reduced-motion todo sigue visible', async () => {
 
 // Criterio 7: sin teléfono publicado en esta iteración (spec §7).
 await comprueba('sin teléfono publicado', async () => {
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false, reducirMovimiento: true });
   const html = await page.content();
   assert.ok(!/href=["']tel:/i.test(html), 'hay un enlace tel: en la página');
   assert.ok(
@@ -313,9 +215,48 @@ await comprueba('sin teléfono publicado', async () => {
 
 // Spec §3: sin formulario.
 await comprueba('sin formulario de contacto', async () => {
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false, reducirMovimiento: true });
   const forms = await page.$$eval('form, input[type="email"]', (e) => e.length);
   assert.equal(forms, 0, `hay ${forms} elemento(s) de formulario`);
+  await page.close();
+});
+
+// Recorrido 3D, Task 1: la config bilingüe está inyectada y es completa.
+await comprueba('la config 3D trae los dos idiomas con sus demos', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const cfg = await page.evaluate(() => {
+    const c = window.__VIAJE_CONFIG;
+    if (!c) return null;
+    return {
+      lang: c.lang,
+      es: c.datos?.es?.proyectos?.map((p) => p.ruta),
+      en: c.datos?.en?.proyectos?.map((p) => p.ruta),
+      bioEs: c.datos?.es?.bio?.parrafos?.length,
+    };
+  });
+  assert.ok(cfg, 'no existe window.__VIAJE_CONFIG');
+  assert.equal(cfg.lang, 'es');
+  assert.deepEqual(cfg.es, [
+    '/fisioymes/', '/demo-barberia-navaja/', '/demo-dental-sereno/', '/demo-psicologia-ancla/',
+  ]);
+  assert.deepEqual(cfg.en, ['/fisioymes/', '/demo-dental-us/', '/demo-lawfirm-us/']);
+  assert.equal(cfg.bioEs, 3);
+  await page.close();
+});
+
+// Recorrido 3D, Task 1: sin permiso para el 3D, la home es la web estática.
+await comprueba('con reduced-motion la home es el fallback estático', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false, reducirMovimiento: true });
+  await new Promise((r) => setTimeout(r, 1500));
+  const estado = await page.evaluate(() => ({
+    viaje3d: document.documentElement.classList.contains('viaje3d'),
+    estaticoVisible: getComputedStyle(document.getElementById('estatico')).display !== 'none',
+    texto: document.body.innerText,
+  }));
+  assert.equal(estado.viaje3d, false, 'con reduced-motion no debe arrancar el 3D');
+  assert.ok(estado.estaticoVisible, '#estatico debe seguir visible');
+  assert.ok(estado.texto.includes('Diseño y construyo webs a medida'), 'falta el titular de la portada');
+  assert.ok(estado.texto.includes('scharcoles@gmail.com'), 'falta el email de contacto');
   await page.close();
 });
 

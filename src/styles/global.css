@@ -187,3 +187,39 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   .punto-vivo { animation: late 2s ease-in-out infinite; }
 }
+
+/* ---- Recorrido 3D ----
+   Estático primero: las capas 3D nacen ocultas y es html.viaje3d quien las
+   enseña y apaga #estatico. Si el JS no corre o no da el visto bueno
+   (reduced-motion, sin WebGL), la página es la web estática de siempre. */
+#webgl, #css3d-container, #carga, #hud { display: none; }
+
+html.viaje3d #estatico { display: none; }
+html.viaje3d #webgl { display: block; position: fixed; inset: 0; z-index: 1; }
+html.viaje3d #css3d-container {
+  display: block; position: fixed; inset: 0; z-index: 2;
+  overflow: hidden; pointer-events: none;
+}
+html.viaje3d #carga {
+  display: grid; place-items: end center;
+  position: fixed; inset: 0; z-index: 20;
+  padding-bottom: 12vh;
+  color: var(--color-tenue);
+  font: 500 0.85rem/1.4 var(--font-sans);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+html.viaje3d #carga[aria-hidden="true"] { opacity: 0; }
+html.viaje3d #hud { display: block; position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+
+/* Rim naranja de acento: es un border, NO un box-shadow — box-shadow no
+   pinta su color a través del pipeline 3D de CSS3DRenderer (sale gris). */
+.pantalla-rim {
+  box-sizing: content-box;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--color-fondo);
+  border: 4px solid rgb(255 92 55 / 0.75);
+}
+iframe.demo3d { border: 0; display: block; background: #fff; pointer-events: none; }

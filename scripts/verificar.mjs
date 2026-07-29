@@ -260,6 +260,24 @@ await comprueba('con reduced-motion la home es el fallback estático', async () 
   await page.close();
 });
 
+// Recorrido 3D, Task 2: la escena arranca, pinta y no ensucia la consola.
+await comprueba('el 3D arranca y el estático se retira', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await new Promise((r) => setTimeout(r, 2500));
+  const estado = await page.evaluate(() => ({
+    viaje3d: document.documentElement.classList.contains('viaje3d'),
+    estaticoOculto: getComputedStyle(document.getElementById('estatico')).display === 'none',
+    canvasVisible: getComputedStyle(document.getElementById('webgl')).display !== 'none',
+    fps: window.__fps ?? 0,
+  }));
+  assert.ok(estado.viaje3d, 'falta la clase viaje3d — el 3D no arrancó');
+  assert.ok(estado.estaticoOculto, '#estatico debe ocultarse con el 3D activo');
+  assert.ok(estado.canvasVisible, 'el canvas WebGL debe estar visible');
+  assert.ok(estado.fps > 0, `__fps es ${estado.fps}: el loop no corre`);
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
 await browser.close();
 
 console.log('');

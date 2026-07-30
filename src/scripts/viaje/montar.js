@@ -13,7 +13,10 @@ export async function montarViaje(cfg) {
     // La clase va DESPUÉS de construir la escena: es la señal que oculta el
     // contenido estático, así que solo puede ponerse cuando el 3D ya existe.
     document.documentElement.classList.add('viaje3d');
-    return { escena, cfg };
+    const { crearPantallas } = await import('./pantallas.js');
+    const pantallas = crearPantallas(escena.escenaCSS, cfg.datos[cfg.lang].proyectos);
+    pantallas.esperarCarga(7000); // sin await: la Task 6 gobierna la espera
+    return { escena, cfg, pantallas };
   } catch (error) {
     // Si el renderer no se puede crear pese al sondeo del guardián (contexto
     // perdido, límite de contextos, driver caprichoso), la página se queda

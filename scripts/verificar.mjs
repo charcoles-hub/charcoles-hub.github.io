@@ -310,6 +310,30 @@ await comprueba('si WebGL2 falla la home queda estática y sin errores', async (
   await page.close();
 });
 
+// Recorrido 3D, Task 3: las demos del idioma activo son pantallas CSS3D vivas.
+await comprueba('las demos cuelgan de pantallas CSS3D del mismo origen', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForFunction(() => window.__viaje?.pantallas, { timeout: 15_000 });
+  await page.waitForFunction(() => window.__viaje.pantallas.cargadas(), { timeout: 30_000 });
+  const datos = await page.evaluate(() => {
+    const { iframes } = window.__viaje.pantallas;
+    return {
+      rims: document.querySelectorAll('#css3d-container .pantalla-rim').length,
+      srcs: iframes.map((f) => f.src),
+      pe: iframes.map((f) => getComputedStyle(f).pointerEvents),
+    };
+  });
+  assert.equal(datos.rims, 4, `ES debe tener 4 pantallas, hay ${datos.rims}`);
+  for (const [i, s] of datos.srcs.entries()) {
+    const u = new globalThis.URL(s);
+    assert.equal(u.origin, new globalThis.URL(URL).origin, `iframe ${i} no es del mismo origen`);
+    assert.ok(/^\/(demo-|fisioymes)/.test(u.pathname), `ruta inesperada: ${u.pathname}`);
+  }
+  for (const v of datos.pe) assert.equal(v, 'none', 'el iframe debe tener pointer-events:none');
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
 await browser.close();
 
 console.log('');

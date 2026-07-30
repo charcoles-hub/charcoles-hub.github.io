@@ -24,11 +24,22 @@ const browser = await puppeteer.launch({
   args: ['--no-sandbox', '--disable-dev-shm-usage'],
 });
 
-async function abrir({ ancho = 390, alto = 844, movil = true, reducirMovimiento = false } = {}) {
+async function abrir({ ancho = 390, alto = 844, movil = true, reducirMovimiento = false, romperWebGL = false } = {}) {
   const page = await browser.newPage();
   await page.setViewport({ width: ancho, height: alto, isMobile: movil, deviceScaleFactor: 2 });
   if (reducirMovimiento) {
     await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+  }
+  if (romperWebGL) {
+    // Simula un dispositivo sin WebGL2 usable (GPU capada por el driver):
+    // getContext LANZA, que es el caso peor — devolver null sería más amable.
+    await page.evaluateOnNewDocument(() => {
+      const original = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (tipo, ...resto) {
+        if (tipo === 'webgl2') throw new Error('WebGL2 bloqueado (simulado por el arnés)');
+        return original.call(this, tipo, ...resto);
+      };
+    });
   }
   // Se engancha ANTES de navegar: un error durante el primer pintado no se
   // recupera después.
@@ -167,8 +178,13 @@ await comprueba('hreflang recíprocos y lang correcto', async () => {
 });
 
 // Spec §5: pointer-events:none — sin esto, trampa táctil en móvil.
+// Va con reduced-motion como los checks de contenido: los iframes nacen por
+// IntersectionObserver dentro de #estatico, y con el 3D activo #estatico está
+// oculto y el observador no interseca — hay carrera entre el boot del 3D y el
+// despertar de las demos. En el fallback (lo que toca de verdad un dedo) los
+// iframes existen siempre y la regla se mide donde importa.
 await comprueba('los iframes no capturan el puntero', async () => {
-  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false, reducirMovimiento: true });
   const valores = await page.$$eval('.marco iframe', (els) =>
     els.map((e) => getComputedStyle(e).pointerEvents)
   );
@@ -274,6 +290,22 @@ await comprueba('el 3D arranca y el estático se retira', async () => {
   assert.ok(estado.estaticoOculto, '#estatico debe ocultarse con el 3D activo');
   assert.ok(estado.canvasVisible, 'el canvas WebGL debe estar visible');
   assert.ok(estado.fps > 0, `__fps es ${estado.fps}: el loop no corre`);
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
+// Recorrido 3D, Task 2 (fix de revisión): si WebGL2 no se puede crear — el
+// guardián o el renderer lanzan — la home se queda estática, completa y sin
+// errores. Es la restricción "sin WebGL → fallback estático completo".
+await comprueba('si WebGL2 falla la home queda estática y sin errores', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false, romperWebGL: true });
+  await new Promise((r) => setTimeout(r, 2000));
+  const estado = await page.evaluate(() => ({
+    viaje3d: document.documentElement.classList.contains('viaje3d'),
+    estaticoVisible: getComputedStyle(document.getElementById('estatico')).display !== 'none',
+  }));
+  assert.equal(estado.viaje3d, false, 'con WebGL2 roto no debe arrancar el 3D');
+  assert.ok(estado.estaticoVisible, '#estatico debe seguir visible');
   assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
   await page.close();
 });

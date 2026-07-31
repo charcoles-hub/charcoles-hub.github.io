@@ -409,6 +409,118 @@ await comprueba('la pantalla de carga monta la escena con progreso real', async 
   await page.close();
 });
 
+// Recorrido 3D, Task 7: el HUD cuenta cada parada y la bio se revela por tramos.
+await comprueba('el HUD muestra el texto de cada parada', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForFunction(() => window.__viaje?.cargaCompleta?.(), { timeout: 30_000 });
+
+  const panel = () =>
+    page.evaluate(() => {
+      const p = document.querySelector('.hud-panel.visible');
+      return p ? p.innerText : '';
+    });
+
+  // Héroe: subtítulo y la pista de scroll.
+  const hero = await panel();
+  assert.ok(hero.includes('Estáticas, rápidas'), `el héroe no muestra el subtítulo: "${hero}"`);
+
+  // Parada de proyecto: ficha de Fisioymés con su nota de cliente y el enlace.
+  await page.evaluate(() => window.__galeria.setScroll(window.__galeria.segmentoMidY('proyecto-0')));
+  await new Promise((r) => setTimeout(r, 1500));
+  const p0 = await panel();
+  assert.ok(p0.includes('Fisioymés'), `falta el nombre del proyecto: "${p0}"`);
+  assert.ok(p0.includes('Encargo real, en producción'), `falta la nota de cliente: "${p0}"`);
+  const enlace = await page.$eval('.hud-panel.visible a', (a) => a.href);
+  assert.ok(enlace.includes('/fisioymes/'), `el enlace debería abrir la demo real: ${enlace}`);
+
+  // Bio: empieza con 1 párrafo visible y acaba con 3.
+  const bioVisibles = async (frac) => {
+    await page.evaluate((f) => {
+      const l = window.__galeria.limites().find((s) => s.id === 'bio');
+      window.__galeria.setScroll(l.start + (l.end - l.start) * f);
+    }, frac);
+    await new Promise((r) => setTimeout(r, 1500));
+    return page.$$eval('.hud-panel.visible [data-parrafo].visible', (e) => e.length);
+  };
+  assert.equal(await bioVisibles(0.05), 1, 'al entrar en bio solo se ve el primer párrafo');
+  assert.equal(await bioVisibles(0.95), 3, 'al salir de bio se ven los tres párrafos');
+
+  // Contacto: el email como CTA.
+  await page.evaluate(() => window.__galeria.setScroll(window.__galeria.totalPx()));
+  await new Promise((r) => setTimeout(r, 1500));
+  const mail = await page.$eval('.hud-panel.visible a', (a) => a.href);
+  assert.ok(mail.startsWith('mailto:scharcoles@gmail.com'), `CTA inesperado: ${mail}`);
+
+  // Barra superior con el toggle.
+  const botones = await page.$$eval('.hud-top button[data-idioma]', (b) => b.map((x) => x.dataset.idioma));
+  assert.deepEqual(botones.sort(), ['en', 'es']);
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
+// Recorrido 3D, Task 8: los titulares de sección flotan en la escena.
+await comprueba('los titulares flotan en CSS3D', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForFunction(() => window.__viaje?.cargaCompleta?.(), { timeout: 30_000 });
+  const titulares = await page.$$eval('#css3d-container .titular3d', (els) =>
+    els.map((e) => e.textContent.trim())
+  );
+  assert.equal(titulares.length, 7, `ES: hero + 4 proyectos + bio + contacto = 7, hay ${titulares.length}`);
+  assert.ok(titulares.some((t) => t.includes('Diseño y construyo webs a medida')), 'falta el titular del héroe');
+  assert.ok(titulares.some((t) => t.includes('Fisioterapia')), 'falta el titular de Fisioymés');
+  assert.ok(titulares.some((t) => t.includes('quien está hablando contigo')), 'falta el titular de bio');
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
+// Recorrido 3D, Task 9: el toggle cambia textos y demos sin recargar.
+await comprueba('el toggle ES/EN reconstruye el viaje en vivo', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForFunction(() => window.__viaje?.cargaCompleta?.(), { timeout: 30_000 });
+
+  // Marcador anti-recarga: si la página navegara, esto desaparecería.
+  await page.evaluate(() => { window.__marcaAntiRecarga = 1; });
+  await page.evaluate(() => window.__galeria.setScroll(window.__galeria.segmentoMidY('proyecto-1')));
+  await new Promise((r) => setTimeout(r, 1200));
+  const fracAntes = await page.evaluate(() => scrollY / window.__galeria.totalPx());
+
+  await page.click('button[data-idioma="en"]');
+  await page.waitForFunction(() => window.__viaje.pantallas.iframes.length === 3, { timeout: 10_000 });
+  await new Promise((r) => setTimeout(r, 1200));
+
+  const estado = await page.evaluate(() => ({
+    marca: window.__marcaAntiRecarga,
+    lang: document.documentElement.lang,
+    titulo: document.title,
+    rutas: window.__viaje.pantallas.iframes.map((f) => new URL(f.src).pathname),
+    fracDespues: scrollY / window.__galeria.totalPx(),
+    titulares: document.querySelectorAll('#css3d-container .titular3d').length,
+  }));
+  assert.equal(estado.marca, 1, 'la página se recargó al cambiar de idioma');
+  assert.equal(estado.lang, 'en');
+  assert.ok(estado.titulo.includes('Web designer'), `el <title> no cambió: ${estado.titulo}`);
+  assert.deepEqual(estado.rutas, ['/fisioymes/', '/demo-dental-us/', '/demo-lawfirm-us/']);
+  assert.equal(estado.titulares, 6, `EN: hero + 3 proyectos + bio + contacto = 6, hay ${estado.titulares}`);
+  assert.ok(
+    Math.abs(estado.fracDespues - fracAntes) < 0.05,
+    `el progreso saltó: ${fracAntes.toFixed(3)} -> ${estado.fracDespues.toFixed(3)}`
+  );
+
+  // El panel repinta en inglés: nos anclamos a la parada de proyecto 1 (EN:
+  // dental US), porque el progreso fraccional NO garantiza caer en el mismo
+  // tipo de segmento — los totales en vh difieren entre idiomas.
+  await page.evaluate(() => window.__galeria.setScroll(window.__galeria.segmentoMidY('proyecto-1')));
+  await new Promise((r) => setTimeout(r, 1500));
+  const panel = await page.evaluate(() => document.querySelector('.hud-panel.visible')?.innerText ?? '');
+  assert.ok(/dental|Dental/.test(panel), `el panel no está en inglés: "${panel}"`);
+
+  // Y vuelta: ES recupera sus 4 pantallas sin errores.
+  await page.click('button[data-idioma="es"]');
+  await page.waitForFunction(() => window.__viaje.pantallas.iframes.length === 4, { timeout: 10_000 });
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
 await browser.close();
 
 console.log('');

@@ -17,8 +17,15 @@ const { lang } = Astro.props;
 // cruzan define:vars — se pre-calculan aquí por proyecto.
 function datosLang(l: Lang) {
   const C = contenido[l];
+  // El héroe flotante lleva la primera frase del pitch; el HUD, la segunda.
+  // Si algún día site.descripcion cambia de forma, esto revienta aquí y no en
+  // el navegador — es a propósito.
+  const [titularHero, subHero] = C.site.descripcion.split('. ');
+  if (!subHero) throw new Error(`site.descripcion (${l}) necesita dos frases: titular flotante + subtítulo HUD`);
   return {
     site: C.site,
+    titularHero: titularHero + '.',
+    subHero,
     portadaPie: C.portadaPie,
     bio: C.bio,
     metodo: C.metodo,

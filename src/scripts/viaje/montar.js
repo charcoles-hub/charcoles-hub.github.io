@@ -1,6 +1,6 @@
 // Orquestador del viaje. Lo carga main.js con import dinámico SOLO cuando el
 // guardián da el visto bueno: three.js no pesa en el primer pintado del
-// fallback estático. Las tasks siguientes van añadiendo piezas aquí.
+// fallback estático.
 import { crearEscena } from './escena.js';
 import { IFRAME_H } from './pantallas.js';
 
@@ -14,13 +14,17 @@ export async function montarViaje(cfg) {
     );
     const { crearPantallas } = await import('./pantallas.js');
     const { crearRecorrido } = await import('./recorrido.js');
+    const { crearHud } = await import('./hud.js');
+    const { crearTitulares } = await import('./titulares.js');
+    const { montarEscena } = await import('./carga.js');
 
-    const proyectos = cfg.datos[cfg.lang].proyectos;
-    const recorrido = crearRecorrido(proyectos, escena.camera);
-    const pantallas = crearPantallas(escena.escenaCSS, proyectos);
+    let lang = cfg.lang;
+    const recorrido = crearRecorrido(cfg.datos[lang].proyectos, escena.camera);
     // stops trae también bio y contacto (sin pantalla): se filtra o colocar
     // escribe más allá del array de objetos.
+    let pantallas = crearPantallas(escena.escenaCSS, cfg.datos[lang].proyectos);
     pantallas.colocar(recorrido.stops.filter((s) => s.tipo === 'proyecto'));
+    let titulares = crearTitulares(escena.escenaCSS, recorrido, cfg.datos[lang]);
     escena.setPuntos(recorrido.zMin(), recorrido.zMax());
 
     // La clase va DESPUÉS de construir la escena: es la señal que oculta el
@@ -39,6 +43,41 @@ export async function montarViaje(cfg) {
       scrollTarget = Math.min(recorrido.totalPx(), scrollTarget);
     });
 
+    const hud = crearHud({
+      root: document.getElementById('hud'),
+      datos: cfg.datos,
+      langInicial: lang,
+      onCambiarIdioma: cambiarIdioma,
+    });
+
+    // Toggle ES/EN en vivo: reconstruye paradas, pantallas, titulares y HUD
+    // conservando el progreso fraccional del scroll (spec §4).
+    async function cambiarIdioma(nuevo) {
+      if (nuevo === lang) return;
+      const frac = recorrido.totalPx() ? scrollY / recorrido.totalPx() : 0;
+      lang = nuevo;
+      document.documentElement.lang = lang;
+      document.title = cfg.datos[lang].site.titulo;
+
+      titulares.destruir();
+      pantallas.destruir();
+
+      recorrido.reconstruir(cfg.datos[lang].proyectos);
+      escena.setPuntos(recorrido.zMin(), recorrido.zMax());
+
+      pantallas = crearPantallas(escena.escenaCSS, cfg.datos[lang].proyectos);
+      pantallas.colocar(recorrido.stops.filter((s) => s.tipo === 'proyecto'));
+      titulares = crearTitulares(escena.escenaCSS, recorrido, cfg.datos[lang]);
+
+      hud.setIdioma(lang);
+      // Conserva el progreso fraccional: mismo punto del viaje, otra longitud.
+      scrollTo(0, frac * recorrido.totalPx());
+      scrollTarget = scrollY;
+      // Las demos nuevas cargan en segundo plano; si una parada llega antes que
+      // su demo, la pantalla espera en negro con el rim, igual que en el montaje.
+      pantallas.esperarCarga(7000);
+    }
+
     escena.enCadaFrame(() => {
       scrollSmooth += (scrollTarget - scrollSmooth) * LERP_SCROLL;
       const { seg, t } = recorrido.aplicar(scrollSmooth);
@@ -51,6 +90,7 @@ export async function montarViaje(cfg) {
           pantallas.iframes[seg.stopIndex].contentWindow.scrollTo(0, t * sobra);
         } catch { /* fisioymes es cross-origin en producción: se degrada sin scroll interno */ }
       }
+      hud.actualizar(seg, t);
     });
 
     // API para el arnés de verificación.
@@ -67,11 +107,19 @@ export async function montarViaje(cfg) {
       encuadreParada: (i) => recorrido.encuadreParada(i, escena.camera),
     };
 
-    const { montarEscena } = await import('./carga.js');
     let completa = false;
-    montarEscena({ escena, pantallas, nTotal: proyectos.length }).then(() => { completa = true; });
+    montarEscena({ escena, pantallas, nTotal: cfg.datos[lang].proyectos.length }).then(() => { completa = true; });
 
-    return { escena, cfg, pantallas, recorrido, cargaCompleta: () => completa };
+    return {
+      escena,
+      cfg,
+      recorrido,
+      hud,
+      cambiarIdioma,
+      cargaCompleta: () => completa,
+      get pantallas() { return pantallas; },
+      get titulares() { return titulares; },
+    };
   } catch (error) {
     // Si el renderer no se puede crear pese al sondeo del guardián (contexto
     // perdido, límite de contextos, driver caprichoso), la página se queda

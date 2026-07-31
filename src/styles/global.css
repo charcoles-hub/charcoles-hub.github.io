@@ -223,3 +223,68 @@ html.viaje3d #hud { display: block; position: fixed; inset: 0; z-index: 10; poin
   border: 4px solid rgb(255 92 55 / 0.75);
 }
 iframe.demo3d { border: 0; display: block; background: #fff; pointer-events: none; }
+
+/* ---- HUD del recorrido ---- */
+.hud-top {
+  position: absolute; top: 0; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.1rem 1.4rem;
+  pointer-events: none;
+}
+.hud-marca { color: var(--color-tenue); font-size: 0.85rem; letter-spacing: 0.04em; }
+.hud-idiomas { display: flex; gap: 0.35rem; pointer-events: auto; }
+.hud-idiomas button {
+  background: none; border: 1px solid var(--color-linea); border-radius: 4px;
+  color: var(--color-tenue); font: 600 0.8rem/1 var(--font-sans);
+  padding: 0.45rem 0.6rem; cursor: pointer;
+}
+.hud-idiomas button[data-activo] { color: var(--color-tinta); border-color: var(--color-acento); }
+
+.hud-panel {
+  position: absolute; left: 1.4rem; bottom: 1.6rem;
+  max-width: min(30rem, calc(100vw - 2.8rem));
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
+}
+.hud-panel.visible { opacity: 1; transform: none; pointer-events: auto; }
+.hud-ficha { color: var(--color-acento); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.hud-vivo { color: var(--color-tenue); margin-left: 0.5em; }
+.hud-nombre { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+.hud-rubro { color: var(--color-medio); margin-top: 0.2rem; }
+.hud-desc { color: var(--color-tinta); margin-top: 0.7rem; max-width: 42ch; }
+.hud-nota { color: var(--color-tenue); font-size: 0.85rem; margin-top: 0.7rem; }
+.hud-pista { color: var(--color-tenue); margin-top: 0.7rem; }
+.hud-sub { font-size: 1.1rem; max-width: 34ch; }
+.hud-abrir {
+  display: inline-block; margin-top: 1rem; color: var(--color-acento);
+  font-weight: 600; text-decoration: none; border-bottom: 1px solid currentColor;
+}
+.hud-panel [data-parrafo] { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.hud-panel [data-parrafo].visible { opacity: 1; transform: none; }
+
+@media (max-width: 700px) {
+  .hud-panel { left: 1rem; right: 1rem; bottom: 1.2rem; max-width: none; }
+  .hud-desc { max-width: none; }
+}
+
+/* ---- Titulares flotantes (CSS3D) ----
+   Ancho fijo en px de mundo: es lo que CSS3D proyecta; con porcentajes el
+   texto se escapa de la composición. */
+.titular3d {
+  width: 760px;
+  color: var(--color-tinta);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 64px;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  pointer-events: none;
+}
+.titular3d--hero { width: 900px; font-size: 88px; text-align: center; }
+.titular3d--proyecto { text-align: center; }
+.titular3d--proyecto strong { display: block; font-size: 44px; }
+.titular3d--proyecto span {
+  display: block; margin-top: 8px;
+  color: var(--color-medio); font-size: 24px; font-weight: 500; letter-spacing: 0;
+}

@@ -334,6 +334,52 @@ await comprueba('las demos cuelgan de pantallas CSS3D del mismo origen', async (
   await page.close();
 });
 
+// Recorrido 3D, Task 4: el scroll gobierna la cámara y la lectura scrollea la demo.
+await comprueba('el recorrido viaje/lectura funciona', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForFunction(() => window.__galeria?.demosLoaded?.(), { timeout: 30_000 });
+  const limites = await page.evaluate(() => window.__galeria.limites());
+  const lecturasProyecto = limites.filter((l) => l.tipo === 'lectura' && l.id?.startsWith('proyecto'));
+  assert.equal(lecturasProyecto.length, 4, `ES debe tener 4 lecturas de proyecto, hay ${lecturasProyecto.length}`);
+
+  // Cámara en movimiento: al principio y a mitad de la primera parada difiere.
+  const camAlInicio = await page.evaluate(() => window.__galeria.camPos());
+  await page.evaluate((y) => window.__galeria.setScroll(y), await page.evaluate(() => window.__galeria.paradaMidY(0)));
+  await new Promise((r) => setTimeout(r, 1500)); // el lerp tarda unos frames
+  const camEnParada = await page.evaluate(() => window.__galeria.camPos());
+  assert.notDeepEqual(camEnParada, camAlInicio, 'la cámara no se movió con el scroll');
+
+  // Lectura: la demo scrollea por dentro en su parada.
+  const scrollDemo = await page.evaluate(() => window.__galeria.getDemoScrollY(0));
+  assert.ok(scrollDemo > 200, `la demo 0 debería ir scrolleada por dentro, va por ${scrollDemo}`);
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
+// Recorrido 3D, Task 5: el viaje termina en bio y contacto, con ids estables.
+await comprueba('el recorrido tiene paradas de héroe, bio y contacto', async () => {
+  const page = await abrir({ ancho: 1440, alto: 900, movil: false });
+  await page.waitForFunction(() => window.__galeria?.limites, { timeout: 15_000 });
+  const ids = await page.evaluate(() => window.__galeria.limites().map((l) => l.id));
+  assert.deepEqual(ids, [
+    'hero',
+    'viaje-a-proyecto-0', 'proyecto-0',
+    'viaje-a-proyecto-1', 'proyecto-1',
+    'viaje-a-proyecto-2', 'proyecto-2',
+    'viaje-a-proyecto-3', 'proyecto-3',
+    'viaje-a-bio', 'bio',
+    'viaje-a-contacto', 'contacto',
+  ], `secuencia de segmentos inesperada: ${ids.join(', ')}`);
+
+  // Al final del todo, la cámara está en la parada de contacto (z ≈ -5*SPACING).
+  await page.evaluate(() => window.__galeria.setScroll(window.__galeria.totalPx()));
+  await new Promise((r) => setTimeout(r, 1500));
+  const cam = await page.evaluate(() => window.__galeria.camPos());
+  assert.ok(cam.z < -6000, `la cámara debería estar al fondo del recorrido, z=${Math.round(cam.z)}`);
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
 await browser.close();
 
 console.log('');

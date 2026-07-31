@@ -521,6 +521,63 @@ await comprueba('el toggle ES/EN reconstruye el viaje en vivo', async () => {
   await page.close();
 });
 
+// Recorrido 3D, Task 10: /en/ es la misma experiencia arrancada en inglés.
+await comprueba('/en/ arranca en inglés con sus 3 demos', async () => {
+  const res = await fetch(new globalThis.URL('en/', URL));
+  assert.equal(res.status, 200, '/en/ debería responder 200');
+
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1440, height: 900 });
+  page.errores = [];
+  page.on('pageerror', (e) => page.errores.push(String(e)));
+  page.on('console', (m) => {
+    if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) page.errores.push(m.text());
+  });
+  await page.goto(new globalThis.URL('en/', URL).href, { waitUntil: 'networkidle2', timeout: 60_000 });
+  await page.waitForFunction(() => window.__viaje?.cargaCompleta?.(), { timeout: 30_000 });
+
+  const estado = await page.evaluate(() => ({
+    langCfg: window.__VIAJE_CONFIG.lang,
+    langHtml: document.documentElement.lang,
+    titulo: document.title,
+    rims: document.querySelectorAll('#css3d-container .pantalla-rim').length,
+    hero: document.querySelector('.hud-panel.visible')?.innerText ?? '',
+  }));
+  assert.equal(estado.langCfg, 'en');
+  assert.equal(estado.langHtml, 'en');
+  assert.ok(estado.titulo.includes('Web designer'), `título inesperado: ${estado.titulo}`);
+  assert.equal(estado.rims, 3, `EN debe tener 3 pantallas, hay ${estado.rims}`);
+  assert.ok(estado.hero.includes('Static, fast'), `el héroe debería estar en inglés: "${estado.hero}"`);
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
+// Recorrido 3D, Task 11: las pantallas encuadran en móvil y en escritorio.
+// Ojo con los umbrales: en vertical la parada encuadra por ANCHO (una pantalla
+// 1440×900 en un viewport 390×844 no puede llenar también el alto — es
+// geometría, no un defecto), así que el mínimo de alto es menor en móvil.
+for (const vp of [
+  { nombre: 'móvil', ancho: 390, alto: 844, movil: true, min: 0.15 },
+  { nombre: 'escritorio', ancho: 1440, alto: 900, movil: false, min: 0.5 },
+]) {
+  await comprueba(`encuadre de paradas en ${vp.nombre}`, async () => {
+    const page = await abrir(vp);
+    await page.waitForFunction(() => window.__viaje?.cargaCompleta?.(), { timeout: 30_000 });
+    const n = await page.evaluate(() => window.__viaje.pantallas.iframes.length);
+    for (let i = 0; i < n; i++) {
+      await page.evaluate((k) => window.__galeria.setScroll(window.__galeria.paradaMidY(k)), i);
+      await new Promise((r) => setTimeout(r, 1500));
+      const frac = await page.evaluate((k) => window.__galeria.encuadreParada(k), i);
+      assert.ok(
+        frac > vp.min && frac < 1.15,
+        `parada ${i}: la pantalla ocupa el ${(frac * 100).toFixed(0)}% del alto — fuera de encuadre`
+      );
+    }
+    assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+    await page.close();
+  });
+}
+
 await browser.close();
 
 console.log('');

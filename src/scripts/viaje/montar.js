@@ -67,8 +67,11 @@ export async function montarViaje(cfg) {
       encuadreParada: (i) => recorrido.encuadreParada(i, escena.camera),
     };
 
-    pantallas.esperarCarga(7000); // sin await: la pantalla de carga (Task 6) gobierna la espera
-    return { escena, cfg, pantallas, recorrido };
+    const { montarEscena } = await import('./carga.js');
+    let completa = false;
+    montarEscena({ escena, pantallas, nTotal: proyectos.length }).then(() => { completa = true; });
+
+    return { escena, cfg, pantallas, recorrido, cargaCompleta: () => completa };
   } catch (error) {
     // Si el renderer no se puede crear pese al sondeo del guardián (contexto
     // perdido, límite de contextos, driver caprichoso), la página se queda

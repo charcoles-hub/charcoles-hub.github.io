@@ -380,6 +380,35 @@ await comprueba('el recorrido tiene paradas de héroe, bio y contacto', async ()
   await page.close();
 });
 
+// Recorrido 3D, Task 6: la carga muestra progreso real y desemboca en el viaje.
+await comprueba('la pantalla de carga monta la escena con progreso real', async () => {
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1440, height: 900 });
+  page.errores = [];
+  page.on('pageerror', (e) => page.errores.push(String(e)));
+  // domcontentloaded, no networkidle: hay que pillar la carga EN CURSO.
+  await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+
+  await page.waitForFunction(
+    () => document.getElementById('carga') && getComputedStyle(document.getElementById('carga')).display !== 'none',
+    { timeout: 15_000 }
+  );
+  const textoDurante = await page.evaluate(() => document.getElementById('carga-texto').textContent);
+  assert.ok(/montando/i.test(textoDurante), `el indicador no muestra montaje: "${textoDurante}"`);
+
+  await page.waitForFunction(() => window.__viaje?.cargaCompleta?.(), { timeout: 30_000 });
+  const estadoFinal = await page.evaluate(() => ({
+    oculta: document.getElementById('carga').getAttribute('aria-hidden') === 'true',
+    montadas: document.querySelectorAll('.pantalla-rim.montada').length,
+    scrollLibre: getComputedStyle(document.documentElement).overflow !== 'hidden',
+  }));
+  assert.ok(estadoFinal.oculta, 'la capa de carga debe quedar aria-hidden al terminar');
+  assert.equal(estadoFinal.montadas, 4, `las 4 pantallas deben quedar montadas, hay ${estadoFinal.montadas}`);
+  assert.ok(estadoFinal.scrollLibre, 'el scroll sigue bloqueado tras la carga');
+  assert.deepEqual(page.errores, [], `errores en consola:\n       ${page.errores.join('\n       ')}`);
+  await page.close();
+});
+
 await browser.close();
 
 console.log('');

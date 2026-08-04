@@ -53,7 +53,10 @@ export async function montarViaje(cfg) {
     // Toggle ES/EN en vivo: reconstruye paradas, pantallas, titulares y HUD
     // conservando el progreso fraccional del scroll (spec §4).
     async function cambiarIdioma(nuevo) {
-      if (nuevo === lang) return;
+      // Durante el montaje inicial el toggle se ignora: montarEscena ya capturó
+      // los iframes viejos y destruirlos aplazaría el fin de la carga al
+      // timeout, con el scroll bloqueado (hallazgo de la revisión final).
+      if (nuevo === lang || !completa) return;
       const frac = recorrido.totalPx() ? scrollY / recorrido.totalPx() : 0;
       lang = nuevo;
       document.documentElement.lang = lang;
@@ -108,7 +111,11 @@ export async function montarViaje(cfg) {
     };
 
     let completa = false;
-    montarEscena({ escena, pantallas, nTotal: cfg.datos[lang].proyectos.length }).then(() => { completa = true; });
+    montarEscena({ escena, pantallas, nTotal: cfg.datos[lang].proyectos.length })
+      .then(() => { completa = true; })
+      // Hoy no hay camino de rechazo, pero si algún día lo hubiera, la regla es
+      // "sin errores en consola": se degrada a viaje sin montaje, no a unhandled.
+      .catch((e) => { completa = true; window.__viajeError = e; });
 
     return {
       escena,

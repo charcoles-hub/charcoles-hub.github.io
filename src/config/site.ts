@@ -9,134 +9,80 @@ export type Lang = 'es' | 'en';
 export const rutas: Record<Lang, string> = { es: '/', en: '/en/' };
 export const ogLocale: Record<Lang, string> = { es: 'es_ES', en: 'en_US' };
 
+/** Contacto real. El wa.me lleva el prefijo, el tel: también. */
+export const TELEFONO = { humano: '620 650 597', tel: 'tel:+34620650597', wa: 'https://wa.me/34620650597' };
+export const CALCULADORA = 'https://charcoles-hub.github.io/presupuesto-web/';
+
 export interface Proyecto {
-  n: string;
   nombre: string;
   rubro: string;
   descripcion: string;
   url: string;
-  /**
-   * Ruta relativa a la demo. ES LO QUE USA EL IFRAME, y tiene que ser relativa:
-   * en producción y bajo un dominio propio resuelve al mismo origen, que es lo
-   * que permite scrollear la demo por dentro. Con la URL absoluta se rompería.
-   */
-  ruta: string;
-  /** SIEMPRE 'concepto' mientras el negocio sea inventado. Ver spec §2. */
-  etiqueta: 'concepto' | 'cliente';
   /** Slug del repo. Nombra la captura en `src/assets/posters/<slug>.png`. */
   slug: string;
-  /**
-   * Alto real de la demo renderizada a 1440px de ancho. MEDIDO, no estimado
-   * (2026-07-16; las dos demos US, 2026-07-18. Ver `scripts/medir-demos.mjs`).
-   * De aquí sale cuánto scroll necesita cada proyecto para recorrerse entero.
-   * Si retocas una demo, vuelve a medir: un número obsoleto deja el recorrido
-   * corto o pasado.
-   */
-  alto: number;
 }
 
 /**
- * Cuántos píxeles de demo avanzan por cada píxel de scroll de la página.
- * ESTE ES EL MANDO DE CALIBRACIÓN del efecto: más alto = recorrido más
- * rápido y página más corta; más bajo = más pausado y página más larga.
- * 3 es el punto de partida, no un valor sagrado. Se ajusta MIRÁNDOLO
- * (Task 4 Step 6), que es la única forma de saber si el ritmo funciona.
+ * El destacado lleva además el alto real de su captura a página completa
+ * (`src/assets/posters/fisioymes-full.png`, 1440px de ancho): de ahí sale
+ * cuánto recorrido tiene el scrub del marco. Si se recaptura, se re-mide.
  */
-export const VELOCIDAD = 3;
+export interface Destacado extends Proyecto {
+  alto: number;
+}
 
 // --- Proyectos ---------------------------------------------------------------
-// Los mismos negocios, contados en cada idioma. La ficha (slug, ruta, alto,
-// etiqueta) es la misma; lo que cambia es el texto. La versión inglesa enseña
-// las dos demos hechas para mercado US en vez de las tres españolas: el cliente
-// real va primero en las dos, porque es la única prueba de trabajo pagado.
 
-const fisioymesES: Proyecto = {
-  // EL ÚNICO CLIENTE REAL. Va primero y con etiqueta 'cliente' — ver spec §2.
-  // Sergio confirmó el 2026-07-16 que Fisioymés dio permiso para publicarla.
-  // Sin ese permiso, esto NO puede llevar su marca: se anonimiza o se saca.
-  n: '01',
+// EL ÚNICO CLIENTE REAL. Va primero, destacado y con chapa de cliente.
+// Sergio confirmó el 2026-07-16 que Fisioymés dio permiso para publicarla.
+// Sin ese permiso, esto NO puede llevar su marca: se anonimiza o se saca.
+// Todo lo demás son conceptos y se declaran conceptos. Esta regla no se toca.
+const fisioymes: Destacado = {
   nombre: 'Fisioymés',
   rubro: 'Fisioterapia · Sant Cugat del Vallès',
   descripcion:
     'Vinieron con una queja concreta: en el móvil su web era todo letra y scroll sin fin. La rehíce entera en catalán y castellano, con las lesiones en rejilla y los tratamientos en fichas — y sin tocarles el sistema de reservas que ya usaban.',
   slug: 'fisioymes',
   url: 'https://charcoles-hub.github.io/fisioymes/',
-  ruta: '/fisioymes/',
-  alto: 4687,
-  etiqueta: 'cliente',
+  alto: 4794,
 };
 
-const proyectosES: Proyecto[] = [
-  fisioymesES,
-  {
-    n: '02',
-    nombre: 'Navaja',
-    rubro: 'Barbería',
-    descripcion:
-      'Una barbería de barrio con alma de taberna. La carta se lee como un menú, el poste gira de verdad y el latón pesa.',
-    slug: 'demo-barberia-navaja',
-    url: 'https://charcoles-hub.github.io/demo-barberia-navaja/',
-    ruta: '/demo-barberia-navaja/',
-    alto: 4229,
-    etiqueta: 'concepto',
-  },
-  {
-    n: '03',
-    nombre: 'Sereno',
-    rubro: 'Clínica dental',
-    descripcion:
-      'Ir al dentista da respeto. La web no tenía por qué darlo también: petróleo y porcelana en vez del cian de siempre, y el tratamiento explicado como quien te lo cuenta sentado.',
-    slug: 'demo-dental-sereno',
-    url: 'https://charcoles-hub.github.io/demo-dental-sereno/',
-    ruta: '/demo-dental-sereno/',
-    alto: 6601,
-    etiqueta: 'concepto',
-  },
-  {
-    n: '04',
-    nombre: 'Ancla',
-    rubro: 'Psicología',
-    descripcion:
-      'Pedir ayuda cuesta. Aquí todo baja el pulso: ciruela y malva, mucho aire, y ni una sola foto de alguien mirando al horizonte.',
-    slug: 'demo-psicologia-ancla',
-    url: 'https://charcoles-hub.github.io/demo-psicologia-ancla/',
-    ruta: '/demo-psicologia-ancla/',
-    alto: 5224,
-    etiqueta: 'concepto',
-  },
+const demo = (slug: string, nombre: string, rubro: string, descripcion: string): Proyecto => ({
+  nombre,
+  rubro,
+  descripcion,
+  slug,
+  url: `https://charcoles-hub.github.io/${slug}/`,
+});
+
+const demosES: Proyecto[] = [
+  demo('demo-barberia-navaja', 'Navaja', 'Barbería',
+    'Una barbería de barrio con alma de taberna: la carta se lee como un menú y el latón pesa.'),
+  demo('demo-dental-sereno', 'Sereno', 'Clínica dental',
+    'Ir al dentista da respeto. La web no tenía por qué darlo también: petróleo y porcelana en vez del cian de siempre.'),
+  demo('demo-veterinaria-manada', 'Manada', 'Veterinaria · Esplugues',
+    'Como en casa, con quirófano: urgencias 24 h contadas sin dramatismo y la cita a un toque.'),
+  demo('demo-fisio-vital', 'Fisio Vital', 'Fisioterapia · Valencia',
+    'La primera valoración sin compromiso como puerta de entrada, y cada lesión explicada en cristiano.'),
+  demo('demo-gestoria-cauce', 'Cauce', 'Gestoría · Sant Joan Despí',
+    'Fiscal, laboral y contable sin sustos ni jerga: lo que una gestoría promete de palabra, puesto por escrito.'),
+  demo('demo-psicologia-ancla', 'Ancla', 'Psicología',
+    'Pedir ayuda cuesta. Aquí todo baja el pulso: ciruela, malva y ni una foto de alguien mirando al horizonte.'),
+  demo('demo-cafe-aurora', 'Aurora', 'Cafetería · Sevilla',
+    'Tu café de cada mañana, hecho con calma. Una carta corta que apetece leer entera.'),
+  demo('demo-gimnasio-pulso', 'Pulso', 'Gimnasio · Bilbao',
+    'Entrenar con propósito, sin fotos de stock sudando: horarios claros y precios a la vista.'),
+  demo('demo-arquitectos-traza', 'Traza', 'Arquitectura · Sant Just Desvern',
+    'Un estudio que enseña obra, no palabrería: vivienda, reforma integral y dirección de obra.'),
+  demo('demo-autoescuela-traza', 'Traza', 'Autoescuela · Sant Just Desvern',
+    'El mismo profesor de principio a fin, y la primera clase reservada desde la propia web.'),
 ];
 
-const proyectosEN: Proyecto[] = [
-  {
-    ...fisioymesES,
-    rubro: 'Physical therapy · Barcelona, Spain',
-    descripcion:
-      'They came with one specific complaint: on a phone, their site was all text and endless scrolling. I rebuilt it from scratch in Catalan and Spanish, with injuries in a grid and treatments on cards — and without touching the booking system they already used.',
-  },
-  {
-    n: '02',
-    nombre: 'Ridgeline Family Dental',
-    rubro: 'Dentistry · Boise, Idaho',
-    descripcion:
-      'Most dental sites hide the price. This one leads with it: a flat first visit, the insurance plans spelled out, and starting prices published on the page instead of behind a phone call.',
-    slug: 'demo-dental-us',
-    url: 'https://charcoles-hub.github.io/demo-dental-us/',
-    ruta: '/demo-dental-us/',
-    alto: 7354,
-    etiqueta: 'concepto',
-  },
-  {
-    n: '03',
-    nombre: 'Hartwell & Vance',
-    rubro: 'Injury law · Charlotte, North Carolina',
-    descripcion:
-      'A personal injury firm has seconds to be believed. Case results up front with the county and the year, practice areas that say what actually happens, and the disclaimers where a real firm has to put them.',
-    slug: 'demo-lawfirm-us',
-    url: 'https://charcoles-hub.github.io/demo-lawfirm-us/',
-    ruta: '/demo-lawfirm-us/',
-    alto: 7262,
-    etiqueta: 'concepto',
-  },
+const demosEN: Proyecto[] = [
+  demo('demo-dental-us', 'Ridgeline Family Dental', 'Dentistry · Boise, Idaho',
+    'Most dental sites hide the price. This one leads with it: a flat first visit and starting prices on the page.'),
+  demo('demo-lawfirm-us', 'Hartwell & Vance', 'Injury law · Charlotte, NC',
+    'A personal injury firm has seconds to be believed: case results up front, with the county and the year.'),
 ];
 
 // --- Copy --------------------------------------------------------------------
@@ -146,35 +92,58 @@ export const contenido = {
     site: {
       nombre: 'Sergio García Ortiz',
       rol: 'Diseñador web',
-      lugar: 'Barcelona',
-      titulo: 'Sergio García Ortiz — Diseñador web en Barcelona',
+      lugar: 'Cornellà de Llobregat · Barcelona',
+      titulo: 'Sergio García Ortiz — Diseñador web en Cornellà de Llobregat, Barcelona',
       descripcion:
         'Diseño y construyo webs a medida para negocios que están hartos de parecer una plantilla. Estáticas, rápidas y sin nada que se pueda romper.',
       email: 'scharcoles@gmail.com',
     },
-    // La cuenta tiene que cuadrar con `proyectos`: decía "Tres" con cuatro
-    // proyectos en la página.
-    portadaPie: 'Cuatro proyectos · en vivo ↓',
+    portada: {
+      // El dato que el visitante viene a comprobar: cuánto y cuándo. Los números
+      // salen de la calculadora pública y tienen que cuadrar con ella SIEMPRE.
+      dato: 'Web completa desde 500 € · entregada en 7 días',
+      ctaWhatsapp: 'WhatsApp',
+      ctaLlamar: 'Llamar',
+      ctaTrabajo: 'Ver el trabajo ↓',
+    },
+    trabajo: {
+      titular: 'El trabajo',
+      cliente: 'Cliente real',
+      clienteNota: 'Encargo real, en producción. Publicado aquí con su permiso.',
+      conceptosTitular: 'Conceptos',
+      // La honestidad es el argumento: se dice claro que son inventados, ANTES
+      // de que nadie lo pregunte. Ver spec §2: jamás presentar demo como cliente.
+      conceptosNota:
+        'Negocios inventados, diseño real. Los hago para enseñar cómo trabajo — ninguno es un cliente.',
+      concepto: 'Concepto',
+      abrir: 'Abrir de verdad ↗',
+    },
+    precio: {
+      eyebrow: 'Precio y plazo',
+      titular: 'Presupuesto cerrado antes de empezar.',
+      datos: [
+        { cifra: '500 €', texto: 'la web entera: hasta 5 páginas a medida, dominio el primer año y puesta en marcha' },
+        { cifra: '7 días', texto: 'de empezar a estar publicada' },
+        { cifra: '24 h', texto: 'para tener tu presupuesto por escrito, sin compromiso' },
+      ],
+      texto:
+        'Lo que necesite tu negocio de más — citas online, dos idiomas, salir en Google — se añade con su precio a la vista. Sin cuotas escondidas ni letra pequeña.',
+      cta: 'Calcula tu presupuesto en 2 minutos ↗',
+    },
     bio: {
-      // El titular lleva el ARGUMENTO; los párrafos llevan las credenciales. No los
-      // dupliques: la versión anterior repetía los "dos años" que el primer párrafo
-      // ya cuenta, y encima abría por el eje donde Sergio pierde (una agencia siempre
-      // pondrá un número mayor). Esto es lo único que una agencia no puede decir.
-      // OJO: aquí NO va ninguna cifra que Sergio no haya confirmado. Hubo un titular
-      // con "llevo diez años haciendo webs" que era inventado. Ver spec §2.
+      // El titular lleva el ARGUMENTO; los párrafos llevan las credenciales.
+      // OJO: aquí NO va ninguna cifra que Sergio no haya confirmado. Hubo un
+      // titular con "llevo diez años haciendo webs" que era inventado. Ver spec §2.
       titular: 'Tu web la va a hacer quien está hablando contigo.',
       parrafos: [
         'Durante dos años llevé el diseño y la gestión de contenidos de la web de la EEBE, la escuela de ingeniería de la UPC, con una beca de aprendizaje. No fue una pantalla bonita y adiós: fue mantener algo vivo, todos los días, para una institución exigente.',
         'Después pasé un año en ciberseguridad en EY. Aprendí cómo se rompen las cosas por dentro, y volví al diseño porque es lo que quiero hacer.',
-        'Ahora trabajo por mi cuenta. Cuando me escribes, te contesto yo. Cuando hacemos la llamada, estoy yo. No hay un gestor de cuentas en medio ni un becario montándote la web mientras el comercial te enseña otra cosa.',
+        'Ahora trabajo por mi cuenta desde Cornellà de Llobregat. Cuando me escribes, te contesto yo. Cuando hacemos la llamada, estoy yo. Y si tu negocio está por el Baix Llobregat o Barcelona, me acerco y lo hablamos en persona.',
       ],
     },
     metodo: {
       titular: 'Construyo webs que no se pueden romper.',
       parrafos: [
-        // Sin "esta semana": las referencias temporales caducan y esta ya era falsa
-        // (el hallazgo fue del 3 de julio, no de la semana en que se escribió).
-        // Y era "apuestas", no "casino" — si afirmas algo concreto, que sea exacto.
         'Tu web actual es probablemente WordPress con veinte plugins que llevan meses sin actualizar. Cada uno es una puerta. Cuando una cede, tu dominio acaba redirigiendo a una web de apuestas y tus pacientes ven eso en vez de tu clínica. Le ha pasado a una clínica dental de aquí al lado.',
         'Yo entrego archivos estáticos. No hay base de datos que inyectar, ni plugins que actualizar, ni panel de administración que reventar. No es una promesa de marketing: es que no existe la puerta.',
         'De propina, va rápida. Un archivo estático se sirve desde el borde de la red y aparece antes de que tu visitante se plantee irse.',
@@ -185,19 +154,11 @@ export const contenido = {
       titular: '¿Tu web se parece a la de todos?',
       texto:
         'Cuéntame qué tienes y qué te gustaría. Te digo qué haría y cuánto cuesta, sin compromiso y sin rodeos.',
+      whatsapp: 'Escríbeme por WhatsApp',
+      llamar: 'Llámame',
     },
-    proyecto: {
-      trabajo: 'El trabajo',
-      concepto: (n: string) => `Proyecto ${n} — concepto`,
-      cliente: 'Cliente',
-      proyectoN: (n: string) => `Proyecto ${n}`,
-      notaConcepto:
-        'Negocio inventado, diseño real. Lo hice para enseñar cómo trabajo, no para un cliente.',
-      notaCliente: 'Encargo real, en producción. Publicado aquí con su permiso.',
-      abrir: 'Abrir de verdad ↗',
-      envivo: 'EN VIVO',
-    },
-    proyectos: proyectosES,
+    proyectos: demosES,
+    destacado: fisioymes,
   },
 
   en: {
@@ -210,18 +171,40 @@ export const contenido = {
         'I design and build custom websites for businesses tired of looking like a template. Static, fast, and with nothing that can break.',
       email: 'scharcoles@gmail.com',
     },
-    portadaPie: 'Three projects · live ↓',
+    portada: {
+      dato: 'A complete website from €500 · delivered in 7 days',
+      ctaWhatsapp: 'WhatsApp',
+      ctaLlamar: 'Call',
+      ctaTrabajo: 'See the work ↓',
+    },
+    trabajo: {
+      titular: 'The work',
+      cliente: 'Real client',
+      clienteNota: 'Real engagement, in production. Published here with their permission.',
+      conceptosTitular: 'Concepts',
+      conceptosNota:
+        'Invented businesses, real design. I build them to show how I work — none of them is a client.',
+      concepto: 'Concept',
+      abrir: 'Open the real one ↗',
+    },
+    precio: {
+      eyebrow: 'Price and timeline',
+      titular: 'A fixed quote before we start.',
+      datos: [
+        { cifra: '€500', texto: 'the whole site: up to 5 custom pages, your domain for the first year, fully launched' },
+        { cifra: '7 days', texto: 'from kickoff to published' },
+        { cifra: '24 h', texto: 'to get your written quote, no strings attached' },
+      ],
+      texto:
+        'Anything extra your business needs — online booking, two languages, local Google presence — is added with its price in plain sight. No hidden fees, no fine print.',
+      cta: 'Get an instant estimate ↗',
+    },
     bio: {
-      // Mismo argumento que en español, no un calco: lo que una agencia no puede
-      // decir. Y las mismas reglas — ni una cifra ni una credencial que no esté
-      // confirmada. Si en inglés falta un dato, se reformula sin él.
       titular: 'The person you talk to is the person who builds your site.',
       parrafos: [
-        // "EEBE" y "UPC" no dicen nada fuera de España: hay que situar la escuela
-        // sin inflarla. Sigue siendo una beca de aprendizaje, y se dice.
         'For two years I ran the design and content management for the website of EEBE, a large public engineering school in Barcelona, part of the Polytechnic University of Catalonia. It was a student traineeship. It was not one pretty screen and done: it was keeping something alive, every day, for a demanding institution.',
         'After that I spent a year in cybersecurity at EY. I learned how things break from the inside, and I came back to design because design is what I want to do.',
-        'Now I work for myself. You email me, I answer. We get on a call, it is me on the call. There is no account manager in the middle, and no intern building your site while a salesperson shows you something else.',
+        'Now I work for myself from Cornellà de Llobregat, just outside Barcelona. You email me, I answer. We get on a call, it is me on the call. There is no account manager in the middle, and no intern building your site while a salesperson shows you something else.',
       ],
     },
     metodo: {
@@ -236,22 +219,17 @@ export const contenido = {
       eyebrow: "Let's talk",
       titular: "Does your website look like everyone else's?",
       texto:
-        "Tell me what you have and what you want. I will tell you what I would do and what it costs. No obligation, no runaround.",
+        'Tell me what you have and what you want. I will tell you what I would do and what it costs. No obligation, no runaround.',
+      whatsapp: 'Message me on WhatsApp',
+      llamar: 'Call me',
     },
-    proyecto: {
-      trabajo: 'The work',
-      concepto: (n: string) => `Project ${n} — concept`,
-      cliente: 'Client',
-      proyectoN: (n: string) => `Project ${n}`,
-      // Los negocios inventados siguen marcados como concepto en inglés. No se
-      // presentan como clientes. Ver spec §2.
-      notaConcepto:
-        'Invented business, real design. I built it to show how I work, not for a client.',
-      notaCliente: 'Real engagement, in production. Published here with their permission.',
-      abrir: 'Open the real one ↗',
-      envivo: 'LIVE',
+    proyectos: demosEN,
+    destacado: {
+      ...fisioymes,
+      rubro: 'Physical therapy · Barcelona, Spain',
+      descripcion:
+        'They came with one specific complaint: on a phone, their site was all text and endless scrolling. I rebuilt it from scratch in Catalan and Spanish, with injuries in a grid and treatments on cards — and without touching the booking system they already used.',
     },
-    proyectos: proyectosEN,
   },
 } as const;
 

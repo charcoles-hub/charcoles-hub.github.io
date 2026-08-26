@@ -1,33 +1,87 @@
 ---
+import { Image } from 'astro:assets';
 import { contenido, type Lang } from '../config/site';
-import PosterVivo from './PosterVivo.astro';
+import Destacado from './Destacado.astro';
 
-import fisioymes from '../assets/posters/fisioymes.png';
-import navaja from '../assets/posters/demo-barberia-navaja.png';
+import barberia from '../assets/posters/demo-barberia-navaja.png';
 import sereno from '../assets/posters/demo-dental-sereno.png';
+import manada from '../assets/posters/demo-veterinaria-manada.png';
+import fisioVital from '../assets/posters/demo-fisio-vital.png';
+import cauce from '../assets/posters/demo-gestoria-cauce.png';
 import ancla from '../assets/posters/demo-psicologia-ancla.png';
+import aurora from '../assets/posters/demo-cafe-aurora.png';
+import pulso from '../assets/posters/demo-gimnasio-pulso.png';
+import arquitectos from '../assets/posters/demo-arquitectos-traza.png';
+import autoescuela from '../assets/posters/demo-autoescuela-traza.png';
 import dentalUs from '../assets/posters/demo-dental-us.png';
 import lawfirmUs from '../assets/posters/demo-lawfirm-us.png';
 
 // Al añadir un proyecto: captura en src/assets/posters/<slug>.png (la genera
 // `node scripts/medir-demos.mjs <slug> --poster`) y una entrada aquí.
 const posters: Record<string, ImageMetadata> = {
-  'fisioymes': fisioymes,
-  'demo-barberia-navaja': navaja,
+  'demo-barberia-navaja': barberia,
   'demo-dental-sereno': sereno,
+  'demo-veterinaria-manada': manada,
+  'demo-fisio-vital': fisioVital,
+  'demo-gestoria-cauce': cauce,
   'demo-psicologia-ancla': ancla,
+  'demo-cafe-aurora': aurora,
+  'demo-gimnasio-pulso': pulso,
+  'demo-arquitectos-traza': arquitectos,
+  'demo-autoescuela-traza': autoescuela,
   'demo-dental-us': dentalUs,
   'demo-lawfirm-us': lawfirmUs,
 };
 
 const { lang } = Astro.props as { lang: Lang };
-const { proyectos, proyecto: txt } = contenido[lang];
+const { proyectos, trabajo: txt } = contenido[lang];
 ---
-<section class="px-6 md:px-12">
-  <h2 class="sr-only">{txt.trabajo}</h2>
-  <div class="mx-auto max-w-[1600px]">
-    {proyectos.map((proyecto) => (
-      <PosterVivo proyecto={proyecto} poster={posters[proyecto.slug]} lang={lang} />
-    ))}
+<section id="trabajo" class="border-t border-linea">
+  <Destacado lang={lang} />
+
+  {/* Los conceptos: rejilla en escritorio, raíl con scroll-snap en móvil.
+      La honestidad va ANTES que las capturas: se declara que son inventados. */}
+  <div class="px-6 pb-24 pt-16 md:px-12 md:pb-32">
+    <div class="mx-auto flex max-w-[1600px] flex-col gap-8">
+      <div data-revela class="flex flex-col gap-3">
+        <h3 class="font-display text-3xl font-extrabold tracking-[-0.04em] md:text-5xl" style="font-stretch:110%">
+          {txt.conceptosTitular}
+          <span class="align-middle font-sans text-xs font-semibold uppercase tracking-[0.16em] text-acento" style="font-stretch:100%">
+            ×{proyectos.length}
+          </span>
+        </h3>
+        <p class="max-w-[52ch] text-pretty text-sm text-tenue md:text-base">{txt.conceptosNota}</p>
+      </div>
+
+      <ul class="rail" role="list">
+        {proyectos.map((p, n) => (
+          <li class="rail__item" data-revela>
+            <a href={p.url} target="_blank" rel="noopener" class="tarjeta group">
+              <span class="tarjeta__marco">
+                <Image
+                  src={posters[p.slug]}
+                  alt={`${p.nombre} — ${p.rubro}`}
+                  widths={[480, 760, 1100]}
+                  sizes="(min-width: 1100px) 30vw, (min-width: 820px) 44vw, 78vw"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+              <span class="flex items-baseline justify-between gap-3">
+                <span class="flex flex-col gap-0.5">
+                  <span class="font-display text-lg font-bold tracking-[-0.02em] text-tinta" style="font-stretch:110%">
+                    {p.nombre}
+                    <span class="ml-1.5 align-middle text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-tenue">{txt.concepto}</span>
+                  </span>
+                  <span class="text-[0.68rem] uppercase tracking-[0.1em] text-tenue">{p.rubro}</span>
+                </span>
+                <span class="numero" aria-hidden="true">{String(n + 2).padStart(2, '0')}</span>
+              </span>
+              <span class="max-w-[46ch] text-pretty text-sm leading-relaxed text-medio">{p.descripcion}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 </section>

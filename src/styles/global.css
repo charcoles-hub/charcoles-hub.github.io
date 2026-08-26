@@ -1,29 +1,31 @@
 @import "tailwindcss";
 
-/* ---- Revelado por scroll ---- */
-@keyframes revela {
-  from { opacity: 0; transform: translateY(40px) scale(0.97); }
-  to   { opacity: 1; transform: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  /* .js-anima lo pone el script del Layout: sin JS, nada se oculta. */
-  .js-anima [data-revela] { opacity: 0; }
-  .js-anima [data-revela].visible { animation: revela 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
-}
-
-/* TEMA — Galería oscura. Las paredes son neutras para que los cuadros canten. */
+/* TEMA — Galería oscura. Las paredes son neutras para que los cuadros canten.
+   Todo en OKLCH: los grises llevan un punto de calidez para que el negro no
+   sea de pizarra, y el acento se deriva con color-mix donde hace falta. */
 @theme {
-  --color-fondo:    #0a0b0d;
-  --color-fondo-2:  #101216;
-  --color-linea:    #1e2127;
-  --color-tinta:    #f2f2f0;
-  --color-tenue:    #7a7e85;
-  --color-medio:    #8b9099;
-  --color-acento:   #ff5c37;
+  --color-fondo:    oklch(0.155 0.006 260);
+  --color-fondo-2:  oklch(0.185 0.008 260);
+  --color-linea:    oklch(0.255 0.01 260);
+  --color-tinta:    oklch(0.96 0.004 90);
+  --color-tenue:    oklch(0.6 0.012 260);
+  --color-medio:    oklch(0.67 0.012 260);
+  --color-acento:   oklch(0.68 0.2 35);
 
   --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-sans:    "Archivo", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Muelle real: linear() muestreado de un spring subamortiguado. Donde no se
+   soporte, cae al cubic-bezier de siempre — mismo gesto, sin rebote. */
+:root {
+  --suave: cubic-bezier(0.16, 1, 0.3, 1);
+  --muelle: linear(
+    0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017,
+    1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%,
+    1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%,
+    0.997 69.8%, 1.003 76.9%, 1
+  );
 }
 
 html {
@@ -32,16 +34,67 @@ html {
 body {
   /* ponytail: NO overflow-x:hidden aquí. Por la regla de overflow de CSS,
      overflow-x:hidden en <html>/<body> fuerza overflow-y a "auto" en ambos,
-     y eso rompe position:sticky en todo lo que cuelga de ellos (confirmado
-     con Trabajo.astro: .proyecto__fijo dejaba de fijarse y se veía negro al
-     scrollear). El .marco ya recorta su iframe de 1440px con overflow:hidden
-     propio, así que no hace falta el guard global; el harness
-     ("sin scroll horizontal a 390/1440px") es la red de seguridad si algo
-     nuevo se sale de madre. */
+     y eso rompe position:sticky en todo lo que cuelga de ellos (confirmado:
+     .proyecto__fijo dejaba de fijarse). El harness ("sin scroll horizontal a
+     390/1440px") es la red de seguridad si algo nuevo se sale de madre. */
   font-family: var(--font-sans);
   color: var(--color-tinta);
   background: var(--color-fondo);
   -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Hilo de progreso de lectura ----
+   CSS puro con animation-timeline: scroll(). Donde no exista, no hay hilo:
+   nadie echa de menos lo que nunca vio. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .progreso {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 2px;
+      z-index: 50;
+      background: var(--color-acento);
+      transform-origin: 0 50%;
+      animation: crece auto linear both;
+      animation-timeline: scroll();
+    }
+  }
+}
+@keyframes crece {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.progreso { display: none; }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .progreso { display: block; }
+  }
+}
+
+/* ---- Revelado ligado al scroll: CSS puro, sin observers ----
+   animation-timeline: view() dentro de @supports. El contenido es visible por
+   defecto: un navegador viejo simplemente no anima nada. La animación se
+   scrubbea con la entrada del elemento en pantalla y se queda quieta al 55%
+   de su recorrido de entrada. */
+@keyframes revela {
+  from { opacity: 0; transform: translateY(2.2rem); }
+  to   { opacity: 1; transform: none; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-revela] {
+      animation: revela auto linear both;
+      animation-timeline: view();
+      animation-range: entry 8% entry 55%;
+    }
+  }
+}
+
+/* Secciones lejanas: el navegador no las maqueta hasta que se acercan.
+   El tamaño intrínseco evita saltos de la barra de scroll. */
+.lejos {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 60rem;
 }
 
 /* ---- Portada: las líneas suben tras una máscara ---- */
@@ -60,8 +113,7 @@ body {
 /* `clip` + `overflow-clip-margin` en vez de `hidden`: la máscara tiene que
    ocultar la línea antes de que suba, PERO sin comerse el rabo de la `g`
    (interlineado 0.88, más apretado que el hueco que Archivo reserva debajo
-   de la base). El margen de recorte deja salir los descendentes sin tocar
-   la maquetación. Verificado a 1440px: sin esto la `g` sale cortada en plano. */
+   de la base). Verificado a 1440px: sin esto la `g` sale cortada en plano. */
 .mascara {
   display: block;
   overflow: clip;
@@ -71,7 +123,7 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   .mascara > span {
     display: block;
-    animation: sube-linea 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: sube-linea 0.9s var(--muelle) both;
     animation-delay: calc(var(--i, 0) * 110ms);
   }
   .entra {
@@ -80,13 +132,54 @@ body {
   }
 }
 
-/* ---- Proyecto: sección alta + fijado ----
-   La sección es alta (su altura la calcula el componente a partir del alto
-   real de la demo). El bloque interior se queda fijo mientras la sección
-   pasa, y ese recorrido es el que mueve la demo por dentro del marco. */
+/* ---- Botones ---- */
+.boton {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5ch;
+  border-radius: 999px;
+  padding: 0.72rem 1.15rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 0.5s var(--muelle), background-color 0.2s ease,
+              border-color 0.2s ease, color 0.2s ease;
+}
+.boton:hover { transform: translateY(-2px); }
+.boton--primario {
+  background: var(--color-acento);
+  color: var(--color-fondo);
+}
+.boton--primario:hover {
+  background: color-mix(in oklch, var(--color-acento), white 12%);
+}
+.boton--borde {
+  border: 1px solid var(--color-linea);
+  color: var(--color-tinta);
+}
+.boton--borde:hover { border-color: var(--color-tenue); }
+.boton--fantasma { color: var(--color-tenue); padding-inline: 0.4rem; }
+.boton--fantasma:hover { color: var(--color-tinta); }
+
+/* Número editorial de ficha: tabular y con el eje de grosor animado al hover
+   de la tarjeta — fuente variable trabajando, no decoración pegada. */
+.numero {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-tenue);
+  transition: font-weight 0.3s ease, color 0.3s ease;
+}
+.group:hover .numero { font-weight: 900; color: var(--color-acento); }
+
+/* ---- Proyecto destacado: sección alta + fijado ----
+   La sección es alta (la calcula el componente con el alto real de la demo).
+   El bloque interior queda fijo mientras la sección pasa, y ese recorrido es
+   el que scrollea la demo por dentro del marco. */
 .proyecto {
   position: relative;
   height: var(--alto-seccion, 200vh);
+  view-timeline: --proy block;
 }
 .proyecto__fijo {
   position: sticky;
@@ -96,26 +189,18 @@ body {
 }
 @media (min-width: 820px) {
   .proyecto__fijo {
-    /* Centrado vertical de verdad: el bloque fijo ocupa la pantalla entera y
-       centra su contenido dentro. Con `top: 8vh` quedaba descolgado arriba
-       (94px por encima, 244px por debajo). Así se centra en cualquier monitor
-       sin depender de un número calculado a ojo. */
     top: 0;
     min-height: 100svh;
     align-content: center;
-    /* El marco manda: se dimensiona por ALTURA DE VIEWPORT (ver .marco abajo) y
-       su columna se ajusta a lo que ocupe. El texto se queda con el resto.
-       Antes era `1fr 1.15fr` dentro de un contenedor topado a 1152px: el marco
-       salía a ~590px de ancho = 370px de alto, el 41% de la pantalla, dejando
-       media pantalla en negro. Lo que la página existe para enseñar era lo más
-       pequeño de ella. */
+    /* El marco manda: se dimensiona por altura de viewport y su columna se
+       ajusta a lo que ocupe. El texto se queda con el resto. */
     grid-template-columns: minmax(16rem, 1fr) auto;
     gap: 2.5rem;
     align-items: center;
   }
 }
 
-/* ---- Póster vivo ---- */
+/* ---- Marco del póster vivo ---- */
 .marco {
   position: relative;
   aspect-ratio: 1440 / 900;
@@ -123,19 +208,15 @@ body {
   border-radius: 10px;
   background: var(--color-fondo-2);
   box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s var(--suave);
   width: 100%;
 }
-
 @media (min-width: 820px) {
-  /* En escritorio manda la ALTURA, no el ancho: el ancho lo deriva el
-     aspect-ratio. Fracción del viewport, nunca píxeles fijos, para que cuadre
-     igual en un portátil que en un monitor grande.
-     El tope de 56vw evita que en pantallas bajas y anchas se coma el texto. */
+  /* En escritorio manda la ALTURA: el ancho lo deriva el aspect-ratio.
+     Fracción del viewport, nunca píxeles fijos. El tope de 56vw evita que en
+     pantallas bajas y anchas se coma el texto. */
   .marco {
     width: auto;
-    /* -2rem: deja sitio al distintivo EN VIVO que ahora vive encima del marco,
-       para que el conjunto siga cabiendo en la pantalla. */
     height: min(calc(66vh - 2rem), 56vw);
   }
 }
@@ -148,143 +229,93 @@ body {
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.09);
   pointer-events: none;
 }
+/* La captura a página completa del cliente, recorrida por CSS puro: la
+   animación avanza con la view-timeline de .proyecto mientras el bloque está
+   fijado. Sin soporte (o con reduced-motion) se ve la portada, quieta. */
+.marco__scroll {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@keyframes recorre {
+  to { transform: translateY(var(--fin, 0%)); }
+}
+/* La barra de recorrido solo existe donde el recorrido existe. */
+.barra-pista { display: none; }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .marco__scroll {
+      animation: recorre auto linear both;
+      animation-timeline: --proy;
+      animation-range: contain 0% contain 100%;
+    }
+    .barra-pista { display: block; }
+    .barra {
+      transform-origin: 0 50%;
+      animation: crece auto linear both;
+      animation-timeline: --proy;
+      animation-range: contain 0% contain 100%;
+    }
+  }
+}
 
-/* La captura: siempre presente, debajo. Es el suelo del que nada se cae. */
-.marco__poster {
-  position: absolute;
-  inset: 0;
+/* ---- Raíl de conceptos ----
+   En móvil: carril horizontal con scroll-snap — diez capturas se hojean con el
+   pulgar sin hacer la página un kilómetro. En escritorio: rejilla de tres.
+   El padding negativo-compensado deja que el carril sangre hasta el borde. */
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 78vw;
+  gap: 1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1.5rem;
+  margin-inline: -1.5rem;
+  padding-inline: 1.5rem;
+  padding-bottom: 0.75rem;
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar { display: none; }
+.rail__item { scroll-snap-align: start; }
+@media (min-width: 820px) {
+  .rail {
+    grid-auto-flow: row;
+    grid-auto-columns: unset;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem 2rem;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}
+@media (min-width: 1100px) {
+  .rail { grid-template-columns: repeat(3, 1fr); }
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  height: 100%;
+}
+.tarjeta__marco {
+  display: block;
+  position: relative;
+  aspect-ratio: 1440 / 900;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--color-fondo-2);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+.tarjeta__marco img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* El iframe: encima, oculto hasta que esté escalado Y cargado.
-   Mide 1440×900 = un viewport de verdad. Si se le da el alto real de la demo,
-   dentro de él 100vh pasa a valer ese alto y la demo se estira (Navaja: +69%).
-   El recorrido NO se hace moviendo el iframe, sino scrolleando su documento. */
-.marco iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1440px;
-  height: 900px;
-  border: 0;
-  transform-origin: 0 0;
-  /* --s lo fija el script. Arranca oculto: sin escala se vería a tamaño real. */
-  transform: scale(var(--s, 1));
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  /* LA LÍNEA CLAVE: póster vivo, no trampa táctil.
-     Sin esto el iframe se traga el scroll del dedo en móvil. */
-  pointer-events: none;
-}
-.marco[data-listo="si"] iframe { opacity: 1; }
-
-@keyframes late {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.25; }
+  object-position: top;
+  transition: transform 0.7s var(--muelle);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .punto-vivo { animation: late 2s ease-in-out infinite; }
-}
-
-/* ---- Recorrido 3D ----
-   Estático primero: las capas 3D nacen ocultas y es html.viaje3d quien las
-   enseña y apaga #estatico. Si el JS no corre o no da el visto bueno
-   (reduced-motion, sin WebGL), la página es la web estática de siempre. */
-#webgl, #css3d-container, #carga, #hud { display: none; }
-
-html.viaje3d #estatico { display: none; }
-html.viaje3d #webgl { display: block; position: fixed; inset: 0; z-index: 1; }
-html.viaje3d #css3d-container {
-  display: block; position: fixed; inset: 0; z-index: 2;
-  overflow: hidden; pointer-events: none;
-}
-html.viaje3d #carga {
-  display: grid; place-items: end center;
-  position: fixed; inset: 0; z-index: 20;
-  padding-bottom: 12vh;
-  color: var(--color-tenue);
-  font: 500 0.85rem/1.4 var(--font-sans);
-  letter-spacing: 0.08em; text-transform: uppercase;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-}
-html.viaje3d #carga[aria-hidden="true"] { opacity: 0; }
-html.viaje3d #hud { display: block; position: fixed; inset: 0; z-index: 10; pointer-events: none; }
-
-/* Rim naranja de acento: es un border, NO un box-shadow — box-shadow no
-   pinta su color a través del pipeline 3D de CSS3DRenderer (sale gris). */
-.pantalla-rim {
-  box-sizing: content-box;
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--color-fondo);
-  border: 4px solid rgb(255 92 55 / 0.75);
-}
-iframe.demo3d { border: 0; display: block; background: #fff; pointer-events: none; }
-
-/* ---- HUD del recorrido ---- */
-.hud-top {
-  position: absolute; top: 0; left: 0; right: 0;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.1rem 1.4rem;
-  pointer-events: none;
-}
-.hud-marca { color: var(--color-tenue); font-size: 0.85rem; letter-spacing: 0.04em; }
-.hud-idiomas { display: flex; gap: 0.35rem; pointer-events: auto; }
-.hud-idiomas button {
-  background: none; border: 1px solid var(--color-linea); border-radius: 4px;
-  color: var(--color-tenue); font: 600 0.8rem/1 var(--font-sans);
-  padding: 0.45rem 0.6rem; cursor: pointer;
-}
-.hud-idiomas button[data-activo] { color: var(--color-tinta); border-color: var(--color-acento); }
-
-.hud-panel {
-  position: absolute; left: 1.4rem; bottom: 1.6rem;
-  max-width: min(30rem, calc(100vw - 2.8rem));
-  opacity: 0; transform: translateY(12px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-  pointer-events: none;
-}
-.hud-panel.visible { opacity: 1; transform: none; pointer-events: auto; }
-.hud-ficha { color: var(--color-acento); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
-.hud-vivo { color: var(--color-tenue); margin-left: 0.5em; }
-.hud-nombre { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
-.hud-rubro { color: var(--color-medio); margin-top: 0.2rem; }
-.hud-desc { color: var(--color-tinta); margin-top: 0.7rem; max-width: 42ch; }
-.hud-nota { color: var(--color-tenue); font-size: 0.85rem; margin-top: 0.7rem; }
-.hud-pista { color: var(--color-tenue); margin-top: 0.7rem; }
-.hud-sub { font-size: 1.1rem; max-width: 34ch; }
-.hud-abrir {
-  display: inline-block; margin-top: 1rem; color: var(--color-acento);
-  font-weight: 600; text-decoration: none; border-bottom: 1px solid currentColor;
-}
-.hud-panel [data-parrafo] { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
-.hud-panel [data-parrafo].visible { opacity: 1; transform: none; }
-
-@media (max-width: 700px) {
-  .hud-panel { left: 1rem; right: 1rem; bottom: 1.2rem; max-width: none; }
-  .hud-desc { max-width: none; }
-}
-
-/* ---- Titulares flotantes (CSS3D) ----
-   Ancho fijo en px de mundo: es lo que CSS3D proyecta; con porcentajes el
-   texto se escapa de la composición. */
-.titular3d {
-  width: 760px;
-  color: var(--color-tinta);
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 64px;
-  line-height: 0.98;
-  letter-spacing: -0.02em;
-  pointer-events: none;
-}
-.titular3d--hero { width: 900px; font-size: 88px; text-align: center; }
-.titular3d--proyecto { text-align: center; }
-.titular3d--proyecto strong { display: block; font-size: 44px; }
-.titular3d--proyecto span {
-  display: block; margin-top: 8px;
-  color: var(--color-medio); font-size: 24px; font-weight: 500; letter-spacing: 0;
+  .tarjeta:hover .tarjeta__marco img { transform: scale(1.03); }
 }

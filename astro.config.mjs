@@ -7,6 +7,12 @@ export default defineConfig({
   base: '/',
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // esbuild, NO lightningcss: lightningcss fusiona animation-timeline
+      // dentro del shorthand `animation` (sintaxis de un borrador viejo que
+      // Chrome rechaza) y mata TODAS las animaciones ligadas al scroll.
+      cssMinify: 'esbuild',
+    },
     server: {
       // En producción /demo-* son project pages del mismo origen y esto no hace
       // falta. En local hay que traerlas para que el iframe sea del mismo origen

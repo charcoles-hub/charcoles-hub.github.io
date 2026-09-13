@@ -44,7 +44,7 @@ const fisioymes: Destacado = {
     'Vinieron con una queja concreta: en el móvil su web era todo letra y scroll sin fin. La rehíce entera en catalán y castellano, con las lesiones en rejilla y los tratamientos en fichas — y sin tocarles el sistema de reservas que ya usaban.',
   slug: 'fisioymes',
   url: 'https://charcoles-hub.github.io/fisioymes/',
-  alto: 4794,
+  alto: 4939,
 };
 
 const demo = (slug: string, nombre: string, rubro: string, descripcion: string): Proyecto => ({

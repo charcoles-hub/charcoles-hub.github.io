@@ -1,5 +1,6 @@
 ---
 import { contenido, rutas, TELEFONO, type Lang } from '../config/site';
+import FondoWebGL from './FondoWebGL.astro';
 const { lang } = Astro.props as { lang: Lang };
 const { site, portada } = contenido[lang];
 
@@ -10,7 +11,8 @@ const idiomas: { codigo: Lang; etiqueta: string }[] = [
   { codigo: 'en', etiqueta: 'EN' },
 ];
 ---
-<header class="flex min-h-[100svh] flex-col justify-between px-6 py-7 md:px-12 md:py-10">
+<header class="relative isolate flex min-h-[100svh] flex-col justify-between px-6 py-7 md:px-12 md:py-10">
+  <FondoWebGL />
   <div class="entra flex items-center justify-between gap-4" style="--i:0">
     <p class="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-acento">
       {site.rol} · <span class="text-medio">{site.lugar}</span>

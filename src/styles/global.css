@@ -575,3 +575,21 @@ body {
     animation: estrella-pop 0.5s var(--muelle);
   }
 }
+
+/* ---- Fondo vivo de la portada ----
+   El canvas se pinta DETRÁS del contenido de la portada (que es el que crea el
+   contexto de apilamiento con `isolate`), nunca detrás del body: el body tiene
+   fondo opaco y se lo comería. Arranca invisible y el script lo enciende, así
+   que si WebGL falla no hay ni un parpadeo. */
+#fondo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  pointer-events: none;
+}
+#fondo.visible { opacity: 1; }

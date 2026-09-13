@@ -4,6 +4,7 @@
 // Si no hay WebGL, o el visitante pide menos movimiento, el canvas ni se monta
 // y la portada se queda como está: el fondo es decoración, nunca contenido.
 ---
+<div class="fondo-respaldo" aria-hidden="true"></div>
 <canvas id="fondo" aria-hidden="true"></canvas>
 
 <script>
@@ -24,14 +25,25 @@
     `;
 
     const FRAGMENTO = `
+      // highp donde exista: con mediump (el defecto en moviles) el campo de
+      // ruido se degrada hasta quedarse plano y el fondo sale liso.
+      #ifdef GL_FRAGMENT_PRECISION_HIGH
+      precision highp float;
+      #else
       precision mediump float;
+      #endif
       uniform vec2 u_res;
       uniform float u_t;
       uniform vec2 u_raton;
       uniform float u_fuerza;
 
+      // Hash SIN sin(): el clasico fract(sin(dot(...)) * 43758.5) necesita
+      // precision de sobra para el producto, y en una GPU de movil devuelve
+      // casi siempre el mismo valor. Este solo multiplica y trunca.
       float hash(vec2 p) {
-        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+        p3 += dot(p3, p3.yzx + 33.33);
+        return fract((p3.x + p3.y) * p3.z);
       }
 
       float ruido(vec2 p) {
@@ -106,15 +118,22 @@
       const s = gl.createShader(tipo)!;
       gl.shaderSource(s, fuente);
       gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.warn('fondo: el shader no compila —', gl.getShaderInfoLog(s));
+        return null;
+      }
       return s;
     };
 
+    const vertice = compila(gl.VERTEX_SHADER, VERTICE);
+    const fragmento = compila(gl.FRAGMENT_SHADER, FRAGMENTO);
+
     const programa = gl.createProgram()!;
-    gl.attachShader(programa, compila(gl.VERTEX_SHADER, VERTICE));
-    gl.attachShader(programa, compila(gl.FRAGMENT_SHADER, FRAGMENTO));
+    if (vertice) gl.attachShader(programa, vertice);
+    if (fragmento) gl.attachShader(programa, fragmento);
     gl.linkProgram(programa);
 
-    if (!gl.getProgramParameter(programa, gl.LINK_STATUS)) {
+    if (!vertice || !fragmento || !gl.getProgramParameter(programa, gl.LINK_STATUS)) {
       lienzo.remove();
     } else {
       gl.useProgram(programa);
@@ -185,9 +204,14 @@
       lienzo.classList.add('visible');
 
       if (quieto) {
-        // Un solo fotograma: el fondo existe, pero no se mueve.
-        requestAnimationFrame(pinta);
-        addEventListener('resize', () => requestAnimationFrame(pinta), { passive: true });
+        // Un solo fotograma: el fondo existe, pero no se mueve. Se pinta varias
+        // veces seguidas porque el primero puede caer antes de que el canvas
+        // tenga tamaño, y entonces no habria un segundo intento.
+        const unaVez = () => requestAnimationFrame(pinta);
+        unaVez();
+        setTimeout(unaVez, 120);
+        addEventListener('load', unaVez);
+        addEventListener('resize', unaVez, { passive: true });
       } else {
         // Solo se anima mientras la portada está en pantalla y la pestaña
         // delante: fuera de ahí no se gasta ni un fotograma.

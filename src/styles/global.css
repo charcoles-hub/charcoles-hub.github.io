@@ -593,3 +593,23 @@ body {
   pointer-events: none;
 }
 #fondo.visible { opacity: 1; }
+
+/* Respaldo del fondo de portada: CSS puro, siempre presente. Si WebGL va, el
+   canvas lo tapa entero; si no va (o el shader no compila en ese móvil), esto
+   es lo que se ve, y la portada nunca queda a negro liso. */
+.fondo-respaldo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 45% at 22% 28%, color-mix(in oklch, var(--color-acento), transparent 84%), transparent 70%),
+    radial-gradient(55% 50% at 78% 72%, oklch(0.3 0.06 260 / 0.5), transparent 72%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fondo-respaldo { animation: respira 26s ease-in-out infinite alternate; }
+}
+@keyframes respira {
+  from { transform: scale(1) translate3d(0, 0, 0); opacity: 0.75; }
+  to   { transform: scale(1.15) translate3d(2%, -2%, 0); opacity: 1; }
+}

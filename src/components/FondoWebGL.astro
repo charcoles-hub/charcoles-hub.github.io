@@ -85,8 +85,11 @@
         col += frio * brasa * 0.5;
         col += acento * pow(brasa, 1.7) * 0.85;
 
-        // Viñeta: los bordes se apagan para que el texto grande respire.
-        col *= 1.0 - 0.6 * smoothstep(0.3, 1.1, length(p));
+        // Viñeta en espacio de pantalla, no del ruido: medida sobre el plano
+        // del ruido se comía la mitad de un móvil en vertical, porque ahí el
+        // lado largo se sale del radio. Medida sobre uv se apaga la misma
+        // proporción en apaisado y en vertical.
+        col *= 1.0 - 0.55 * smoothstep(0.34, 0.8, length(uv - 0.5));
 
         // El titular manda: la banda central se apaga para que el blanco sobre
         // negro conserve el contraste, que es lo único que no se negocia.
@@ -139,9 +142,9 @@
           lienzo.height = h;
           gl.viewport(0, 0, w, h);
           gl.uniform2f(uRes, w, h);
-          // En pantalla estrecha el humo ocupa proporcionalmente mucho más, así
-          // que se baja para que siga siendo fondo y no protagonista.
-          gl.uniform1f(uFuerza, lienzo.clientWidth < 820 ? 0.5 : 1.0);
+          // El humo apenas baja en móvil: lo que lo agrandaba era normalizar por
+          // la altura, y eso ya se corrige en el shader. A 0.5 no se veía nada.
+          gl.uniform1f(uFuerza, lienzo.clientWidth < 820 ? 0.95 : 1.0);
         }
       };
 

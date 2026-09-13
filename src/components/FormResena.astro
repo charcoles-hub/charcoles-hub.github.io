@@ -23,14 +23,14 @@ const estrellas = [5, 4, 3, 2, 1];
       method="POST"
       class="flex flex-col gap-7 rounded-xl border border-linea bg-fondo-2 p-6 md:p-9"
     >
-      <input type="hidden" name="_subject" value="Nueva reseña desde el portfolio" />
-      <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="_next" value={siguiente} />
+      <input type="hidden" name="access_key" value={RESENA_FORM.clave} />
+      <input type="hidden" name="subject" value="Nueva reseña desde el portfolio" />
+      <input type="hidden" name="from_name" value="Portfolio · Reseñas" />
+      <input type="hidden" name="redirect" value={siguiente} />
       <input type="hidden" name="Idioma" value={lang} />
-      {/* Cebo para bots: FormSubmit descarta el envío si _honey viene relleno. */}
+      {/* Cebo para bots: Web3Forms descarta el envío si `botcheck` viene marcado. */}
       <p class="cebo" aria-hidden="true">
-        <label>No rellenar<input type="text" name="_honey" tabindex="-1" autocomplete="off" /></label>
+        <label>No rellenar<input type="checkbox" name="botcheck" tabindex="-1" /></label>
       </p>
 
       <fieldset class="estrellas">
@@ -80,7 +80,7 @@ const estrellas = [5, 4, 3, 2, 1];
         </p>
         <p class="campo">
           <label class="etiqueta" for="email">{f.email}</label>
-          <input id="email" name="Email" type="email" autocomplete="email" maxlength="120" />
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="120" />
           <span class="pista">{f.emailPista}</span>
         </p>
       </div>

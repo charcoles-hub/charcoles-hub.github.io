@@ -104,8 +104,14 @@ export interface Resena {
 // esté vacío, la sección enseña la invitación a escribir y ninguna tarjeta.
 export const RESENAS: Resena[] = [];
 
+// Web3Forms y NO FormSubmit: Protección Digital de Movistar bloquea
+// formsubmit.co como phishing (verificado el 13-09-2026 desde la línea de
+// Sergio), así que a cualquier cliente con Movistar le salía una pantalla de
+// aviso al enviar. La clave es pública a propósito: identifica el buzón de
+// destino, no da acceso a nada.
 export const RESENA_FORM = {
-  destino: 'https://formsubmit.co/scharcoles@gmail.com',
+  destino: 'https://api.web3forms.com/submit',
+  clave: '5a2a409b-c60a-49a7-8f70-4a1282a1c1ab',
   gracias: { es: '/gracias/', en: '/en/thanks/' },
 } as const;
 

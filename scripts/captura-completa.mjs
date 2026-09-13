@@ -51,17 +51,40 @@ await p.addStyleTag({
 });
 
 // Recorrido completo para despertar los revelados al scroll, y vuelta arriba.
+// A 250 px por paso y 250 ms de espera, NO más rápido: con pasos de 500 px y
+// 120 ms las reseñas del cliente (que entran escalonadas, una tras otra) se
+// quedaban a medio revelar y esa sección salía en blanco. Medido: barrido
+// rápido deja 6 elementos a opacity 0; este, ninguno.
 await p.evaluate(async () => {
-  const paso = 500;
+  const paso = 250;
   for (let y = 0; y < document.documentElement.scrollHeight; y += paso) {
     window.scrollTo(0, y);
     document.documentElement.scrollTop = y;
-    await new Promise((r) => setTimeout(r, 120));
+    await new Promise((r) => setTimeout(r, 250));
   }
+  await new Promise((r) => setTimeout(r, 1500));
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
   await new Promise((r) => setTimeout(r, 800));
 });
+
+// Red de seguridad: si algo sigue invisible tras el recorrido, se dice en voz
+// alta en vez de guardar otra captura con agujeros.
+const dormidos = await p.evaluate(() =>
+  [...document.querySelectorAll('*')].filter((e) => {
+    const cs = getComputedStyle(e);
+    const r = e.getBoundingClientRect();
+    if (cs.opacity !== '0' || r.height < 60 || r.width < 60) return false;
+    // Un carrusel apila sus diapositivas en el mismo hueco y solo enseña una:
+    // están ocultas a propósito y no son un revelado a medias. Se reconocen por
+    // ser tres o más hermanos con la misma clase.
+    const iguales = [...(e.parentElement?.children ?? [])].filter(
+      (h) => h.className === e.className
+    );
+    return iguales.length < 3;
+  }).length
+);
+if (dormidos) console.warn(`AVISO: ${dormidos} elementos siguen a opacity 0; la captura tendrá huecos.`);
 
 const alto = await p.evaluate(() => document.documentElement.scrollHeight);
 await p.screenshot({ path: destino, fullPage: true });

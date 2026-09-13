@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Gracias from '../components/Gracias.astro';
+import { contenido } from '../config/site';
+const g = contenido.es.gracias;
+---
+<Layout lang="es" titulo={g.titulo} descripcion={g.texto} paginas={{ es: '/gracias/', en: '/en/thanks/' }} noindex>
+  <Gracias lang="es" />
+</Layout>

@@ -319,3 +319,259 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   .tarjeta:hover .tarjeta__marco img { transform: scale(1.03); }
 }
+
+/* ---- Reseñas ----
+   Las estrellas no se pintan con color: se RELLENAN. Dos capas del mismo texto
+   («★★★★★» apagadas debajo, en acento encima) y la de encima se recorta al
+   ancho que toca. Ese ancho se anima con la view-timeline de la tarjeta, así
+   que las estrellas se llenan mientras la reseña entra en pantalla. */
+.estrellas-fijas,
+.estrellas-grandes {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.estrellas-grandes {
+  align-self: start;
+  font-size: clamp(2.6rem, 9vw, 5rem);
+  letter-spacing: 0.08em;
+}
+.estrellas-fijas__base { color: var(--color-linea); }
+.estrellas-fijas__relleno {
+  position: absolute;
+  inset: 0 auto 0 0;
+  overflow: hidden;
+  width: calc(var(--n, 5) / 5 * 100%);
+  color: var(--color-acento);
+}
+
+@keyframes rellena-estrellas {
+  from { width: 0; }
+}
+
+/* La tarjeta llega repartida: entra ladeada y se endereza. El escalonado no
+   es un delay (con view() no existe): es un desfase del propio rango, así que
+   cada columna alcanza su sitio un poco después que la anterior. */
+@keyframes reparte {
+  from {
+    opacity: 0;
+    transform: translateY(2.8rem) rotate(-2.2deg) scale(0.96);
+  }
+}
+
+.carta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid var(--color-linea);
+  border-radius: 0.75rem;
+  background: var(--color-fondo-2);
+  padding: 1.5rem;
+  transform-origin: 50% 100%;
+  transition: transform 0.5s var(--muelle), border-color 0.3s ease,
+              box-shadow 0.5s var(--suave);
+}
+@media (min-width: 768px) {
+  .carta { padding: 1.75rem; }
+}
+.carta:hover {
+  border-color: color-mix(in oklch, var(--color-acento), transparent 55%);
+  box-shadow: 0 24px 50px -30px rgb(0 0 0 / 0.9);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .carta:hover { transform: translateY(-4px); }
+}
+
+/* La comilla vive fuera del flujo, detrás del texto, y se asoma al pasar. */
+.carta__comilla {
+  position: absolute;
+  top: -0.35rem;
+  right: 0.9rem;
+  font-family: var(--font-display);
+  font-size: 5.5rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--color-linea);
+  pointer-events: none;
+  user-select: none;
+  transition: color 0.35s ease, transform 0.6s var(--muelle);
+}
+.carta:hover .carta__comilla {
+  color: color-mix(in oklch, var(--color-acento), transparent 70%);
+  transform: translateY(-0.2rem) rotate(-6deg);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .carta {
+      view-timeline: --carta block;
+      animation: reparte auto linear both;
+      animation-timeline: view();
+      animation-range: entry 6% entry calc(52% + var(--i, 0) * 9%);
+    }
+    .estrellas-fijas__relleno {
+      animation: rellena-estrellas auto linear both;
+      animation-timeline: --carta;
+      animation-range: entry 20% entry 75%;
+    }
+    .estrellas-grandes {
+      view-timeline: --tira block;
+    }
+    .estrellas-grandes .estrellas-fijas__relleno {
+      animation: rellena-estrellas auto linear both;
+      animation-timeline: --tira;
+      animation-range: entry 12% cover 42%;
+    }
+  }
+}
+
+/* Barrido de luz en el botón de la sección: una sola pasada al pasar el ratón. */
+.boton--brillo {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.boton--brillo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: translateX(-120%) skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.45), transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .boton--brillo:hover::after { animation: barre 0.75s var(--suave); }
+}
+@keyframes barre {
+  to { transform: translateX(120%) skewX(-18deg); }
+}
+
+/* ---- Formulario de reseña ----
+   Las estrellas son radios de verdad: el campo va en row-reverse con el 5
+   primero en el DOM, así `:checked ~ label` pinta las estrellas de puntuación
+   menor, que son las que quedan a la izquierda. Sin una línea de JS. */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+}
+.etiqueta {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-tinta);
+}
+.pista {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--color-tenue);
+}
+.campo input,
+.campo textarea {
+  width: 100%;
+  border: 1px solid var(--color-linea);
+  border-radius: 10px;
+  background: var(--color-fondo);
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--color-tinta);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.campo textarea {
+  resize: vertical;
+  min-height: 8rem;
+  line-height: 1.55;
+}
+.campo input:hover,
+.campo textarea:hover { border-color: var(--color-tenue); }
+.campo input:focus-visible,
+.campo textarea:focus-visible {
+  outline: none;
+  border-color: var(--color-acento);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-acento), transparent 78%);
+}
+
+.estrellas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.estrellas__campo {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 0.15rem;
+}
+.estrellas__campo input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.estrellas__campo label {
+  cursor: pointer;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--color-linea);
+  transition: color 0.15s ease, transform 0.4s var(--muelle);
+}
+.estrellas__campo label:hover { transform: translateY(-2px); }
+.estrellas__campo input:checked ~ label,
+.estrellas__campo label:hover,
+.estrellas__campo label:hover ~ label { color: var(--color-acento); }
+.estrellas__campo input:focus-visible + label {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.permiso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-medio);
+  cursor: pointer;
+}
+.permiso input {
+  margin-top: 0.15rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+  accent-color: var(--color-acento);
+}
+.permiso:hover { color: var(--color-tinta); }
+
+/* El cebo tiene que existir para el bot y no existir para nadie más. */
+.cebo {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Al marcar una puntuación, la estrella elegida da un salto con muelle. */
+@keyframes estrella-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35) rotate(-8deg); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .estrellas__campo input:checked + label {
+    animation: estrella-pop 0.5s var(--muelle);
+  }
+}

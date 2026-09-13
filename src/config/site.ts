@@ -85,6 +85,30 @@ const demosEN: Proyecto[] = [
     'A personal injury firm has seconds to be believed: case results up front, with the county and the year.'),
 ];
 
+// --- Reseñas -----------------------------------------------------------------
+
+export interface Resena {
+  texto: string;
+  /** Traducción para /en/. Si falta, en inglés se muestra el original. */
+  textoEn?: string;
+  autor: string;
+  cargo: string;
+  estrellas: 1 | 2 | 3 | 4 | 5;
+  url?: string;
+  /** ISO (YYYY-MM-DD). Se muestra como «mes año». */
+  fecha: string;
+}
+
+// MISMA REGLA QUE LOS PROYECTOS: aquí solo entran reseñas REALES, con permiso
+// explícito de quien las escribe. Nada inventado, ni «de ejemplo». Mientras
+// esté vacío, la sección enseña la invitación a escribir y ninguna tarjeta.
+export const RESENAS: Resena[] = [];
+
+export const RESENA_FORM = {
+  destino: 'https://formsubmit.co/scharcoles@gmail.com',
+  gracias: { es: '/gracias/', en: '/en/thanks/' },
+} as const;
+
 // --- Copy --------------------------------------------------------------------
 
 export const contenido = {
@@ -157,6 +181,50 @@ export const contenido = {
       whatsapp: 'Escríbeme por WhatsApp',
       llamar: 'Llámame',
     },
+    resenas: {
+      eyebrow: 'Reseñas',
+      titular: 'Lo que dicen los que ya la tienen.',
+      texto: 'Escritas por ellos, publicadas tal cual. Ni retocadas ni resumidas.',
+      titularVacio: 'Aquí todavía no hay ninguna reseña.',
+      textoVacio:
+        'Esta parte prefiero que la escriban ellos, así que de momento está vacía. Si hemos trabajado juntos, cuéntalo en dos líneas: la publico tal cual, con tu nombre y el de tu negocio.',
+      nota: 'La escribes tú, la publico yo sin tocar una coma. Solo sale si me das permiso, y la quito el día que me lo pidas.',
+      cta: 'Escribir una reseña ↗',
+      href: '/resena/',
+      traducida: 'traducida del español',
+      deCinco: (n: number) => `${n} de 5 estrellas`,
+    },
+    formulario: {
+      titulo: 'Escribe una reseña — Sergio García Ortiz',
+      descripcion: 'Cuenta cómo fue trabajar conmigo. Se publica tal cual en la web, solo con tu permiso.',
+      volver: 'Volver al portfolio',
+      eyebrow: 'Reseñas',
+      titular: 'Cuéntalo con tus palabras.',
+      texto:
+        'Dos líneas bastan. Me llega a mí, la publico tal cual — sin retocar nada — y si algún día quieres que la quite, me lo dices y la quito.',
+      nombre: 'Tu nombre',
+      nombrePista: 'El que quieras que aparezca.',
+      negocio: 'Tu negocio y a qué se dedica',
+      negocioPista: 'Por ejemplo: Fisioymés · Fisioterapia en Sant Cugat.',
+      enlace: 'Tu web o Instagram',
+      enlacePista: 'Opcional. Si lo pones, enlazo tu nombre ahí.',
+      email: 'Tu email',
+      emailPista: 'Opcional y no se publica. Solo por si necesito confirmarte algo.',
+      puntuacion: 'Puntuación',
+      puntuacionPista: 'De 1 a 5.',
+      resena: 'Tu reseña',
+      resenaPista: 'Qué necesitabas, cómo fue y qué tal el resultado.',
+      permiso: 'Doy permiso para publicar esta reseña en la web con mi nombre y el de mi negocio.',
+      enviar: 'Enviar la reseña',
+      legal: 'Lo que escribas me llega por correo. No se publica nada hasta que yo lo suba, y lo quito el día que me lo pidas.',
+    },
+    gracias: {
+      titulo: 'Reseña recibida — Sergio García Ortiz',
+      titular: 'Recibida. Gracias de verdad.',
+      texto:
+        'La leo hoy mismo y la subo a la web tal cual me la has escrito. Si quieres cambiar algo o que la quite, escríbeme y ya está.',
+      volver: 'Volver al portfolio',
+    },
     proyectos: demosES,
     destacado: fisioymes,
   },
@@ -222,6 +290,50 @@ export const contenido = {
         'Tell me what you have and what you want. I will tell you what I would do and what it costs. No obligation, no runaround.',
       whatsapp: 'Message me on WhatsApp',
       llamar: 'Call me',
+    },
+    resenas: {
+      eyebrow: 'Reviews',
+      titular: 'What the people who already have one say.',
+      texto: 'Written by them, published word for word. Not polished, not trimmed.',
+      titularVacio: 'No reviews here yet.',
+      textoVacio:
+        'I would rather my clients wrote this part, so for now it is empty. If we have worked together, say it in two lines: I publish it as it is, with your name and your business.',
+      nota: 'You write it, I publish it without touching a comma. It only goes up with your permission, and it comes down the day you ask.',
+      cta: 'Write a review ↗',
+      href: '/en/review/',
+      traducida: 'translated from Spanish',
+      deCinco: (n: number) => `${n} out of 5 stars`,
+    },
+    formulario: {
+      titulo: 'Write a review — Sergio García Ortiz',
+      descripcion: 'Tell people what it was like to work with me. Published as it is, only with your permission.',
+      volver: 'Back to the portfolio',
+      eyebrow: 'Reviews',
+      titular: 'Say it in your own words.',
+      texto:
+        'Two lines are enough. It comes straight to me, I publish it as it is — nothing rewritten — and if you ever want it gone, tell me and it is gone.',
+      nombre: 'Your name',
+      nombrePista: 'However you want it to appear.',
+      negocio: 'Your business and what it does',
+      negocioPista: 'For example: Ridgeline Family Dental · Dentistry in Boise.',
+      enlace: 'Your website or Instagram',
+      enlacePista: 'Optional. If you add it, I link your name to it.',
+      email: 'Your email',
+      emailPista: 'Optional and never published. Only in case I need to check something with you.',
+      puntuacion: 'Rating',
+      puntuacionPista: 'From 1 to 5.',
+      resena: 'Your review',
+      resenaPista: 'What you needed, how it went and how the result turned out.',
+      permiso: 'I give permission to publish this review on the site with my name and my business name.',
+      enviar: 'Send the review',
+      legal: 'What you write reaches me by email. Nothing is published until I put it up, and it comes down the day you ask.',
+    },
+    gracias: {
+      titulo: 'Review received — Sergio García Ortiz',
+      titular: 'Got it. Thank you, really.',
+      texto:
+        'I will read it today and put it on the site exactly as you wrote it. If you want to change anything, or have it taken down, just write to me.',
+      volver: 'Back to the portfolio',
     },
     proyectos: demosEN,
     destacado: {

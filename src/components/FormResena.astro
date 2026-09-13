@@ -1,0 +1,99 @@
+---
+import { contenido, rutas, RESENA_FORM, type Lang } from '../config/site';
+const { lang } = Astro.props as { lang: Lang };
+const f = contenido[lang].formulario;
+const siguiente = new URL(RESENA_FORM.gracias[lang], Astro.site).href;
+const estrellas = [5, 4, 3, 2, 1];
+---
+<section class="px-6 py-20 md:px-12 md:py-28">
+  <div class="mx-auto flex max-w-3xl flex-col gap-10">
+    <div class="flex flex-col gap-4">
+      <a href={rutas[lang]} class="w-fit text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-tenue transition-colors hover:text-tinta">
+        ← {f.volver}
+      </a>
+      <p class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">{f.eyebrow}</p>
+      <h1 class="font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.04em] text-balance md:text-6xl" style="font-stretch:110%">
+        {f.titular}
+      </h1>
+      <p class="max-w-[52ch] text-pretty text-medio md:text-lg">{f.texto}</p>
+    </div>
+
+    <form
+      action={RESENA_FORM.destino}
+      method="POST"
+      class="flex flex-col gap-7 rounded-xl border border-linea bg-fondo-2 p-6 md:p-9"
+    >
+      <input type="hidden" name="_subject" value="Nueva reseña desde el portfolio" />
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_next" value={siguiente} />
+      <input type="hidden" name="Idioma" value={lang} />
+      {/* Cebo para bots: FormSubmit descarta el envío si _honey viene relleno. */}
+      <p class="cebo" aria-hidden="true">
+        <label>No rellenar<input type="text" name="_honey" tabindex="-1" autocomplete="off" /></label>
+      </p>
+
+      <fieldset class="estrellas">
+        <legend class="etiqueta">{f.puntuacion}</legend>
+        <div class="estrellas__campo">
+          {estrellas.map((n) => (
+            <>
+              <input
+                type="radio"
+                id={`estrella-${n}`}
+                name="Puntuacion"
+                value={`${n}/5`}
+                checked={n === 5}
+                required
+              />
+              <label for={`estrella-${n}`} title={`${n}/5`}>
+                <span class="sr-only">{`${n}/5`}</span>
+                <span aria-hidden="true">★</span>
+              </label>
+            </>
+          ))}
+        </div>
+        <span class="pista">{f.puntuacionPista}</span>
+      </fieldset>
+
+      <p class="campo">
+        <label class="etiqueta" for="resena">{f.resena}</label>
+        <textarea id="resena" name="Resena" rows="6" maxlength="700" required placeholder=" "></textarea>
+        <span class="pista">{f.resenaPista}</span>
+      </p>
+
+      <div class="grid gap-7 md:grid-cols-2">
+        <p class="campo">
+          <label class="etiqueta" for="nombre">{f.nombre}</label>
+          <input id="nombre" name="Nombre" type="text" autocomplete="name" maxlength="80" required />
+          <span class="pista">{f.nombrePista}</span>
+        </p>
+        <p class="campo">
+          <label class="etiqueta" for="negocio">{f.negocio}</label>
+          <input id="negocio" name="Negocio" type="text" maxlength="120" required />
+          <span class="pista">{f.negocioPista}</span>
+        </p>
+        <p class="campo">
+          <label class="etiqueta" for="enlace">{f.enlace}</label>
+          <input id="enlace" name="Enlace" type="url" inputmode="url" placeholder="https://" maxlength="200" />
+          <span class="pista">{f.enlacePista}</span>
+        </p>
+        <p class="campo">
+          <label class="etiqueta" for="email">{f.email}</label>
+          <input id="email" name="Email" type="email" autocomplete="email" maxlength="120" />
+          <span class="pista">{f.emailPista}</span>
+        </p>
+      </div>
+
+      <label class="permiso">
+        <input type="checkbox" name="Permiso" value="Si, autoriza a publicarla" required />
+        <span>{f.permiso}</span>
+      </label>
+
+      <div class="flex flex-col gap-4 border-t border-linea pt-6 md:flex-row md:items-center md:justify-between">
+        <p class="max-w-[46ch] text-pretty text-xs leading-relaxed text-tenue">{f.legal}</p>
+        <button type="submit" class="boton boton--primario shrink-0">{f.enviar}</button>
+      </div>
+    </form>
+  </div>
+</section>

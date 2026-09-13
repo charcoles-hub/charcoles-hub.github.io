@@ -1,22 +1,30 @@
 ---
 import '../styles/global.css';
-import { contenido, rutas, ogLocale, TELEFONO, type Lang } from '../config/site';
+import { contenido, rutas, ogLocale, RESENAS, TELEFONO, type Lang } from '../config/site';
 
 interface Props {
   lang: Lang;
   titulo?: string;
   descripcion?: string;
+  /** Rutas equivalentes en cada idioma, para los hreflang. Por defecto, la portada. */
+  paginas?: Record<Lang, string>;
+  noindex?: boolean;
 }
 const { lang } = Astro.props;
 const C = contenido[lang];
-const { titulo = C.site.titulo, descripcion = C.site.descripcion } = Astro.props;
+const {
+  titulo = C.site.titulo,
+  descripcion = C.site.descripcion,
+  paginas = rutas,
+  noindex = false,
+} = Astro.props;
 const canonica = new URL(Astro.url.pathname, Astro.site).href;
 
 // hreflang recíprocos: cada versión declara las dos rutas, y las dos existen
 // como HTML estático. Sin esto Google trata /en/ como duplicado de la raíz.
-const alternas = (Object.keys(rutas) as Lang[]).map((l) => ({
+const alternas = (Object.keys(paginas) as Lang[]).map((l) => ({
   codigo: l,
-  href: new URL(rutas[l], Astro.site).href,
+  href: new URL(paginas[l], Astro.site).href,
 }));
 
 const jsonLd = {
@@ -37,6 +45,23 @@ const jsonLd = {
     '@type': 'CollegeOrUniversity',
     name: 'Universitat Politècnica de Catalunya — EEBE',
   },
+  // Solo si hay reseñas reales: marcar valoraciones inventadas es penalizable
+  // por Google, además de mentira. Con el array vacío no sale ni el campo.
+  ...(RESENAS.length > 0 && {
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: (RESENAS.reduce((s, r) => s + r.estrellas, 0) / RESENAS.length).toFixed(1),
+      reviewCount: RESENAS.length,
+      bestRating: 5,
+    },
+    review: RESENAS.map((r) => ({
+      '@type': 'Review',
+      reviewBody: r.texto,
+      datePublished: r.fecha,
+      author: { '@type': 'Person', name: r.autor },
+      reviewRating: { '@type': 'Rating', ratingValue: r.estrellas, bestRating: 5 },
+    })),
+  }),
 };
 
 // Favicon: la S sobre el acento, inline. Sin peticiones extra ni binarios.
@@ -57,9 +82,10 @@ const favicon =
     <link rel="canonical" href={canonica} />
     <link rel="icon" href={favicon} />
     <title>{titulo}</title>
+    {noindex && <meta name="robots" content="noindex" />}
 
     {alternas.map((a) => <link rel="alternate" hreflang={a.codigo} href={a.href} />)}
-    <link rel="alternate" hreflang="x-default" href={new URL(rutas.es, Astro.site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(paginas.es, Astro.site).href} />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={titulo} />

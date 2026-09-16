@@ -1,0 +1,144 @@
+---
+import { CALCULADORA, contenido, TELEFONO } from '../config/site';
+import { SERVICIOS, type Servicio } from '../config/servicios';
+import Layout from '../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  return SERVICIOS.map((s) => ({ params: { servicio: s.slug }, props: { s } }));
+}
+
+const { s } = Astro.props as { s: Servicio };
+const { site, portada, contacto } = contenido.es;
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: s.faq.map((f) => ({
+    '@type': 'Question',
+    name: f.pregunta,
+    acceptedAnswer: { '@type': 'Answer', text: f.respuesta },
+  })),
+};
+
+const servicioLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: s.nombre,
+  description: s.descripcion,
+  serviceType: s.nombre,
+  provider: { '@type': 'ProfessionalService', name: site.nombre, telephone: '+34620650597' },
+  areaServed: { '@type': 'AdministrativeArea', name: 'Baix Llobregat i Barcelona' },
+  url: new URL(`/${s.slug}/`, Astro.site).href,
+};
+---
+<Layout
+  lang="es"
+  titulo={s.titulo}
+  descripcion={s.descripcion}
+  paginas={{ es: `/${s.slug}/`, en: '/en/' }}
+  datos={[servicioLd, faqLd]}
+>
+  <header class="px-6 pb-16 pt-7 md:px-12 md:pb-24 md:pt-10">
+    <div class="mx-auto max-w-6xl">
+      <a
+        href="/"
+        class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-tenue transition-colors hover:text-tinta"
+      >
+        ← {site.nombre}
+      </a>
+
+      <p class="mt-14 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-acento md:mt-20">
+        {s.nombre}
+      </p>
+
+      <h1 class="mt-6 font-display text-[clamp(2.2rem,5.6vw,4.2rem)] font-extrabold leading-[0.98] tracking-[-0.04em] text-balance">
+        {s.h1}
+      </h1>
+
+      <p class="mt-7 max-w-[54ch] text-balance text-base text-medio md:text-lg">{s.bajada}</p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-3">
+        <a href={CALCULADORA} target="_blank" rel="noopener" class="boton boton--primario">
+          {portada.ctaPresupuesto}
+        </a>
+        <a href={TELEFONO.wa} target="_blank" rel="noopener" class="boton boton--borde">
+          {contacto.whatsapp}
+        </a>
+        <a href={TELEFONO.tel} class="boton boton--fantasma">
+          {portada.ctaLlamar} <span class="text-tenue">{TELEFONO.humano}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="border-t border-linea bg-fondo-2 px-6 py-20 md:px-12 md:py-28">
+    <div class="mx-auto max-w-6xl">
+      <h2 class="font-display text-3xl font-extrabold tracking-[-0.035em] md:text-4xl">
+        {s.incluyeTitular}
+      </h2>
+      <ul class="mt-10 grid gap-x-12 gap-y-5 md:grid-cols-2">
+        {s.incluye.map((linea) => (
+          <li class="flex gap-3 text-pretty text-medio md:text-lg">
+            <span aria-hidden="true" class="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-acento"></span>
+            <span>{linea}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="border-t border-linea px-6 py-20 md:px-12 md:py-28">
+    <div class="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
+      {s.datos.map((d) => (
+        <div class="flex flex-col gap-2">
+          <p class="font-display text-4xl font-extrabold tracking-[-0.04em] md:text-5xl">{d.cifra}</p>
+          <p class="text-pretty text-sm text-medio md:text-base">{d.texto}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="border-t border-linea bg-fondo-2 px-6 py-20 md:px-12 md:py-28">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="font-display text-3xl font-extrabold tracking-[-0.035em] md:text-4xl">
+        Preguntas frecuentes
+      </h2>
+      <div class="mt-10 flex flex-col divide-y divide-linea border-y border-linea">
+        {s.faq.map((f) => (
+          <details class="group py-5">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-pretty font-semibold md:text-lg">
+              {f.pregunta}
+              <span
+                aria-hidden="true"
+                class="shrink-0 text-acento transition-transform group-open:rotate-45"
+              >+</span>
+            </summary>
+            <p class="mt-3 max-w-[60ch] text-pretty text-medio">{f.respuesta}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-linea px-6 py-20 md:px-12 md:py-28">
+    <div class="mx-auto flex max-w-6xl flex-col gap-8">
+      <h2 class="font-display text-[clamp(2rem,4.6vw,3.4rem)] font-extrabold leading-[1] tracking-[-0.04em] text-balance">
+        {contacto.titular}
+      </h2>
+      <p class="max-w-[46ch] text-balance text-medio md:text-lg">{contacto.texto}</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href={TELEFONO.wa} target="_blank" rel="noopener" class="boton boton--primario">
+          {contacto.whatsapp}
+        </a>
+        <a href={TELEFONO.tel} class="boton boton--borde">
+          {contacto.llamar} <span class="text-tenue">{TELEFONO.humano}</span>
+        </a>
+        <a href={`mailto:${site.email}`} class="boton boton--fantasma">{site.email}</a>
+      </div>
+      <footer class="mt-16 flex items-center justify-between border-t border-linea pt-8 text-xs text-tenue">
+        <span>{site.nombre}</span>
+        <span>{site.lugar}</span>
+      </footer>
+    </div>
+  </section>
+</Layout>

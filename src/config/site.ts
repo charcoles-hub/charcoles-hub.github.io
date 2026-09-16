@@ -129,7 +129,7 @@ export const contenido = {
       email: 'info@sergiogarciaweb.com',
     },
     portada: {
-      titular: ['Diseño webs a medida', 'para pequeños negocios'],
+      titular: ['Diseño webs', 'a medida'],
       bajada:
         'Sencillas, rápidas y que se ven bien en el móvil. Las hago yo de principio a fin.',
       // El dato que el visitante viene a comprobar: cuánto y cuándo. Los números
@@ -256,7 +256,7 @@ export const contenido = {
       email: 'info@sergiogarciaweb.com',
     },
     portada: {
-      titular: ['Custom websites', 'for small businesses'],
+      titular: ['Custom', 'websites'],
       bajada:
         'Simple, fast, and good-looking on a phone. I build them end to end.',
       dato: 'From €500 · live in 7 days',

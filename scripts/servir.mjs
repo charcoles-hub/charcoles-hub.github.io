@@ -4,7 +4,7 @@ import { extname, join, normalize } from 'node:path';
 
 const PUERTO = Number(process.env.PUERTO ?? 4321);
 const RAIZ = new URL('../dist/', import.meta.url).pathname;
-const ORIGEN_DEMOS = 'https://charcoles-hub.github.io';
+const ORIGEN_DEMOS = 'https://sergiogarciaweb.com';
 const ORIGEN_FISIOYMES = 'https://fisioymes.com';
 
 // Rutas que NO son de este sitio, sino de otros repos publicados en el mismo
@@ -13,7 +13,7 @@ const ORIGEN_FISIOYMES = 'https://fisioymes.com';
 // en el proxy de astro.config.mjs, o su iframe cargará un 404 en local.
 const ES_PROYECTO = /^\/(demo-|fisioymes)/;
 
-// Fisioymés ya vive en su propio dominio: charcoles-hub.github.io/fisioymes/
+// Fisioymés ya vive en su propio dominio: sergiogarciaweb.com/fisioymes/
 // es un 301 a fisioymes.com, y el HTML que sirve referencia sus assets con
 // rutas absolutas de RAÍZ (/assets/*, /_astro/*). En producción esas rutas las
 // resuelve su dominio; aquí caerían en dist/ y darían 404, así que si dist/ no

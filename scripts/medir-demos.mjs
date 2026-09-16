@@ -28,7 +28,7 @@ const objetivos = slugs.length
 // Por defecto mide las demos PUBLICADAS: los pósters deben enseñar lo que ve el visitante.
 // Si acabas de mejorar una demo y aún no la has publicado, este script capturaría la versión
 // vieja, así que el orden correcto es: publicar la demo -> regenerar el póster -> publicar esto.
-const ORIGEN = process.env.DEMOS_ORIGEN ?? 'https://charcoles-hub.github.io';
+const ORIGEN = process.env.DEMOS_ORIGEN ?? 'https://sergiogarciaweb.com';
 
 const POSTERS = new URL('../src/assets/posters/', import.meta.url).pathname;
 if (conPoster) await mkdir(POSTERS, { recursive: true });

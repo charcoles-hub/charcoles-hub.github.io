@@ -11,7 +11,7 @@ export const ogLocale: Record<Lang, string> = { es: 'es_ES', en: 'en_US' };
 
 /** Contacto real. El wa.me lleva el prefijo, el tel: también. */
 export const TELEFONO = { humano: '620 650 597', tel: 'tel:+34620650597', wa: 'https://wa.me/34620650597' };
-export const CALCULADORA = 'https://charcoles-hub.github.io/presupuesto-web/';
+export const CALCULADORA = 'https://sergiogarciaweb.com/presupuesto-web/';
 
 export interface Proyecto {
   nombre: string;
@@ -43,7 +43,7 @@ const fisioymes: Destacado = {
   descripcion:
     'Vinieron con una queja concreta: en el móvil su web era todo letra y scroll sin fin. La rehíce entera en catalán y castellano, con las lesiones en rejilla y los tratamientos en fichas — y sin tocarles el sistema de reservas que ya usaban.',
   slug: 'fisioymes',
-  url: 'https://charcoles-hub.github.io/fisioymes/',
+  url: 'https://sergiogarciaweb.com/fisioymes/',
   alto: 4939,
 };
 
@@ -52,7 +52,7 @@ const demo = (slug: string, nombre: string, rubro: string, descripcion: string):
   rubro,
   descripcion,
   slug,
-  url: `https://charcoles-hub.github.io/${slug}/`,
+  url: `https://sergiogarciaweb.com/${slug}/`,
 });
 
 const demosES: Proyecto[] = [

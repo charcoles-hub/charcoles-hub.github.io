@@ -26,7 +26,7 @@ export default defineConfig({
       // caza ("la demo se recorre al scrollear" da 0 -> 0), pero cuesta menos
       // acordarse.
       proxy: {
-        '^/(demo-|fisioymes)': { target: 'https://charcoles-hub.github.io', changeOrigin: true },
+        '^/(demo-|fisioymes)': { target: 'https://sergiogarciaweb.com', changeOrigin: true },
       },
     },
   },

@@ -1,0 +1,24 @@
+---
+import { contenido, type Lang } from '../config/site';
+import { SERVICIOS } from '../config/servicios';
+const { lang } = Astro.props as { lang: Lang };
+const { site } = contenido[lang];
+
+// Las paginas de servicio solo existen en espanol de momento: en /en/ el pie
+// se queda con el nombre y el lugar, como estaba.
+const servicios = lang === 'es' ? SERVICIOS : [];
+---
+<footer class="mx-auto mt-24 flex max-w-6xl flex-col gap-8 border-t border-linea pt-8">
+  {servicios.length > 0 && (
+    <nav aria-label="Servicios" class="flex flex-wrap gap-x-6 gap-y-3 text-sm text-medio">
+      {servicios.map((s) => (
+        <a href={`/${s.slug}/`} class="transition-colors hover:text-tinta">{s.nombre}</a>
+      ))}
+    </nav>
+  )}
+
+  <div class="flex items-center justify-between text-xs text-tenue">
+    <span>{site.nombre}</span>
+    <span>{site.lugar}</span>
+  </div>
+</footer>

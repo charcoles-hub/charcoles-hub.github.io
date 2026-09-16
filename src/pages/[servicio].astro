@@ -2,6 +2,7 @@
 import { CALCULADORA, contenido, TELEFONO } from '../config/site';
 import { SERVICIOS, type Servicio } from '../config/servicios';
 import Layout from '../layouts/Layout.astro';
+import Pie from '../components/Pie.astro';
 
 export function getStaticPaths() {
   return SERVICIOS.map((s) => ({ params: { servicio: s.slug }, props: { s } }));
@@ -135,10 +136,7 @@ const servicioLd = {
         </a>
         <a href={`mailto:${site.email}`} class="boton boton--fantasma">{site.email}</a>
       </div>
-      <footer class="mt-16 flex items-center justify-between border-t border-linea pt-8 text-xs text-tenue">
-        <span>{site.nombre}</span>
-        <span>{site.lugar}</span>
-      </footer>
+      <Pie lang="es" />
     </div>
   </section>
 </Layout>

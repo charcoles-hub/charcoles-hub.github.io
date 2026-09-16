@@ -70,6 +70,131 @@ export const SERVICIOS: Servicio[] = [
       },
     ],
   },
+  {
+    slug: 'rediseno-web',
+    nombre: 'Rediseño de web antigua',
+    titulo: 'Rediseño de webs antiguas — Sergio García Ortiz',
+    descripcion:
+      'Si tu web va lenta, no se ve bien en el móvil o te da vergüenza enseñarla, la rehago desde cero sin perder lo que ya tienes en Google.',
+    h1: 'Rediseño de webs antiguas',
+    bajada:
+      'Si tu web va lenta, no se ve bien en el móvil o te da vergüenza enseñarla, la rehago desde cero sin perder lo que ya tienes en Google.',
+    incluyeTitular: 'Qué incluye',
+    incluye: [
+      'La web rehecha desde cero, no un parche encima de la que tienes.',
+      'Te quedas con tu dominio y con las direcciones que ya estaban en Google.',
+      'Traslado de tus textos y fotos a la web nueva.',
+      'Se ve perfecta en el móvil, que es donde peor va la web antigua.',
+      'Tu web actual sigue funcionando hasta el día que publicamos la nueva.',
+    ],
+    datos: [
+      { cifra: '500 €', texto: 'la web nueva entera, con presupuesto cerrado antes de empezar' },
+      { cifra: '100 €', texto: 'el traslado de los contenidos de tu web actual' },
+      { cifra: '7 días', texto: 'de empezar a estar publicada' },
+    ],
+    faq: [
+      {
+        pregunta: '¿Pierdo el posicionamiento que tengo?',
+        respuesta:
+          'No. Se mantienen las direcciones que Google ya conoce, y las que cambien se redirigen a la página nueva que les corresponde.',
+      },
+      {
+        pregunta: '¿Me quedo con mi dominio?',
+        respuesta:
+          'Sí, el dominio es tuyo y sigue a tu nombre. Yo solo lo administro mientras quieras.',
+      },
+      {
+        pregunta: '¿Mi web actual se cae mientras trabajas?',
+        respuesta:
+          'No. La nueva se construye aparte y tu web de siempre sigue en pie; solo se cambia el día que publicamos, y eso son minutos.',
+      },
+      {
+        pregunta: '¿Y si luego quiero cambiar cosas?',
+        respuesta:
+          'Me lo dices y te lo cambio yo: 25 € una tanda de textos y fotos, 50 € una página nueva. Con mantenimiento los cambios van incluidos y las páginas nuevas salen a mitad de precio.',
+      },
+    ],
+  },
+  {
+    slug: 'mantenimiento-web',
+    nombre: 'Mantenimiento',
+    titulo: 'Mantenimiento de páginas web — Sergio García Ortiz',
+    descripcion:
+      'Alojamiento, copias de seguridad y tus cambios hechos por mí. Desde 50 € al mes, con 3 meses mínimo.',
+    h1: 'Mantenimiento de páginas web',
+    bajada:
+      'Alojamiento, copias de seguridad y tus cambios hechos por mí. Desde 50 € al mes, con 3 meses mínimo.',
+    incluyeTitular: 'Qué incluye',
+    incluye: [
+      'Alojamiento y copias de seguridad de tu web.',
+      'Los cambios de texto y fotos que necesites, hechos por mí.',
+      'Las páginas nuevas, a mitad de precio: 25 € en vez de 50 €.',
+      'Actualizaciones y vigilancia de que todo sigue funcionando.',
+      'Con el plan Prioritario, además, un repaso cada mes de cómo va la web.',
+    ],
+    datos: [
+      { cifra: '50 €', texto: 'al mes, con tus cambios hechos en 7 días como máximo' },
+      { cifra: '75 €', texto: 'al mes, con prioridad: tus cambios en 2 días como máximo' },
+      { cifra: '3 meses', texto: 'de compromiso mínimo, y después lo dejas cuando quieras' },
+    ],
+    faq: [
+      {
+        pregunta: '¿Qué cuenta como cambio?',
+        respuesta:
+          'Textos y fotos: cambiar precios, horarios, servicios, añadir fotos nuevas. Una página entera nueva va aparte, a mitad de precio: 25 €.',
+      },
+      {
+        pregunta: '¿Tengo que atarme un año?',
+        respuesta:
+          'No. El compromiso son 3 meses y a partir de ahí lo dejas cuando quieras, sin penalización ni papeleo.',
+      },
+      {
+        pregunta: '¿Y si no quiero mantenimiento?',
+        respuesta:
+          'No hace falta: la web funciona sola, sin plugins que actualizar. Si algún día quieres cambios, te los cobro sueltos: 25 € una tanda de textos y fotos, 50 € una página nueva.',
+      },
+    ],
+  },
+  {
+    slug: 'posicionamiento-google',
+    nombre: 'Posicionamiento en Google',
+    titulo: 'Posicionamiento en Google para negocios locales — Sergio García Ortiz',
+    descripcion:
+      'Que te encuentren cuando busquen tu servicio en tu zona: ficha de Google, la web preparada por dentro y los datos que Google necesita. 110 €.',
+    h1: 'Posicionamiento en Google para negocios locales',
+    bajada:
+      'Que te encuentren cuando busquen tu servicio en tu zona: ficha de Google, la web preparada por dentro y los datos que Google necesita.',
+    incluyeTitular: 'Qué incluye',
+    incluye: [
+      'Tu ficha de Google creada y rellenada: servicios, zonas, horario y fotos.',
+      'La web preparada por dentro: títulos, descripciones y los datos que Google lee.',
+      'El sitio declarado a Google para que sepa qué páginas tienes.',
+      'Una web rápida, que es de lo poco que Google mide y compara de verdad.',
+      'Te explico cómo pedir reseñas, que es lo que más mueve en las búsquedas de tu barrio.',
+    ],
+    datos: [
+      { cifra: '110 €', texto: 'el servicio completo, junto con tu web nueva' },
+      { cifra: '2 días', texto: 'de trabajo añadidos al plazo de la web' },
+      { cifra: '0 €', texto: 'de cuota: no es una suscripción, se hace una vez' },
+    ],
+    faq: [
+      {
+        pregunta: '¿Cuánto tardo en aparecer?',
+        respuesta:
+          'La ficha, en cuanto Google la verifica: unos días. En los resultados de búsqueda va más despacio, semanas, y depende de la competencia que tengas en tu zona.',
+      },
+      {
+        pregunta: '¿Qué es la ficha de Google y por qué importa?',
+        respuesta:
+          'Es el cuadro con tu nombre, teléfono y reseñas que sale a la derecha o en el mapa. Para un negocio de barrio es lo que más clientes trae, por delante de la propia web.',
+      },
+      {
+        pregunta: '¿Me garantizas el primer puesto?',
+        respuesta:
+          'No, y quien te lo garantice te está engañando. Lo que hago es que Google tenga toda la información para encontrarte y entenderte; el puesto depende de la competencia que tengas en tu zona.',
+      },
+    ],
+  },
 ];
 
 export const porSlug = (slug: string) => SERVICIOS.find((s) => s.slug === slug);

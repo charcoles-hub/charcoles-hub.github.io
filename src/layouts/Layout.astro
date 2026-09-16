@@ -29,21 +29,38 @@ const alternas = (Object.keys(paginas) as Lang[]).map((l) => ({
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Person',
+  '@type': 'ProfessionalService',
   name: C.site.nombre,
-  jobTitle: C.site.rol,
+  description: C.site.descripcion,
+  url: canonica,
+  image: new URL('/og.png', Astro.site).href,
   email: `mailto:${C.site.email}`,
   telephone: '+34620650597',
-  url: canonica,
+  priceRange: '€€',
+  currenciesAccepted: 'EUR',
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Cornellà de Llobregat',
     addressRegion: 'Barcelona',
     addressCountry: 'ES',
   },
-  alumniOf: {
-    '@type': 'CollegeOrUniversity',
-    name: 'Universitat Politècnica de Catalunya — EEBE',
+  areaServed: [
+    'Cornellà de Llobregat',
+    'Esplugues de Llobregat',
+    'Sant Joan Despí',
+    'Sant Boi de Llobregat',
+    "L'Hospitalet de Llobregat",
+    'Barcelona',
+    'Baix Llobregat',
+  ].map((n) => ({ '@type': 'City', name: n })),
+  founder: {
+    '@type': 'Person',
+    name: C.site.nombre,
+    jobTitle: C.site.rol,
+    alumniOf: {
+      '@type': 'CollegeOrUniversity',
+      name: 'Universitat Politècnica de Catalunya — EEBE',
+    },
   },
   // Solo si hay reseñas reales: marcar valoraciones inventadas es penalizable
   // por Google, además de mentira. Con el array vacío no sale ni el campo.

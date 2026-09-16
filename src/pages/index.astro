@@ -1,6 +1,7 @@
 ---
 // Español, en la RAÍZ: es lo indexado y no se mueve. Estático, CSS primero:
 // el único JS de la página es el del marco vivo de Fisioymés.
+import { RESENAS } from '../config/site';
 import Layout from '../layouts/Layout.astro';
 import Portada from '../components/Portada.astro';
 import Trabajo from '../components/Trabajo.astro';
@@ -9,13 +10,16 @@ import Precio from '../components/Precio.astro';
 import Bio from '../components/Bio.astro';
 import ComoTrabajo from '../components/ComoTrabajo.astro';
 import Contacto from '../components/Contacto.astro';
+
+const hayResenas = RESENAS.length > 0;
 ---
 <Layout lang="es">
   <Portada lang="es" />
   <Trabajo lang="es" />
-  <Resenas lang="es" />
+  {hayResenas && <Resenas lang="es" />}
   <Precio lang="es" />
   <Bio lang="es" />
   <ComoTrabajo lang="es" />
+  {!hayResenas && <Resenas lang="es" />}
   <Contacto lang="es" />
 </Layout>

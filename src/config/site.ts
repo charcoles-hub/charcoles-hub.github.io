@@ -129,12 +129,22 @@ export const contenido = {
       email: 'hola@sergiogarciaweb.com',
     },
     portada: {
+      titular: ['Diseño webs a medida', 'para pequeños negocios'],
+      bajada:
+        'Sencillas, rápidas y que se ven bien en el móvil. Las hago yo de principio a fin, y luego las actualizas sin pelearte con nada.',
       // El dato que el visitante viene a comprobar: cuánto y cuándo. Los números
       // salen de la calculadora pública y tienen que cuadrar con ella SIEMPRE.
-      dato: 'Web completa desde 500 € · entregada en 7 días',
+      dato: 'Desde 500 € · publicada en 7 días',
+      ctaPresupuesto: 'Pedir presupuesto',
       ctaWhatsapp: 'WhatsApp',
       ctaLlamar: 'Llamar',
-      ctaTrabajo: 'Ver el trabajo ↓',
+      ctaTrabajo: 'Ver trabajos ↓',
+      nav: [
+        { texto: 'Trabajos', href: '#trabajo' },
+        { texto: 'Precio', href: '#precio' },
+        { texto: 'Cómo trabajo', href: '#metodo' },
+        { texto: 'Contacto', href: '#contacto' },
+      ],
     },
     trabajo: {
       titular: 'El trabajo',
@@ -246,10 +256,20 @@ export const contenido = {
       email: 'hola@sergiogarciaweb.com',
     },
     portada: {
-      dato: 'A complete website from €500 · delivered in 7 days',
+      titular: ['Custom websites', 'for small businesses'],
+      bajada:
+        'Simple, fast, and good-looking on a phone. I build them end to end, and you can update them afterwards without fighting anything.',
+      dato: 'From €500 · live in 7 days',
+      ctaPresupuesto: 'Get a quote',
       ctaWhatsapp: 'WhatsApp',
       ctaLlamar: 'Call',
       ctaTrabajo: 'See the work ↓',
+      nav: [
+        { texto: 'Work', href: '#trabajo' },
+        { texto: 'Pricing', href: '#precio' },
+        { texto: 'How I work', href: '#metodo' },
+        { texto: 'Contact', href: '#contacto' },
+      ],
     },
     trabajo: {
       titular: 'The work',

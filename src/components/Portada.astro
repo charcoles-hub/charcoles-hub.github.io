@@ -1,6 +1,5 @@
 ---
 import { contenido, rutas, TELEFONO, type Lang } from '../config/site';
-import FondoWebGL from './FondoWebGL.astro';
 const { lang } = Astro.props as { lang: Lang };
 const { site, portada } = contenido[lang];
 
@@ -11,62 +10,75 @@ const idiomas: { codigo: Lang; etiqueta: string }[] = [
   { codigo: 'en', etiqueta: 'EN' },
 ];
 ---
-<header class="relative isolate flex min-h-[100svh] flex-col justify-between px-6 py-7 md:px-12 md:py-10">
-  <FondoWebGL />
-  <div class="entra flex items-center justify-between gap-4" style="--i:0">
-    <p class="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-acento">
-      {site.rol} · <span class="text-medio">{site.lugar}</span>
-    </p>
-    <nav
-      aria-label={lang === 'es' ? 'Idioma' : 'Language'}
-      class="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em]"
-    >
-      {idiomas.map((i, n) => (
-        <>
-          {n > 0 && <span aria-hidden="true" class="text-linea">/</span>}
-          <a
-            href={rutas[i.codigo]}
-            hreflang={i.codigo}
-            aria-current={i.codigo === lang ? 'true' : undefined}
-            class={i.codigo === lang ? 'text-tinta' : 'text-tenue transition-colors hover:text-tinta'}
-          >
-            {i.etiqueta}
-          </a>
-        </>
-      ))}
-    </nav>
+<header class="relative isolate px-6 pb-20 pt-7 md:px-12 md:pb-32 md:pt-10">
+  <div class="entra mx-auto flex max-w-6xl items-center justify-between gap-4" style="--i:0">
+    <a href={rutas[lang]} class="text-[0.78rem] font-semibold tracking-[-0.01em] text-tinta">
+      {site.nombre}
+    </a>
+
+    <div class="flex items-center gap-6">
+      <nav
+        aria-label={lang === 'es' ? 'Secciones' : 'Sections'}
+        class="hidden items-center gap-6 text-[0.78rem] text-medio md:flex"
+      >
+        {portada.nav.map((l) => (
+          <a href={l.href} class="transition-colors hover:text-tinta">{l.texto}</a>
+        ))}
+      </nav>
+
+      <nav
+        aria-label={lang === 'es' ? 'Idioma' : 'Language'}
+        class="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.16em]"
+      >
+        {idiomas.map((i, n) => (
+          <>
+            {n > 0 && <span aria-hidden="true" class="text-linea">/</span>}
+            <a
+              href={rutas[i.codigo]}
+              hreflang={i.codigo}
+              aria-current={i.codigo === lang ? 'true' : undefined}
+              class={i.codigo === lang ? 'text-tinta' : 'text-tenue transition-colors hover:text-tinta'}
+            >
+              {i.etiqueta}
+            </a>
+          </>
+        ))}
+      </nav>
+    </div>
   </div>
 
-  <h1
-    class="font-display font-extrabold leading-[0.88] tracking-[-0.045em]
-           text-[clamp(3rem,13vw,11rem)]"
-    style="font-stretch:115%"
-  >
-    <span class="mascara"><span style="--i:1">Sergio</span></span>
-    <span class="mascara"><span style="--i:2">García <em class="not-italic text-tenue">Ortiz</em></span></span>
-  </h1>
+  <div class="mx-auto mt-24 max-w-6xl md:mt-40">
+    <p class="entra text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-acento" style="--i:1">
+      {site.rol}
+    </p>
 
-  <div class="flex flex-col gap-7">
-    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-      <p class="entra max-w-[42ch] text-balance text-base text-medio md:text-lg" style="--i:3">
-        {site.descripcion}
-      </p>
-      <p class="entra text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-tinta" style="--i:4">
-        {portada.dato}
-      </p>
-    </div>
+    <h1
+      class="mt-6 font-display font-extrabold leading-[0.95] tracking-[-0.04em]
+             text-[clamp(2.5rem,7.2vw,5.5rem)] text-balance"
+    >
+      {portada.titular.map((linea, n) => (
+        <span class="mascara block"><span style={`--i:${n + 2}`}>{linea}</span></span>
+      ))}
+    </h1>
 
-    {/* Los tres caminos del visitante con prisa: hablar ya (WhatsApp/llamar) o
-        comprobar el trabajo. En móvil son de un toque. */}
-    <div class="entra flex flex-wrap items-center gap-3" style="--i:5">
-      <a href={TELEFONO.wa} target="_blank" rel="noopener"
-        class="boton boton--primario">
-        {portada.ctaWhatsapp}
-      </a>
-      <a href={TELEFONO.tel} class="boton boton--borde">
+    <p class="entra mt-8 max-w-[52ch] text-balance text-base text-medio md:text-lg" style="--i:4">
+      {portada.bajada}
+    </p>
+
+    <p
+      class="entra mt-10 inline-flex items-center gap-2 rounded-full border border-linea
+             bg-fondo-2 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-tinta"
+      style="--i:5"
+    >
+      {portada.dato}
+    </p>
+
+    <div class="entra mt-10 flex flex-wrap items-center gap-3" style="--i:6">
+      <a href="#contacto" class="boton boton--primario">{portada.ctaPresupuesto}</a>
+      <a href="#trabajo" class="boton boton--borde">{portada.ctaTrabajo}</a>
+      <a href={TELEFONO.tel} class="boton boton--fantasma">
         {portada.ctaLlamar} <span class="text-tenue">{TELEFONO.humano}</span>
       </a>
-      <a href="#trabajo" class="boton boton--fantasma">{portada.ctaTrabajo}</a>
     </div>
   </div>
 </header>

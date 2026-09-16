@@ -126,7 +126,7 @@ export const contenido = {
       titulo: 'Sergio García Ortiz — Diseñador web en Cornellà de Llobregat, Barcelona',
       descripcion:
         'Diseño y construyo webs a medida para negocios que están hartos de parecer una plantilla. Estáticas, rápidas y sin nada que se pueda romper.',
-      email: 'scharcoles@gmail.com',
+      email: 'hola@sergiogarciaweb.com',
     },
     portada: {
       // El dato que el visitante viene a comprobar: cuánto y cuándo. Los números
@@ -243,7 +243,7 @@ export const contenido = {
       titulo: 'Sergio García Ortiz — Web designer in Barcelona',
       descripcion:
         'I design and build custom websites for businesses tired of looking like a template. Static, fast, and with nothing that can break.',
-      email: 'scharcoles@gmail.com',
+      email: 'hola@sergiogarciaweb.com',
     },
     portada: {
       dato: 'A complete website from €500 · delivered in 7 days',

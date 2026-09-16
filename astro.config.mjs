@@ -8,7 +8,7 @@ export default defineConfig({
   base: '/',
   integrations: [
     sitemap({
-      filter: (pagina) => !/\/(gracias|thanks)\/$/.test(pagina),
+      filter: (pagina) => !/\/(gracias|thanks|gracies)\/$/.test(pagina),
     }),
   ],
   vite: {

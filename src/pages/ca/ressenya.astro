@@ -2,9 +2,9 @@
 import Layout from '../../layouts/Layout.astro';
 import FormResena from '../../components/FormResena.astro';
 import { contenido } from '../../config/site';
-const f = contenido.en.formulario;
+const f = contenido.ca.formulario;
 const paginas = { es: '/resena/', en: '/en/review/', ca: '/ca/ressenya/' };
 ---
-<Layout lang="en" titulo={f.titulo} descripcion={f.descripcion} paginas={paginas}>
-  <FormResena lang="en" />
+<Layout lang="ca" titulo={f.titulo} descripcion={f.descripcion} paginas={paginas}>
+  <FormResena lang="ca" />
 </Layout>

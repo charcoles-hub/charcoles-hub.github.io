@@ -1,4 +1,4 @@
-export type Lang = 'es' | 'en';
+export type Lang = 'es' | 'en' | 'ca';
 
 /**
  * Rutas de cada idioma. El español vive en la RAÍZ y no se mueve: es lo que ya
@@ -6,8 +6,8 @@ export type Lang = 'es' | 'en';
  * conmutar por JS ni de olfatear el idioma del navegador, porque las dos
  * versiones tienen que indexarse por separado.
  */
-export const rutas: Record<Lang, string> = { es: '/', en: '/en/' };
-export const ogLocale: Record<Lang, string> = { es: 'es_ES', en: 'en_US' };
+export const rutas: Record<Lang, string> = { es: '/', en: '/en/', ca: '/ca/' };
+export const ogLocale: Record<Lang, string> = { es: 'es_ES', en: 'en_US', ca: 'ca_ES' };
 
 /** Contacto real. El wa.me lleva el prefijo, el tel: también. */
 export const TELEFONO = { humano: '620 650 597', tel: 'tel:+34620650597', wa: 'https://wa.me/34620650597' };
@@ -84,6 +84,54 @@ const demosEN: Proyecto[] = [
   demo('demo-lawfirm-us', 'Hartwell & Vance', 'Injury law · Charlotte, NC',
     'A personal injury firm has seconds to be believed: case results up front, with the county and the year.'),
 ];
+
+
+const TRADUCCIONES_CA: Record<string, { rubro: string; descripcion: string }> =
+  {
+    "demo-barberia-navaja": {
+      "rubro": "Barberia",
+      "descripcion": "Una barberia de barri amb ànima de taverna: la carta es llegeix com un menú i el llautó pesa."
+    },
+    "demo-dental-sereno": {
+      "rubro": "Clínica dental",
+      "descripcion": "Anar al dentista fa respecte. El web no havia de fer-ne també: petroli i porcellana en lloc del cian de sempre."
+    },
+    "demo-veterinaria-manada": {
+      "rubro": "Veterinària · Esplugues",
+      "descripcion": "Com a casa, amb quiròfan: urgències 24 h explicades sense dramatisme i la cita a un toc."
+    },
+    "demo-fisio-vital": {
+      "rubro": "Fisioteràpia · València",
+      "descripcion": "La primera valoració sense compromís com a porta d'entrada, i cada lesió explicada en cristià."
+    },
+    "demo-gestoria-cauce": {
+      "rubro": "Gestoria · Sant Joan Despí",
+      "descripcion": "Fiscal, laboral i comptable sense ensurts ni argot: el que una gestoria promet de paraula, posat per escrit."
+    },
+    "demo-psicologia-ancla": {
+      "rubro": "Psicologia",
+      "descripcion": "Demanar ajuda costa. Aquí tot baixa el pols: pruna, malva i ni una foto d'algú mirant l'horitzó."
+    },
+    "demo-cafe-aurora": {
+      "rubro": "Cafeteria · Sevilla",
+      "descripcion": "El teu cafè de cada matí, fet amb calma. Una carta curta que ve de gust llegir sencera."
+    },
+    "demo-gimnasio-pulso": {
+      "rubro": "Gimnàs · Bilbao",
+      "descripcion": "Entrenar amb propòsit, sense fotos d'estoc suant: horaris clars i preus a la vista."
+    },
+    "demo-arquitectos-traza": {
+      "rubro": "Arquitectura · Sant Just Desvern",
+      "descripcion": "Un estudi que ensenya obra, no paraules: habitatge, reforma integral i direcció d'obra."
+    },
+    "demo-autoescuela-traza": {
+      "rubro": "Autoescola · Sant Just Desvern",
+      "descripcion": "El mateix professor de principi a fi, i la primera classe reservada des del mateix web."
+    }
+  };
+
+const demosCA: Proyecto[] = demosES.map((p) => ({ ...p, ...TRADUCCIONES_CA[p.slug] }));
+const fisioymesCA: Destacado = { ...fisioymes, ...({"rubro": "Fisioteràpia · Sant Cugat del Vallès", "descripcion": "Van venir amb una queixa concreta: al mòbil el seu web era tot lletra i scroll sense fi. El vaig refer sencer en català i castellà, amb les lesions en graella i els tractaments en fitxes — i sense tocar-los el sistema de reserves que ja feien servir."}) };
 
 // --- Reseñas -----------------------------------------------------------------
 
@@ -369,6 +417,146 @@ export const contenido = {
       descripcion:
         'They came with one specific complaint: on a phone, their site was all text and endless scrolling. I rebuilt it from scratch in Catalan and Spanish, with injuries in a grid and treatments on cards — and without touching the booking system they already used.',
     },
+  },
+
+  ca: {
+    "site": {
+      "nombre": "Sergio García Ortiz",
+      "rol": "Dissenyador web",
+      "lugar": "Cornellà de Llobregat · Barcelona",
+      "titulo": "Sergio García Ortiz — Dissenyador web a Cornellà de Llobregat, Barcelona",
+      "descripcion": "Dissenyo i construeixo webs a mida per a negocis que estan tips de semblar una plantilla. Estàtiques, ràpides i sense res que es pugui trencar.",
+      "email": "info@sergiogarciaweb.com"
+    },
+    "portada": {
+      "titular": [
+        "Dissenyo webs",
+        "a mida"
+      ],
+      "bajada": "Senzilles, ràpides i que es veuen bé al mòbil. Les faig jo de principi a fi.",
+      "dato": "Des de 500 € · publicada en 7 dies",
+      "ctaPresupuesto": "Demanar pressupost",
+      "ctaWhatsapp": "WhatsApp",
+      "ctaLlamar": "Trucar",
+      "ctaTrabajo": "Veure treballs ↓",
+      "nav": [
+        {
+          "texto": "Serveis",
+          "href": "#servicios"
+        },
+        {
+          "texto": "Treballs",
+          "href": "#trabajo"
+        },
+        {
+          "texto": "Preu",
+          "href": "#precio"
+        },
+        {
+          "texto": "Com treballo",
+          "href": "#metodo"
+        },
+        {
+          "texto": "Contacte",
+          "href": "#contacto"
+        }
+      ]
+    },
+    "trabajo": {
+      "titular": "La feina",
+      "cliente": "Client real",
+      "clienteNota": "Encàrrec real, en producció. Publicat aquí amb el seu permís.",
+      "conceptosTitular": "Conceptes",
+      "conceptosNota": "Negocis inventats, disseny real. Els faig per ensenyar com treballo — cap no és un client.",
+      "concepto": "Concepte",
+      "abrir": "Obrir de debò ↗"
+    },
+    "precio": {
+      "eyebrow": "Preu i termini",
+      "titular": "Pressupost tancat abans de començar.",
+      "datos": [
+        {
+          "cifra": "500 €",
+          "texto": "la web sencera: fins a 5 pàgines a mida, domini el primer any i posada en marxa"
+        },
+        {
+          "cifra": "7 dies",
+          "texto": "de començar a estar publicada"
+        },
+        {
+          "cifra": "24 h",
+          "texto": "per tenir el pressupost per escrit, sense compromís"
+        }
+      ],
+      "texto": "El que el teu negoci necessiti de més — cites en línia, dos idiomes, sortir a Google — s'afegeix amb el seu preu a la vista. Sense quotes amagades ni lletra petita.",
+      "cta": "Calcula el teu pressupost en 2 minuts ↗"
+    },
+    "bio": {
+      "titular": "La teva web la farà qui està parlant amb tu.",
+      "parrafos": [
+        "Durant dos anys vaig portar el disseny i la gestió de continguts del web de l'EEBE, l'escola d'enginyeria de la UPC, amb una beca d'aprenentatge. No va ser una pantalla bonica i adéu: va ser mantenir una cosa viva, cada dia, per a una institució exigent.",
+        "Després vaig passar un any a ciberseguretat a EY. Vaig aprendre com es trenquen les coses per dins, i vaig tornar al disseny perquè és el que vull fer.",
+        "Ara treballo pel meu compte des de Cornellà de Llobregat. Quan m'escrius, et contesto jo. Quan fem la trucada, hi sóc jo."
+      ]
+    },
+    "metodo": {
+      "titular": "Faig webs que no es poden trencar.",
+      "parrafos": [
+        "La teva web actual és probablement WordPress amb vint connectors que fa mesos que no s'actualitzen. Cadascun és una porta. Quan una cedeix, el teu domini acaba redirigint a una web d'apostes i els teus pacients veuen això en lloc de la teva clínica. Li ha passat a una clínica dental d'aquí al costat.",
+        "Jo entrego arxius estàtics. No hi ha base de dades per injectar, ni connectors per actualitzar, ni tauler d'administració per rebentar. No és una promesa de màrqueting: és que la porta no existeix.",
+        "De propina, va ràpida. Un arxiu estàtic se serveix des de la vora de la xarxa i apareix abans que el visitant es plantegi marxar."
+      ]
+    },
+    "contacto": {
+      "eyebrow": "En parlem",
+      "titular": "La teva web s'assembla a la de tothom?",
+      "texto": "Explica'm què tens i què t'agradaria. Et dic què faria i quant costa, sense compromís i sense voltes.",
+      "whatsapp": "Escriu-me per WhatsApp",
+      "llamar": "Truca'm"
+    },
+    "resenas": {
+      "eyebrow": "Ressenyes",
+      "titular": "Què diuen els qui ja la tenen.",
+      "texto": "Escrites per ells, publicades tal qual. Ni retocades ni resumides.",
+      "titularVacio": "Aquí encara no hi ha cap ressenya.",
+      "textoVacio": "Aquesta part prefereixo que l'escriguin ells, així que de moment està buida. Si hem treballat junts, explica-ho en dues línies: la publico tal qual, amb el teu nom i el del teu negoci.",
+      "nota": "L'escrius tu, la publico jo sense tocar-ne una coma. Només surt si em dones permís, i la trec el dia que m'ho demanis.",
+      "cta": "Escriure una ressenya ↗",
+      "href": "/resena/",
+      "traducida": "traduïda del castellà",
+      deCinco: (n: number) => `${n} de 5 estrelles`
+    },
+    "formulario": {
+      "titulo": "Escriu una ressenya — Sergio García Ortiz",
+      "descripcion": "Explica com va ser treballar amb mi. Es publica tal qual al web, només amb el teu permís.",
+      "volver": "Tornar al portfoli",
+      "eyebrow": "Ressenyes",
+      "titular": "Explica-ho amb les teves paraules.",
+      "texto": "Dues línies n'hi ha prou. M'arriba a mi, la publico tal qual — sense retocar res — i si algun dia vols que la tregui, m'ho dius i la trec.",
+      "nombre": "El teu nom",
+      "nombrePista": "El que vulguis que aparegui.",
+      "negocio": "El teu negoci i a què es dedica",
+      "negocioPista": "Per exemple: Fisioymés · Fisioteràpia a Sant Cugat.",
+      "enlace": "El teu web o Instagram",
+      "enlacePista": "Opcional. Si el poses, enllaço el teu nom allà.",
+      "email": "El teu correu",
+      "emailPista": "Opcional i no es publica. Només per si necessito confirmar-te alguna cosa.",
+      "puntuacion": "Puntuació",
+      "puntuacionPista": "De 1 a 5.",
+      "resena": "La teva ressenya",
+      "resenaPista": "Què necessitaves, com va anar i què tal el resultat.",
+      "permiso": "Dono permís per publicar aquesta ressenya al web amb el meu nom i el del meu negoci.",
+      "enviar": "Enviar la ressenya",
+      "legal": "El que escriguis m'arriba per correu. No es publica res fins que jo ho pujo, i ho trec el dia que m'ho demanis."
+    },
+    "gracias": {
+      "titulo": "Ressenya rebuda — Sergio García Ortiz",
+      "titular": "Rebuda. Gràcies de veritat.",
+      "texto": "La llegeixo avui mateix i la pujo al web tal com me l'has escrit. Si vols canviar alguna cosa o que la tregui, escriu-me i ja està.",
+      "volver": "Tornar al portfoli"
+    },
+    proyectos: demosCA,
+    destacado: fisioymesCA,
   },
 } as const;
 

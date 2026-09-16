@@ -140,6 +140,7 @@ export const contenido = {
       ctaLlamar: 'Llamar',
       ctaTrabajo: 'Ver trabajos ↓',
       nav: [
+        { texto: 'Servicios', href: '#servicios' },
         { texto: 'Trabajos', href: '#trabajo' },
         { texto: 'Precio', href: '#precio' },
         { texto: 'Cómo trabajo', href: '#metodo' },

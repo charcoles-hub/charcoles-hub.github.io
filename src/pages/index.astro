@@ -6,6 +6,7 @@ import Layout from '../layouts/Layout.astro';
 import Portada from '../components/Portada.astro';
 import Trabajo from '../components/Trabajo.astro';
 import Resenas from '../components/Resenas.astro';
+import Servicios from '../components/Servicios.astro';
 import Precio from '../components/Precio.astro';
 import Bio from '../components/Bio.astro';
 import ComoTrabajo from '../components/ComoTrabajo.astro';
@@ -17,6 +18,7 @@ const hayResenas = RESENAS.length > 0;
   <Portada lang="es" />
   <Trabajo lang="es" />
   {hayResenas && <Resenas lang="es" />}
+  <Servicios lang="es" />
   <Precio lang="es" />
   <Bio lang="es" />
   <ComoTrabajo lang="es" />

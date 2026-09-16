@@ -11,6 +11,8 @@ export interface Servicio {
   descripcion: string;
   h1: string;
   bajada: string;
+  /** Una linea para el bloque de la portada. */
+  resumen: string;
   incluyeTitular: string;
   incluye: string[];
   datos: { cifra: string; texto: string }[];
@@ -30,6 +32,8 @@ export const SERVICIOS: Servicio[] = [
     h1: 'Diseño de páginas web para negocios',
     bajada:
       'Tu web hecha desde cero, no una plantilla con tu logo encima. Desde 500 €, publicada en 7 días.',
+    resumen:
+      'Tu web desde cero, con presupuesto cerrado antes de empezar y publicada en 7 días.',
     incluyeTitular: 'Qué incluye',
     incluye: [
       'Hasta 5 páginas diseñadas a medida de tu negocio.',
@@ -79,6 +83,8 @@ export const SERVICIOS: Servicio[] = [
     h1: 'Rediseño de webs antiguas',
     bajada:
       'Si tu web va lenta, no se ve bien en el móvil o te da vergüenza enseñarla, la rehago desde cero sin perder lo que ya tienes en Google.',
+    resumen:
+      'Tu web actual rehecha sin perder lo que ya tienes en Google.',
     incluyeTitular: 'Qué incluye',
     incluye: [
       'La web rehecha desde cero, no un parche encima de la que tienes.',
@@ -124,6 +130,8 @@ export const SERVICIOS: Servicio[] = [
     h1: 'Mantenimiento de páginas web',
     bajada:
       'Alojamiento, copias de seguridad y tus cambios hechos por mí. Desde 50 € al mes, con 3 meses mínimo.',
+    resumen:
+      'Alojamiento, copias y tus cambios hechos por mí, desde 50 € al mes.',
     incluyeTitular: 'Qué incluye',
     incluye: [
       'Alojamiento y copias de seguridad de tu web.',
@@ -164,6 +172,8 @@ export const SERVICIOS: Servicio[] = [
     h1: 'Posicionamiento en Google para negocios locales',
     bajada:
       'Que te encuentren cuando busquen tu servicio en tu zona: ficha de Google, la web preparada por dentro y los datos que Google necesita.',
+    resumen:
+      'Que te encuentren en Google cuando busquen tu servicio en tu zona.',
     incluyeTitular: 'Qué incluye',
     incluye: [
       'Tu ficha de Google creada y rellenada: servicios, zonas, horario y fotos.',

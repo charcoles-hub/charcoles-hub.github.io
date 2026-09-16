@@ -1,11 +1,12 @@
 ---
-import { SERVICIOS, type Servicio } from '../config/servicios';
+import { ZONAS } from '../config/zonas';
+import type { Servicio } from '../config/servicios';
 import { contenido } from '../config/site';
 import Layout from '../layouts/Layout.astro';
 import PaginaLarga from '../components/PaginaLarga.astro';
 
 export function getStaticPaths() {
-  return SERVICIOS.map((s) => ({ params: { servicio: s.slug }, props: { s } }));
+  return ZONAS.map((s) => ({ params: { zona: s.slug }, props: { s } }));
 }
 
 const { s } = Astro.props as { s: Servicio };
@@ -21,14 +22,14 @@ const faqLd = {
   })),
 };
 
-const servicioLd = {
+const zonaLd = {
   '@context': 'https://schema.org',
   '@type': 'Service',
-  name: s.nombre,
+  name: `Diseño web en ${s.nombre}`,
   description: s.descripcion,
-  serviceType: s.nombre,
+  serviceType: 'Diseño de páginas web',
   provider: { '@type': 'ProfessionalService', name: site.nombre, telephone: '+34620650597' },
-  areaServed: { '@type': 'AdministrativeArea', name: 'Baix Llobregat i Barcelona' },
+  areaServed: { '@type': 'Place', name: s.nombre },
   url: new URL(`/${s.slug}/`, Astro.site).href,
 };
 ---
@@ -37,7 +38,7 @@ const servicioLd = {
   titulo={s.titulo}
   descripcion={s.descripcion}
   paginas={{ es: `/${s.slug}/`, en: '/en/' }}
-  datos={[servicioLd, faqLd]}
+  datos={[zonaLd, faqLd]}
 >
   <PaginaLarga s={s} />
 </Layout>

@@ -1,5 +1,5 @@
 ---
-import { contenido, rutas, TELEFONO, type Lang } from '../config/site';
+import { CALCULADORA, contenido, rutas, TELEFONO, type Lang } from '../config/site';
 const { lang } = Astro.props as { lang: Lang };
 const { site, portada } = contenido[lang];
 
@@ -74,7 +74,9 @@ const idiomas: { codigo: Lang; etiqueta: string }[] = [
     </p>
 
     <div class="entra mt-10 flex flex-wrap items-center gap-3" style="--i:6">
-      <a href="#contacto" class="boton boton--primario">{portada.ctaPresupuesto}</a>
+      <a href={CALCULADORA} target="_blank" rel="noopener" class="boton boton--primario">
+        {portada.ctaPresupuesto}
+      </a>
       <a href="#trabajo" class="boton boton--borde">{portada.ctaTrabajo}</a>
       <a href={TELEFONO.tel} class="boton boton--fantasma">
         {portada.ctaLlamar} <span class="text-tenue">{TELEFONO.humano}</span>

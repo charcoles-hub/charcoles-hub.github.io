@@ -15,7 +15,7 @@ export const ZONAS: Servicio[] = [
       'Hago webs para negocios de Cornellà desde 500 €, publicadas en 7 días. Trabajo por mi cuenta: cuando llamas, te contesto yo.',
     h1: 'Diseño web en Cornellà de Llobregat',
     bajada:
-      'Soy de aquí. Hago la web de tu negocio desde cero, desde 500 € y publicada en 7 días, y cuando llamas te contesto yo y no un comercial.',
+      'Trabajo con negocios de Cornellà y de toda España. La web se diseña desde cero, con trato directo y un presupuesto claro antes de empezar.',
     resumen: 'Webs para negocios de Cornellà, desde 500 €.',
     incluyeTitular: 'Por qué te interesa que sea de aquí',
     incluye: [
@@ -34,7 +34,7 @@ export const ZONAS: Servicio[] = [
       {
         pregunta: '¿Trabajas solo con negocios de Cornellà?',
         respuesta:
-          'No, trabajo con quien me llame de donde sea. Pero los de aquí los llevo con más gusto, y se nota en la atención.',
+          'No. Trabajo con negocios de toda España. En Cornellà conozco de cerca el tejido local y podemos hablar con la misma cercanía, pero el proceso también funciona a distancia.',
       },
       {
         pregunta: '¿Hace falta que nos veamos en persona?',
@@ -97,14 +97,14 @@ export const ZONAS: Servicio[] = [
       'Webs a medida para negocios de Barcelona desde 500 €, publicadas en 7 días. Sin agencia en medio: hablas siempre con quien la construye.',
     h1: 'Diseño web en Barcelona',
     bajada:
-      'Lo mismo que te cobraría una agencia de Barcelona, hecho por la persona con la que hablas y por bastante menos dinero.',
+      'Diseño y desarrollo a medida, con una persona responsable del proyecto de principio a fin y un presupuesto claro antes de empezar.',
     resumen: 'Webs a medida sin precio de agencia.',
     incluyeTitular: 'La diferencia con una agencia',
     incluye: [
-      'No hay comercial, ni jefe de proyecto, ni becario construyendo tu web mientras otro te la vende.',
+      'Hablas directamente con la persona que diseña y desarrolla tu web.',
       'El presupuesto se cierra antes de empezar y no se mueve por el camino.',
-      'Entrego archivos estáticos: no hay panel ni plugins que se rompan o se hackeen.',
-      'La web va rápida, que es de lo poco que Google mide y compara de verdad.',
+      'Para webs corporativas, trabajo con una base estática que reduce el mantenimiento y los componentes expuestos.',
+      'La base técnica se prepara para cargar con agilidad y para que los buscadores puedan entender el contenido.',
       'Y si dentro de un año quieres cambios, sigues hablando con la misma persona.',
     ],
     datos: [
@@ -116,7 +116,7 @@ export const ZONAS: Servicio[] = [
       {
         pregunta: '¿Por qué cuesta tanto menos que en una agencia?',
         respuesta:
-          'Porque en el precio de una agencia estás pagando su estructura: oficina, comerciales y gestores de proyecto. Aquí pagas el trabajo.',
+          'Trabajo de forma independiente. Eso permite concentrar el presupuesto en el alcance del proyecto y mantener una comunicación directa.',
       },
       {
         pregunta: '¿Y si mi negocio necesita algo más complejo?',
@@ -131,3 +131,4 @@ export const ZONAS: Servicio[] = [
     ],
   },
 ];
+

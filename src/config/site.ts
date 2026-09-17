@@ -177,9 +177,9 @@ export const contenido = {
       email: 'info@sergiogarciaweb.com',
     },
     portada: {
-      titular: ['Diseño webs', 'a medida'],
+      titular: ['Webs a medida', 'que no parecen plantilla'],
       bajada:
-        'Sencillas, rápidas y que se ven bien en el móvil. Las hago yo de principio a fin.',
+        'Claras, rápidas y pensadas para leerse bien en el móvil. Las hago yo de principio a fin.',
       // El dato que el visitante viene a comprobar: cuánto y cuándo. Los números
       // salen de la calculadora pública y tienen que cuadrar con ella SIEMPRE.
       dato: 'Desde 500 € · publicada en 7 días',
@@ -199,11 +199,11 @@ export const contenido = {
       titular: 'El trabajo',
       cliente: 'Cliente real',
       clienteNota: 'Encargo real, en producción. Publicado aquí con su permiso.',
-      conceptosTitular: 'Conceptos',
+      conceptosTitular: 'Diseños por sector',
       // La honestidad es el argumento: se dice claro que son inventados, ANTES
       // de que nadie lo pregunte. Ver spec §2: jamás presentar demo como cliente.
       conceptosNota:
-        'Negocios inventados, diseño real. Los hago para enseñar cómo trabajo — ninguno es un cliente.',
+        'Ejemplos de cómo podría verse un negocio como el tuyo. Son conceptos, no clientes, y muestran el tipo de decisiones que tomo en cada sector.',
       concepto: 'Concepto',
       abrir: 'Abrir de verdad ↗',
     },
@@ -231,11 +231,11 @@ export const contenido = {
       ],
     },
     metodo: {
-      titular: 'Construyo webs que no se pueden romper.',
+      titular: 'Webs rápidas, sencillas y con menos puntos débiles.',
       parrafos: [
-        'Tu web actual es probablemente WordPress con veinte plugins que llevan meses sin actualizar. Cada uno es una puerta. Cuando una cede, tu dominio acaba redirigiendo a una web de apuestas y tus pacientes ven eso en vez de tu clínica. Le ha pasado a una clínica dental de aquí al lado.',
-        'Yo entrego archivos estáticos. No hay base de datos que inyectar, ni plugins que actualizar, ni panel de administración que reventar. No es una promesa de marketing: es que no existe la puerta.',
-        'De propina, va rápida. Un archivo estático se sirve desde el borde de la red y aparece antes de que tu visitante se plantee irse.',
+        'Muchas webs dependen de un gestor y de plugins que hay que actualizar. Cuantas más piezas tienen, más mantenimiento y más puntos que vigilar.',
+        'Para una web corporativa, entrego archivos estáticos: sin base de datos pública, sin plugins y sin un panel de administración expuesto. Eso reduce el mantenimiento y la superficie de ataque.',
+        'Además, carga rápido. Una web estática se sirve desde una red distribuida y aparece antes de que el visitante se plantee irse.',
       ],
     },
     contacto: {
@@ -305,9 +305,9 @@ export const contenido = {
       email: 'info@sergiogarciaweb.com',
     },
     portada: {
-      titular: ['Custom', 'websites'],
+      titular: ['Custom websites', 'that do not look templated'],
       bajada:
-        'Simple, fast, and good-looking on a phone. I build them end to end.',
+        'Clear, fast, and designed to read well on a phone. I build them end to end.',
       dato: 'From €500 · live in 7 days',
       ctaPresupuesto: 'Get a quote',
       ctaWhatsapp: 'WhatsApp',
@@ -324,9 +324,9 @@ export const contenido = {
       titular: 'The work',
       cliente: 'Real client',
       clienteNota: 'Real engagement, in production. Published here with their permission.',
-      conceptosTitular: 'Concepts',
+      conceptosTitular: 'Design directions by sector',
       conceptosNota:
-        'Invented businesses, real design. I build them to show how I work — none of them is a client.',
+        'Examples of how a business like yours could look. They are concepts, not clients, and show the decisions I make for each sector.',
       concepto: 'Concept',
       abrir: 'Open the real one ↗',
     },
@@ -351,11 +351,11 @@ export const contenido = {
       ],
     },
     metodo: {
-      titular: 'I build websites with nothing to break into.',
+      titular: 'Fast websites with fewer moving parts.',
       parrafos: [
-        'Your current site is probably WordPress with twenty plugins nobody has updated in months. Every one of them is a door. When one gives, your domain ends up redirecting to a sports betting site, and your patients see that instead of your clinic. It happened to a dental practice down the street from me.',
-        'I ship static files. There is no database to inject, no plugins to update, no admin panel to break into. That is not a marketing promise. The door simply does not exist.',
-        'It is fast, too. A static file is served from the edge of the network and shows up before your visitor thinks about leaving.',
+        'Many websites depend on a CMS and plugins that need updating. The more moving parts there are, the more maintenance and potential weak points they create.',
+        'For a business website, I ship static files: no public database, no plugins and no exposed admin panel. That reduces maintenance and the attack surface.',
+        'It is fast, too. A static website is served from a distributed network and shows up before a visitor thinks about leaving.',
       ],
     },
     contacto: {
@@ -430,10 +430,10 @@ export const contenido = {
     },
     "portada": {
       "titular": [
-        "Dissenyo webs",
-        "a mida"
+        "Webs a mida",
+        "que no semblen una plantilla"
       ],
-      "bajada": "Senzilles, ràpides i que es veuen bé al mòbil. Les faig jo de principi a fi.",
+      "bajada": "Clares, ràpides i pensades per llegir-se bé al mòbil. Les faig jo de principi a fi.",
       "dato": "Des de 500 € · publicada en 7 dies",
       "ctaPresupuesto": "Demanar pressupost",
       "ctaWhatsapp": "WhatsApp",
@@ -466,8 +466,8 @@ export const contenido = {
       "titular": "La feina",
       "cliente": "Client real",
       "clienteNota": "Encàrrec real, en producció. Publicat aquí amb el seu permís.",
-      "conceptosTitular": "Conceptes",
-      "conceptosNota": "Negocis inventats, disseny real. Els faig per ensenyar com treballo — cap no és un client.",
+      "conceptosTitular": "Dissenys per sector",
+      "conceptosNota": "Exemples de com podria veure's un negoci com el teu. Són conceptes, no clients, i mostren les decisions que prenc a cada sector.",
       "concepto": "Concepte",
       "abrir": "Obrir de debò ↗"
     },
@@ -500,11 +500,11 @@ export const contenido = {
       ]
     },
     "metodo": {
-      "titular": "Faig webs que no es poden trencar.",
+      "titular": "Webs ràpides, senzilles i amb menys punts febles.",
       "parrafos": [
-        "La teva web actual és probablement WordPress amb vint connectors que fa mesos que no s'actualitzen. Cadascun és una porta. Quan una cedeix, el teu domini acaba redirigint a una web d'apostes i els teus pacients veuen això en lloc de la teva clínica. Li ha passat a una clínica dental d'aquí al costat.",
-        "Jo entrego arxius estàtics. No hi ha base de dades per injectar, ni connectors per actualitzar, ni tauler d'administració per rebentar. No és una promesa de màrqueting: és que la porta no existeix.",
-        "De propina, va ràpida. Un arxiu estàtic se serveix des de la vora de la xarxa i apareix abans que el visitant es plantegi marxar."
+        "Molts webs depenen d'un gestor i de connectors que cal actualitzar. Com més peces tenen, més manteniment i més punts per vigilar.",
+        "Per a un web corporatiu, entrego arxius estàtics: sense base de dades pública, sense connectors i sense un tauler d'administració exposat. Això redueix el manteniment i la superfície d'atac.",
+        "A més, carrega ràpid. Un web estàtic se serveix des d'una xarxa distribuïda i apareix abans que el visitant es plantegi marxar."
       ]
     },
     "contacto": {
@@ -561,3 +561,4 @@ export const contenido = {
 } as const;
 
 export type Contenido = (typeof contenido)[Lang];
+

@@ -37,10 +37,10 @@ export const SERVICIOS: Servicio[] = [
     incluyeTitular: 'Qué incluye',
     incluye: [
       'Hasta 5 páginas diseñadas a medida de tu negocio.',
-      'Se ve perfecta en el móvil, que es por donde te va a entrar casi todo el mundo.',
+      'Diseñada para que se lea y se use con comodidad en móvil.',
       'Tu dominio pagado el primer año y la web puesta en marcha.',
       'Formulario de contacto, botón de WhatsApp y mapa para llegar a tu local.',
-      'Tú no tocas nada: me encargo yo de todo.',
+      'Te acompaño en la puesta en marcha y me ocupo de los ajustes acordados.',
     ],
     datos: [
       { cifra: '500 €', texto: 'la web entera, con presupuesto cerrado antes de empezar' },
@@ -70,7 +70,7 @@ export const SERVICIOS: Servicio[] = [
       {
         pregunta: '¿Por qué es más barato que una agencia?',
         respuesta:
-          'Porque trabajo por mi cuenta: no hay comercial, ni jefe de proyecto, ni becario haciendo tu web mientras otro te la vende.',
+          'Porque trabajo de forma independiente y directa. El presupuesto cubre el trabajo del proyecto, sin estructura de agencia de por medio.',
       },
     ],
   },
@@ -90,7 +90,7 @@ export const SERVICIOS: Servicio[] = [
       'La web rehecha desde cero, no un parche encima de la que tienes.',
       'Te quedas con tu dominio y con las direcciones que ya estaban en Google.',
       'Traslado de tus textos y fotos a la web nueva.',
-      'Se ve perfecta en el móvil, que es donde peor va la web antigua.',
+      'Una experiencia móvil clara, revisada desde el principio.',
       'Tu web actual sigue funcionando hasta el día que publicamos la nueva.',
     ],
     datos: [
@@ -196,7 +196,7 @@ export const SERVICIOS: Servicio[] = [
       {
         pregunta: '¿Qué es la ficha de Google y por qué importa?',
         respuesta:
-          'Es el cuadro con tu nombre, teléfono y reseñas que sale a la derecha o en el mapa. Para un negocio de barrio es lo que más clientes trae, por delante de la propia web.',
+          'Es la ficha con tu nombre, teléfono, horario y reseñas que puede aparecer en el mapa y en los resultados locales. Ayuda a que Google entienda y muestre tu negocio.',
       },
       {
         pregunta: '¿Me garantizas el primer puesto?',
@@ -208,3 +208,4 @@ export const SERVICIOS: Servicio[] = [
 ];
 
 export const porSlug = (slug: string) => SERVICIOS.find((s) => s.slug === slug);
+

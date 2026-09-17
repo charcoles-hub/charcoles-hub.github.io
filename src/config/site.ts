@@ -171,9 +171,9 @@ export const contenido = {
       nombre: 'Sergio García Ortiz',
       rol: 'Diseñador web',
       lugar: 'Cornellà de Llobregat · Barcelona',
-      titulo: 'Sergio García Ortiz — Diseñador web en Cornellà de Llobregat, Barcelona',
+      titulo: 'Diseño web a medida para negocios en España — Sergio García',
       descripcion:
-        'Diseño y construyo webs a medida para negocios que están hartos de parecer una plantilla. Estáticas, rápidas y sin nada que se pueda romper.',
+        'Diseño y desarrollo web a medida para negocios y profesionales de toda España. Trato directo, webs rápidas y presupuesto cerrado. Desde 500 €.',
       email: 'info@sergiogarciaweb.com',
     },
     portada: {
@@ -299,9 +299,9 @@ export const contenido = {
       nombre: 'Sergio García Ortiz',
       rol: 'Web designer',
       lugar: 'Barcelona, Spain',
-      titulo: 'Sergio García Ortiz — Web designer in Barcelona',
+      titulo: 'Custom web design for businesses in Spain — Sergio García',
       descripcion:
-        'I design and build custom websites for businesses tired of looking like a template. Static, fast, and with nothing that can break.',
+        'Custom web design and development for businesses and professionals across Spain. Direct communication, fast websites and a fixed quote. From €500.',
       email: 'info@sergiogarciaweb.com',
     },
     portada: {
@@ -424,8 +424,8 @@ export const contenido = {
       "nombre": "Sergio García Ortiz",
       "rol": "Dissenyador web",
       "lugar": "Cornellà de Llobregat · Barcelona",
-      "titulo": "Sergio García Ortiz — Dissenyador web a Cornellà de Llobregat, Barcelona",
-      "descripcion": "Dissenyo i construeixo webs a mida per a negocis que estan tips de semblar una plantilla. Estàtiques, ràpides i sense res que es pugui trencar.",
+      "titulo": "Disseny web a mida per a negocis a Espanya — Sergio García",
+      "descripcion": "Disseny i desenvolupament web a mida per a negocis i professionals de tot Espanya. Tracte directe, webs ràpides i pressupost tancat. Des de 500 €.",
       "email": "info@sergiogarciaweb.com"
     },
     "portada": {

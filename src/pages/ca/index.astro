@@ -1,24 +1,17 @@
 ---
-// La mateixa pàgina, arrencada en català des de /ca/.
-import { RESENAS } from '../../config/site';
 import Layout from '../../layouts/Layout.astro';
 import Portada from '../../components/Portada.astro';
 import Trabajo from '../../components/Trabajo.astro';
-import Resenas from '../../components/Resenas.astro';
 import Precio from '../../components/Precio.astro';
 import Bio from '../../components/Bio.astro';
 import ComoTrabajo from '../../components/ComoTrabajo.astro';
 import Contacto from '../../components/Contacto.astro';
-
-const hayResenas = RESENAS.length > 0;
 ---
 <Layout lang="ca">
   <Portada lang="ca" />
   <Trabajo lang="ca" />
-  {hayResenas && <Resenas lang="ca" />}
   <Precio lang="ca" />
   <Bio lang="ca" />
   <ComoTrabajo lang="ca" />
-  {!hayResenas && <Resenas lang="ca" />}
   <Contacto lang="ca" />
 </Layout>

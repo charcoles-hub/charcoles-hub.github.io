@@ -33,15 +33,17 @@ const posters: Record<string, ImageMetadata> = {
   'demo-lawfirm-us': lawfirmUs,
 };
 
-const { lang } = Astro.props as { lang: Lang };
+const {
+  lang,
+  mostrarDestacado = true,
+  mostrarConceptos = true,
+} = Astro.props as { lang: Lang; mostrarDestacado?: boolean; mostrarConceptos?: boolean };
 const { proyectos, trabajo: txt } = contenido[lang];
 ---
-<section id="trabajo" class="border-t border-linea">
-  <Destacado lang={lang} />
+<section id={mostrarDestacado ? 'trabajo' : 'conceptos'} class="border-t border-linea">
+  {mostrarDestacado && <Destacado lang={lang} />}
 
-  {/* Los conceptos: rejilla en escritorio, raíl con scroll-snap en móvil.
-      La honestidad va ANTES que las capturas: se declara que son inventados. */}
-  <div class="px-6 pb-24 pt-16 md:px-12 md:pb-32">
+  {mostrarConceptos && <div class="px-6 pb-24 pt-16 md:px-12 md:pb-32">
     <div class="mx-auto flex max-w-[1600px] flex-col gap-8">
       <div data-revela class="flex flex-col gap-3">
         <h3 class="font-display text-3xl font-extrabold tracking-[-0.04em] md:text-5xl" style="font-stretch:110%">
@@ -83,5 +85,6 @@ const { proyectos, trabajo: txt } = contenido[lang];
         ))}
       </ul>
     </div>
-  </div>
+  </div>}
 </section>
+

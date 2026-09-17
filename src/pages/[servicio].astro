@@ -28,7 +28,7 @@ const servicioLd = {
   description: s.descripcion,
   serviceType: s.nombre,
   provider: { '@type': 'ProfessionalService', name: site.nombre, telephone: '+34620650597' },
-  areaServed: { '@type': 'AdministrativeArea', name: 'Baix Llobregat i Barcelona' },
+  areaServed: { '@type': 'Country', name: 'España' },
   url: new URL(`/${s.slug}/`, Astro.site).href,
 };
 ---
@@ -41,3 +41,4 @@ const servicioLd = {
 >
   <PaginaLarga s={s} />
 </Layout>
+

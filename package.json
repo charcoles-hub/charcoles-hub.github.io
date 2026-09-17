@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "servir": "node scripts/servir.mjs",
-    "verificar": "node scripts/verificar.mjs"
+    "verificar": "node scripts/check-build.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.1",

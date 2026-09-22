@@ -36,7 +36,7 @@ export const SERVICIOS: Servicio[] = [
       'Tu web desde cero, con alcance y presupuesto a medida antes de empezar.',
     incluyeTitular: 'Qué incluye',
     incluye: [
-      'Hasta 5 páginas diseñadas a medida de tu negocio.',
+      'Las páginas que necesite tu proyecto, diseñadas a medida de tu negocio.',
       'Diseñada para que se lea y se use con comodidad en móvil.',
       'Tu dominio pagado el primer año y la web puesta en marcha.',
       'Formulario de contacto, botón de WhatsApp y mapa para llegar a tu local.',

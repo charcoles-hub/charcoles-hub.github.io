@@ -1,9 +1,10 @@
 ---
-import { CALCULADORA, contenido, type Lang } from '../config/site';
+import { contenido, TELEFONO, type Lang } from '../config/site';
 const { lang } = Astro.props as { lang: Lang };
 const precio = contenido[lang].precio;
+const whatsapp = `${TELEFONO.wa}?text=${encodeURIComponent(lang === 'en' ? 'Hi Sergio, I would like a tailored quote for my website.' : lang === 'ca' ? 'Hola Sergio, voldria un pressupost personalitzat per al meu web.' : 'Hola Sergio, me gustaría recibir un presupuesto personalizado para mi web.')}`;
 ---
-<section id="precio" class="lejos border-t border-linea bg-fondo-2 px-6 py-24 md:px-12 md:py-32">
+<section id="presupuesto" class="lejos border-t border-linea bg-fondo-2 px-6 py-24 md:px-12 md:py-32">
   <div class="mx-auto flex max-w-6xl flex-col gap-10">
     <div data-revela class="flex flex-col gap-4">
       <p class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">{precio.eyebrow}</p>
@@ -26,7 +27,7 @@ const precio = contenido[lang].precio;
 
     <div data-revela class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
       <p class="max-w-[52ch] text-pretty text-medio md:text-lg">{precio.texto}</p>
-      <a href={CALCULADORA} target="_blank" rel="noopener" class="boton boton--primario shrink-0">
+      <a href={whatsapp} target="_blank" rel="noopener" class="boton boton--primario shrink-0">
         {precio.cta}
       </a>
     </div>

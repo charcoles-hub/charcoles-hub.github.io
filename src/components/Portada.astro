@@ -1,7 +1,8 @@
 ---
-import { CALCULADORA, contenido, rutas, TELEFONO, type Lang } from '../config/site';
+import { contenido, rutas, TELEFONO, type Lang } from '../config/site';
 const { lang } = Astro.props as { lang: Lang };
 const { site, portada } = contenido[lang];
+const whatsapp = `${TELEFONO.wa}?text=${encodeURIComponent(lang === 'en' ? 'Hi Sergio, I would like a tailored quote for my website.' : lang === 'ca' ? 'Hola Sergio, voldria un pressupost personalitzat per al meu web.' : 'Hola Sergio, me gustaría recibir un presupuesto personalizado para mi web.')}`;
 
 // Selector de idioma: enlaces reales a la otra ruta estática, no un conmutador
 // por JS. Cada versión tiene que poder abrirse, enlazarse e indexarse sola.
@@ -75,7 +76,7 @@ const idiomas: { codigo: Lang; etiqueta: string }[] = [
     </p>
 
     <div class="entra mt-10 flex flex-wrap items-center gap-3" style="--i:6">
-      <a href={CALCULADORA} target="_blank" rel="noopener" class="boton boton--primario">
+      <a href={whatsapp} target="_blank" rel="noopener" class="boton boton--primario">
         {portada.ctaPresupuesto}
       </a>
       <a href="#trabajo" class="boton boton--borde">{portada.ctaTrabajo}</a>

@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { contenido, rutas, CALCULADORA, TELEFONO, RESENAS, type Lang } from '../config/site';
+import { contenido, rutas, TELEFONO, RESENAS, type Lang } from '../config/site';
 import { studio } from '../config/studio';
 import fisio from '../assets/posters/fisioymes-full.png';
 import navaja from '../assets/posters/demo-barberia-navaja.png';
@@ -18,7 +18,7 @@ const selected = lang === 'en'
 const posters = { 'demo-barberia-navaja': navaja, 'demo-dental-sereno': sereno, 'demo-arquitectos-traza': traza, 'demo-dental-us': dental, 'demo-lawfirm-us': law };
 const more = c.proyectos.filter(p => !selected.some(s => s.slug === p.slug));
 const wa = `${TELEFONO.wa}?text=${encodeURIComponent(t.waText)}`;
-const anchors = ['trabajo', 'servicios', 'metodo', 'precio'];
+const anchors = ['trabajo', 'servicios', 'metodo', 'presupuesto'];
 const hayResenas = RESENAS.length > 0;
 const formatoResena = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : lang === 'ca' ? 'ca-ES' : 'es-ES', { month: 'long', year: 'numeric' });
 ---
@@ -108,7 +108,7 @@ const formatoResena = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : lang ===
 
   <section class="section wrap process" id="metodo" aria-labelledby="process-title"><div class="section-head"><div><p class="eyebrow">{t.processKicker}</p><h2 id="process-title">{t.processTitle}</h2></div></div><ol class="process-grid">{t.process.map(([title, desc], i) => <li><span class="step" aria-hidden="true">0{i + 1}</span><h3>{title}</h3><p>{desc}</p></li>)}</ol></section>
 
-  <section class="pricing section" id="precio" aria-labelledby="price-title"><div class="wrap"><div class="section-head"><div><p class="eyebrow">{t.priceKicker}</p><h2 id="price-title">{t.priceTitle}</h2></div><p>{t.priceIntro}</p></div><div class="pricing-grid"><article class="price-card"><div class="price-card-top"><h3>{t.base}</h3><span aria-hidden="true">↗</span></div><div class="amount"><span>{t.pricePrefix}</span><strong>{t.price}<small>{t.currency}</small></strong></div><p class="price-note">{t.priceNote}</p><ul>{t.includes.map(x => <li><span aria-hidden="true">✓</span>{x}</li>)}</ul><a class="button button-lime" href={CALCULADORA}>{t.estimate}<span aria-hidden="true">↗</span></a><p class="calculator-note">{t.priceDetail}</p></article><div class="price-explained">{[[t.timeTitle, t.timeText], [t.extraTitle, t.extraText], [t.upkeepTitle, t.upkeepText]].map(([title, desc], i) => <div><span aria-hidden="true">0{i + 1}</span><h3>{title}</h3><p>{desc}</p></div>)}</div></div></div></section>
+  <section class="quote section" id="presupuesto" aria-labelledby="quote-title"><div class="wrap"><div class="section-head"><div><p class="eyebrow">{t.priceKicker}</p><h2 id="quote-title">{t.priceTitle}</h2></div><p>{t.priceIntro}</p></div><div class="quote-grid"><article class="quote-card"><div class="quote-card-top"><h3>{t.base}</h3><span aria-hidden="true">↗</span></div><p class="quote-note">{t.priceNote}</p><ul>{t.includes.map(x => <li><span aria-hidden="true">✓</span>{x}</li>)}</ul><a class="button button-lime" href={wa}>{t.estimate}<span aria-hidden="true">↗</span></a></article><div class="quote-explained">{[[t.timeTitle, t.timeText], [t.extraTitle, t.extraText], [t.upkeepTitle, t.upkeepText]].map(([title, desc], i) => <div><span aria-hidden="true">0{i + 1}</span><h3>{title}</h3><p>{desc}</p></div>)}</div></div></div></section>
 
   <section class="section wrap about" aria-labelledby="about-title"><div class="about-copy"><p class="eyebrow">{t.aboutKicker}</p><h2 id="about-title">{t.aboutTitle}</h2><p>{t.aboutText}</p><a class="text-link" href={`mailto:${c.site.email}`}>{c.site.email}<span aria-hidden="true">↗</span></a></div><div class="experience">{t.credentials.map(([title, desc]) => <div><h3>{title}</h3><p>{desc}</p></div>)}</div><aside class="technical"><span aria-hidden="true">↳</span><div><h3>{t.buildTitle}</h3><p>{t.buildText}</p></div></aside></section>
 
@@ -270,27 +270,22 @@ const formatoResena = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : lang ===
   .step { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #b9c4ae; border-radius: 50%; font-size: 10px; margin-bottom: 25px; }
   .process-grid h3 { font-size: 20px; margin-bottom: 13px; }
   .process-grid p { color: var(--muted); font-size: 12px; line-height: 1.8; }
-  .pricing { background: #eef0e8; }
-  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 90px; align-items: center; max-width: 1030px; }
-  .price-card { border-radius: 8px; padding: 37px; background: var(--ink); color: var(--paper); }
-  .price-card-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #516057; padding-bottom: 24px; }
-  .price-card-top h3 { font-size: 20px; }
-  .price-card-top > span { font-size: 27px; color: var(--lime); }
-  .amount { margin-top: 25px; }
-  .amount > span { display: block; font-size: 12px; color: #bac9c1; }
-  .amount strong { font-size: 91px; line-height: 1.1; font-weight: 600; letter-spacing: -.07em; display: block; }
-  .amount small { font-size: 47px; margin-left: 8px; font-weight: 400; }
-  .price-note { color: #bdcac4; font-size: 11px; margin-top: 12px; }
-  .price-card ul { list-style: none; margin: 29px 0; padding: 0; }
-  .price-card li { display: flex; gap: 13px; align-items: flex-start; margin-block: 10px; font-size: 12px; }
-  .price-card li span { color: var(--lime); }
-  .price-card .button { width: 100%; }
-  .calculator-note { text-align: center; font-size: 9px; color: #bdcac4; margin-top: 12px; }
-  .price-explained > div { position: relative; padding: 25px 0 25px 38px; border-bottom: 1px solid #cfd6c5; }
-  .price-explained > div:first-child { padding-top: 0; }
-  .price-explained span { position: absolute; left: 0; font-size: 10px; color: var(--muted); padding-top: 5px; }
-  .price-explained h3 { font-size: 22px; margin-bottom: 13px; }
-  .price-explained p { color: var(--muted); font-size: 13px; line-height: 1.8; }
+  .quote { background: #eef0e8; }
+  .quote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 90px; align-items: center; max-width: 1030px; }
+  .quote-card { border-radius: 8px; padding: 37px; background: var(--ink); color: var(--paper); }
+  .quote-card-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #516057; padding-bottom: 24px; }
+  .quote-card-top h3 { font-size: 20px; }
+  .quote-card-top > span { font-size: 27px; color: var(--lime); }
+  .quote-note { color: #d3dcd6; font-size: 14px; line-height: 1.75; margin-top: 25px; }
+  .quote-card ul { list-style: none; margin: 29px 0; padding: 0; }
+  .quote-card li { display: flex; gap: 13px; align-items: flex-start; margin-block: 10px; font-size: 12px; }
+  .quote-card li span { color: var(--lime); }
+  .quote-card .button { width: 100%; }
+  .quote-explained > div { position: relative; padding: 25px 0 25px 38px; border-bottom: 1px solid #cfd6c5; }
+  .quote-explained > div:first-child { padding-top: 0; }
+  .quote-explained span { position: absolute; left: 0; font-size: 10px; color: var(--muted); padding-top: 5px; }
+  .quote-explained h3 { font-size: 22px; margin-bottom: 13px; }
+  .quote-explained p { color: var(--muted); font-size: 13px; line-height: 1.8; }
   .about { display: grid; grid-template-columns: 1fr 1fr; gap: 64px 100px; }
   .about h2 { max-width: 560px; }
   .about-copy > p:not(.eyebrow) { margin-block: 26px 16px; color: var(--muted); font-size: 14px; max-width: 450px; }
@@ -328,8 +323,9 @@ const formatoResena = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : lang ===
   .footer > div > p { color: var(--muted); font-size: 10px; margin-top: 10px; }
   .footer-bottom { width: 100%; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; border-top: 1px solid var(--line); padding-top: 23px; font-size: 10px; color: var(--muted); }
   @media (min-width: 1600px) { .hero { padding-block: 95px; } }
-  @media (max-width: 1100px) { .wrap { width: calc(100% - 64px); } .desktop-nav { gap: 16px; } .nav-end { gap: 17px; } .hero { gap: 32px; } .hero-actions { gap: 14px; flex-wrap: wrap; } .hero-showcase { min-height: 390px; } .case { gap: 38px; } .section-head { gap: 40px; } .pricing-grid { gap: 60px; } .about { gap: 50px; } .contact-grid { gap: 65px; } }
-  @media (max-width: 900px) { .desktop-nav { display: none; } .hero { padding-block: 55px; gap: 45px; } .hero h1 { font-size: 67px; } .hero { grid-template-columns: 1fr; } .hero-copy { max-width: 650px; } .hero-intro { max-width: 560px; } .hero-showcase { min-height: auto; max-width: 640px; width: 100%; padding: 25px; } .desktop-screen { margin: 22px 35px; } .desktop-screen img { aspect-ratio: 1.8; object-fit: cover; object-position: top; } .promises { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 30px; } .section { padding-block: 78px; } .section-head { display: block; margin-bottom: 36px; } .section-head > p { margin-top: 22px; max-width: 600px; } .case { gap: 38px; } .case-copy h3 { font-size: 31px; } .case-copy .eyebrow { margin-bottom: 17px; } .case-visual { padding: 20px; } .case-intro { font-size: 12px; margin-top: 17px; } .case-copy dl { margin-top: 18px; } .case-copy dl > div { padding: 11px 0; } .concept-heading { display: block; margin-top: 70px; } .concept-heading > p { margin-top: 17px; max-width: 580px; } .concept-grid { gap: 19px; } .concept-image { padding: 15px 12px 0; } .review-grid { grid-template-columns: 1fr 1fr; } .service-grid { gap: 25px; } .service-grid h3 { font-size: 23px; } .service-grid .text-link { font-size: 11px; gap: 10px; } .process-grid { grid-template-columns: 1fr 1fr; gap: 32px; } .pricing-grid { gap: 35px; } .price-card { padding: 28px; } .about { gap: 44px; } .faq { grid-template-columns: 1fr; gap: 30px; } .faq h2 { max-width: 600px; } .contact-grid { gap: 40px; } }
+  @media (max-width: 1100px) { .wrap { width: calc(100% - 64px); } .desktop-nav { gap: 16px; } .nav-end { gap: 17px; } .hero { gap: 32px; } .hero-actions { gap: 14px; flex-wrap: wrap; } .hero-showcase { min-height: 390px; } .case { gap: 38px; } .section-head { gap: 40px; } .quote-grid { gap: 60px; } .about { gap: 50px; } .contact-grid { gap: 65px; } }
+  @media (max-width: 900px) { .desktop-nav { display: none; } .hero { padding-block: 55px; gap: 45px; } .hero h1 { font-size: 67px; } .hero { grid-template-columns: 1fr; } .hero-copy { max-width: 650px; } .hero-intro { max-width: 560px; } .hero-showcase { min-height: auto; max-width: 640px; width: 100%; padding: 25px; } .desktop-screen { margin: 22px 35px; } .desktop-screen img { aspect-ratio: 1.8; object-fit: cover; object-position: top; } .promises { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 30px; } .section { padding-block: 78px; } .section-head { display: block; margin-bottom: 36px; } .section-head > p { margin-top: 22px; max-width: 600px; } .case { gap: 38px; } .case-copy h3 { font-size: 31px; } .case-copy .eyebrow { margin-bottom: 17px; } .case-visual { padding: 20px; } .case-intro { font-size: 12px; margin-top: 17px; } .case-copy dl { margin-top: 18px; } .case-copy dl > div { padding: 11px 0; } .concept-heading { display: block; margin-top: 70px; } .concept-heading > p { margin-top: 17px; max-width: 580px; } .concept-grid { gap: 19px; } .concept-image { padding: 15px 12px 0; } .review-grid { grid-template-columns: 1fr 1fr; } .service-grid { gap: 25px; } .service-grid h3 { font-size: 23px; } .service-grid .text-link { font-size: 11px; gap: 10px; } .process-grid { grid-template-columns: 1fr 1fr; gap: 32px; } .quote-grid { gap: 35px; } .quote-card { padding: 28px; } .about { gap: 44px; } .faq { grid-template-columns: 1fr; gap: 30px; } .faq h2 { max-width: 600px; } .contact-grid { gap: 40px; } }
   @media (max-width: 600px) { .wrap { width: calc(100% - 40px); } .masthead { min-height: 87px; gap: 10px; } .identity { gap: 10px; font-size: 13px; } .identity-sub { font-size: 7px; letter-spacing: .02em; } .monogram { width: 35px; height: 35px; font-size: 24px; } .nav-contact { display: none; } .languages { gap: 11px; font-size: 10px; } .hero { padding-block: 40px 43px; gap: 33px; } .eyebrow { font-size: 9px; letter-spacing: .1em; margin-bottom: 19px; } .hero h1 { font-size: clamp(54px, 13.5vw, 78px); margin-block: 25px 23px; } .hero h1 .hero-lead { font-size: .49em; } .hero-intro { font-size: 13px; line-height: 1.8; } .hero-actions { gap: 13px 20px; margin-top: 25px; } .button { font-size: 11px; padding: 14px 17px; gap: 20px; min-height: 50px; } .text-link { font-size: 11px; gap: 12px; } .hero-facts { margin-top: 18px; font-size: 9px; gap: 5px 9px; } .hero-facts span { padding-left: 9px; } .hero-showcase { padding: 20px; border-radius: 6px; } .desktop-screen { margin: 23px 0; } .showcase-bottom strong { font-size: 12px; } .showcase-bottom small { font-size: 8px; } .round-arrow { width: 34px; height: 34px; font-size: 17px; flex-shrink: 0; } .promises { gap: 13px 20px; font-size: 9px; padding-block: 20px; } .promises span { gap: 8px; } .promises i { font-size: 16px; } .section { padding-block: 62px; } h2 { font-size: 36px; } .section-head > p { font-size: 13px; } .case { grid-template-columns: 1fr; gap: 28px; } .case-visual { padding: 20px; } .case-browser { margin-top: 20px; } .case-browser img { max-height: 380px; object-fit: cover; object-position: top; } .case-copy h3 { max-width: 100%; font-size: 32px; } .case-intro { font-size: 13px; } .case-copy dl > div { padding-block: 15px; } .case-copy dd { font-size: 12px; } .concept-heading { margin-top: 56px; } .concept-heading h3 { font-size: 28px; } .concept-grid, .concept-grid-two, .review-grid { grid-template-columns: 1fr; gap: 31px; } .concept-image { padding: 23px 23px 0; aspect-ratio: 1.6; } .concept-name { margin-top: 10px; } .more-concepts > div, .review-invite { grid-template-columns: 1fr; } .review-invite { gap: 18px; padding-block: 26px; } .review-stars { font-size: 22px; } .service-grid { grid-template-columns: 1fr; gap: 35px; } .service-number { margin-bottom: 19px; } .service-grid h3 { font-size: 27px; } .service-grid p { margin-bottom: 10px; } .process-grid { gap: 27px 22px; } .process-grid h3 { font-size: 18px; } .process-grid p { font-size: 11px; } .step { margin-bottom: 20px; } .pricing-grid { grid-template-columns: 1fr; gap: 36px; } .price-card { padding: 27px; } .amount strong { font-size: 88px; } .price-card .button { font-size: 12px; } .price-explained h3 { font-size: 21px; } .about { grid-template-columns: 1fr; gap: 26px; } .experience { padding-top: 0; } .technical { padding: 23px; gap: 15px; margin-top: 14px; } .technical > span { font-size: 26px; } .technical h3 { font-size: 17px; } .faq { gap: 31px; } .questions summary { font-size: 13px; gap: 20px; padding-block: 21px; } .questions details > p { padding-right: 10px; font-size: 12px; } .contact-grid { grid-template-columns: 1fr; gap: 32px; } .contact h2 { font-size: 40px; } .contact .eyebrow { margin-bottom: 23px; } .contact-grid > div > p:first-child { font-size: 13px; } .contact .button { max-width: 400px; } .footer { padding-block: 38px 24px; gap: 25px; } .footer-name { font-size: 25px; } .footer-bottom { font-size: 9px; justify-content: flex-start; gap: 10px 22px; } }
+  @media (max-width: 600px) { .quote-grid { grid-template-columns: 1fr; gap: 36px; } .quote-card { padding: 27px; } .quote-explained h3 { font-size: 21px; } }
   @media (prefers-reduced-motion: reduce) { .studio *, .studio *::before, .studio *::after { transition: none !important; animation: none !important; } .desktop-screen { transform: none; } .button:hover, .concept-card:hover img { transform: none; } }
 </style>

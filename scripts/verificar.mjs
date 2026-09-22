@@ -158,12 +158,14 @@ await comprueba('hreflang recíprocos y lang correcto', async () => {
   }
 });
 
-await comprueba('la calculadora está enlazada', async () => {
+await comprueba('no hay calculadora ni importes fijos', async () => {
   const page = await abrir();
-  const hay = await page.evaluate(
-    () => [...document.querySelectorAll('a')].some((a) => a.href.includes('/presupuesto-web/'))
-  );
-  assert.ok(hay, 'falta el enlace a la calculadora');
+  const datos = await page.evaluate(() => ({
+    calculadora: [...document.querySelectorAll('a')].some((a) => a.href.includes('/presupuesto-web/')),
+    importe: /(?:\d[\d.,]*\s*€|€\s*\d)/.test(document.body.textContent ?? ''),
+  }));
+  assert.equal(datos.calculadora, false, 'la calculadora sigue enlazada');
+  assert.equal(datos.importe, false, 'todavía aparece un importe fijo');
   await page.close();
 });
 

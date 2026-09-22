@@ -1,5 +1,5 @@
 ---
-import { CALCULADORA, contenido, TELEFONO } from '../config/site';
+import { contenido, TELEFONO } from '../config/site';
 import type { Servicio } from '../config/servicios';
 
 const { s } = Astro.props as { s: Servicio };
@@ -35,7 +35,7 @@ const whatsapp = `${TELEFONO.wa}?text=${encodeURIComponent(`Hola Sergio, me gust
 
     <section class="facts-section"><div class="wrap facts" aria-label="Datos principales">{s.datos.map((d, index) => <article><span>0{index + 1}</span><strong>{d.cifra}</strong><p>{d.texto}</p></article>)}</div></section>
 
-    <section class="section wrap process" aria-labelledby="process-title"><div><p class="eyebrow">Sin sorpresas</p><h2 id="process-title">Claro antes, durante y después.</h2></div><div class="process-copy"><p>Primero hablamos de lo que debe conseguir la web. Después recibes alcance, precio y plazo por escrito. Construyo el proyecto, lo revisamos juntos y se publica cuando todo está preparado.</p><a class="text-link" href={CALCULADORA}>Calcula tu presupuesto <span aria-hidden="true">↗</span></a></div></section>
+    <section class="section wrap process" aria-labelledby="process-title"><div><p class="eyebrow">Sin sorpresas</p><h2 id="process-title">Claro antes, durante y después.</h2></div><div class="process-copy"><p>Primero hablamos de lo que debe conseguir la web. Como cada negocio necesita algo distinto, preparo el alcance, el calendario y el presupuesto a medida. Lo recibes todo por escrito antes de decidir.</p><a class="text-link" href={whatsapp}>Pide una propuesta a medida <span aria-hidden="true">↗</span></a></div></section>
 
     <section class="section wrap faq" aria-labelledby="faq-title"><div><p class="eyebrow">Preguntas frecuentes</p><h2 id="faq-title">Las dudas habituales, respondidas.</h2></div><div class="questions">{s.faq.map((f) => <details><summary>{f.pregunta}<span aria-hidden="true">+</span></summary><p>{f.respuesta}</p></details>)}</div></section>
 

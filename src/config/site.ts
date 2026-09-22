@@ -11,7 +11,6 @@ export const ogLocale: Record<Lang, string> = { es: 'es_ES', en: 'en_US', ca: 'c
 
 /** Contacto real. El wa.me lleva el prefijo, el tel: también. */
 export const TELEFONO = { humano: '620 650 597', tel: 'tel:+34620650597', wa: 'https://wa.me/34620650597' };
-export const CALCULADORA = 'https://sergiogarciaweb.com/presupuesto-web/';
 
 export interface Proyecto {
   nombre: string;
@@ -160,7 +159,7 @@ export const RESENAS: Resena[] = [];
 export const RESENA_FORM = {
   destino: 'https://api.web3forms.com/submit',
   clave: '5a2a409b-c60a-49a7-8f70-4a1282a1c1ab',
-  gracias: { es: '/gracias/', en: '/en/thanks/' },
+  gracias: { es: '/gracias/', en: '/en/thanks/', ca: '/ca/gracies/' },
 } as const;
 
 // --- Copy --------------------------------------------------------------------
@@ -173,16 +172,14 @@ export const contenido = {
       lugar: 'Cornellà de Llobregat · Barcelona',
       titulo: 'Diseño web a medida para negocios en España — Sergio García',
       descripcion:
-        'Diseño y desarrollo web a medida para negocios y profesionales de toda España. Trato directo, webs rápidas y presupuesto cerrado. Desde 500 €.',
+        'Diseño y desarrollo web a medida para negocios y profesionales de toda España. Trato directo, webs rápidas y presupuesto personalizado.',
       email: 'info@sergiogarciaweb.com',
     },
     portada: {
       titular: ['Webs a medida', 'que no parecen plantilla'],
       bajada:
         'Claras, rápidas y pensadas para leerse bien en el móvil. Las hago yo de principio a fin.',
-      // El dato que el visitante viene a comprobar: cuánto y cuándo. Los números
-      // salen de la calculadora pública y tienen que cuadrar con ella SIEMPRE.
-      dato: 'Desde 500 € · publicada en 7 días',
+      dato: 'Presupuesto a medida · todo por escrito',
       ctaPresupuesto: 'Pedir presupuesto',
       ctaWhatsapp: 'WhatsApp',
       ctaLlamar: 'Llamar',
@@ -190,7 +187,7 @@ export const contenido = {
       nav: [
         { texto: 'Servicios', href: '#servicios' },
         { texto: 'Trabajos', href: '#trabajo' },
-        { texto: 'Precio', href: '#precio' },
+        { texto: 'Presupuesto', href: '#presupuesto' },
         { texto: 'Cómo trabajo', href: '#metodo' },
         { texto: 'Contacto', href: '#contacto' },
       ],
@@ -208,16 +205,16 @@ export const contenido = {
       abrir: 'Abrir de verdad ↗',
     },
     precio: {
-      eyebrow: 'Precio y plazo',
-      titular: 'Presupuesto cerrado antes de empezar.',
+      eyebrow: 'Presupuesto personalizado',
+      titular: 'Cada web necesita algo distinto.',
       datos: [
-        { cifra: '500 €', texto: 'la web entera: hasta 5 páginas a medida, dominio el primer año y puesta en marcha' },
-        { cifra: '7 días', texto: 'de empezar a estar publicada' },
-        { cifra: '24 h', texto: 'para tener tu presupuesto por escrito, sin compromiso' },
+        { cifra: 'A medida', texto: 'según las páginas, contenidos y funciones que realmente necesita tu negocio' },
+        { cifra: 'Por escrito', texto: 'con el alcance, el calendario y el coste claros antes de empezar' },
+        { cifra: 'Sin compromiso', texto: 'primero hablamos y después decides con toda la información' },
       ],
       texto:
-        'Lo que necesite tu negocio de más — citas online, dos idiomas, salir en Google — se añade con su precio a la vista. Sin cuotas escondidas ni letra pequeña.',
-      cta: 'Calcula tu presupuesto en 2 minutos ↗',
+        'Un presupuesto automático no tiene sentido: cada negocio parte de un lugar distinto y necesita una combinación diferente de páginas, contenidos y funciones.',
+      cta: 'Cuéntame qué necesitas ↗',
     },
     bio: {
       // El titular lleva el ARGUMENTO; los párrafos llevan las credenciales.
@@ -301,21 +298,21 @@ export const contenido = {
       lugar: 'Barcelona, Spain',
       titulo: 'Custom web design for businesses in Spain — Sergio García',
       descripcion:
-        'Custom web design and development for businesses and professionals across Spain. Direct communication, fast websites and a fixed quote. From €500.',
+        'Custom web design and development for businesses and professionals across Spain. Direct communication, fast websites and a tailored quote.',
       email: 'info@sergiogarciaweb.com',
     },
     portada: {
       titular: ['Custom websites', 'that do not look templated'],
       bajada:
         'Clear, fast, and designed to read well on a phone. I build them end to end.',
-      dato: 'From €500 · live in 7 days',
+      dato: 'A tailored quote · everything in writing',
       ctaPresupuesto: 'Get a quote',
       ctaWhatsapp: 'WhatsApp',
       ctaLlamar: 'Call',
       ctaTrabajo: 'See the work ↓',
       nav: [
         { texto: 'Work', href: '#trabajo' },
-        { texto: 'Pricing', href: '#precio' },
+        { texto: 'Quote', href: '#presupuesto' },
         { texto: 'How I work', href: '#metodo' },
         { texto: 'Contact', href: '#contacto' },
       ],
@@ -331,16 +328,16 @@ export const contenido = {
       abrir: 'Open the real one ↗',
     },
     precio: {
-      eyebrow: 'Price and timeline',
-      titular: 'A fixed quote before we start.',
+      eyebrow: 'A tailored quote',
+      titular: 'Every website needs something different.',
       datos: [
-        { cifra: '€500', texto: 'the whole site: up to 5 custom pages, your domain for the first year, fully launched' },
-        { cifra: '7 days', texto: 'from kickoff to published' },
-        { cifra: '24 h', texto: 'to get your written quote, no strings attached' },
+        { cifra: 'Tailored', texto: 'to the pages, content and features your business actually needs' },
+        { cifra: 'In writing', texto: 'with scope, schedule and cost made clear before work begins' },
+        { cifra: 'No obligation', texto: 'we talk first, then you decide with all the information' },
       ],
       texto:
-        'Anything extra your business needs — online booking, two languages, local Google presence — is added with its price in plain sight. No hidden fees, no fine print.',
-      cta: 'Get an instant estimate ↗',
+        'An automatic estimate makes little sense: every business starts somewhere different and needs its own mix of pages, content and features.',
+      cta: 'Tell me what you need ↗',
     },
     bio: {
       titular: 'The person you talk to is the person who builds your site.',
@@ -425,7 +422,7 @@ export const contenido = {
       "rol": "Dissenyador web",
       "lugar": "Cornellà de Llobregat · Barcelona",
       "titulo": "Disseny web a mida per a negocis a Espanya — Sergio García",
-      "descripcion": "Disseny i desenvolupament web a mida per a negocis i professionals de tot Espanya. Tracte directe, webs ràpides i pressupost tancat. Des de 500 €.",
+      "descripcion": "Disseny i desenvolupament web a mida per a negocis i professionals de tot Espanya. Tracte directe, webs ràpides i pressupost personalitzat.",
       "email": "info@sergiogarciaweb.com"
     },
     "portada": {
@@ -434,7 +431,7 @@ export const contenido = {
         "que no semblen una plantilla"
       ],
       "bajada": "Clares, ràpides i pensades per llegir-se bé al mòbil. Les faig jo de principi a fi.",
-      "dato": "Des de 500 € · publicada en 7 dies",
+      "dato": "Pressupost a mida · tot per escrit",
       "ctaPresupuesto": "Demanar pressupost",
       "ctaWhatsapp": "WhatsApp",
       "ctaLlamar": "Trucar",
@@ -449,8 +446,8 @@ export const contenido = {
           "href": "#trabajo"
         },
         {
-          "texto": "Preu",
-          "href": "#precio"
+          "texto": "Pressupost",
+          "href": "#presupuesto"
         },
         {
           "texto": "Com treballo",
@@ -472,24 +469,24 @@ export const contenido = {
       "abrir": "Obrir de debò ↗"
     },
     "precio": {
-      "eyebrow": "Preu i termini",
-      "titular": "Pressupost tancat abans de començar.",
+      "eyebrow": "Pressupost personalitzat",
+      "titular": "Cada web necessita una cosa diferent.",
       "datos": [
         {
-          "cifra": "500 €",
-          "texto": "la web sencera: fins a 5 pàgines a mida, domini el primer any i posada en marxa"
+          "cifra": "A mida",
+          "texto": "segons les pàgines, els continguts i les funcions que realment necessita el teu negoci"
         },
         {
-          "cifra": "7 dies",
-          "texto": "de començar a estar publicada"
+          "cifra": "Per escrit",
+          "texto": "amb l'abast, el calendari i el cost clars abans de començar"
         },
         {
-          "cifra": "24 h",
-          "texto": "per tenir el pressupost per escrit, sense compromís"
+          "cifra": "Sense compromís",
+          "texto": "primer en parlem i després decideixes amb tota la informació"
         }
       ],
-      "texto": "El que el teu negoci necessiti de més — cites en línia, dos idiomes, sortir a Google — s'afegeix amb el seu preu a la vista. Sense quotes amagades ni lletra petita.",
-      "cta": "Calcula el teu pressupost en 2 minuts ↗"
+      "texto": "Un pressupost automàtic no té sentit: cada negoci parteix d'un lloc diferent i necessita una combinació pròpia de pàgines, continguts i funcions.",
+      "cta": "Explica'm què necessites ↗"
     },
     "bio": {
       "titular": "La teva web la farà qui està parlant amb tu.",
@@ -522,7 +519,7 @@ export const contenido = {
       "textoVacio": "Aquesta part prefereixo que l'escriguin ells, així que de moment està buida. Si hem treballat junts, explica-ho en dues línies: la publico tal qual, amb el teu nom i el del teu negoci.",
       "nota": "L'escrius tu, la publico jo sense tocar-ne una coma. Només surt si em dones permís, i la trec el dia que m'ho demanis.",
       "cta": "Escriure una ressenya ↗",
-      "href": "/resena/",
+      "href": "/ca/ressenya/",
       "traducida": "traduïda del castellà",
       deCinco: (n: number) => `${n} de 5 estrelles`
     },

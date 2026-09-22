@@ -12,21 +12,21 @@ export const ZONAS: Servicio[] = [
     nombre: 'Cornellà de Llobregat',
     titulo: 'Diseño web en Cornellà de Llobregat — Sergio García Ortiz',
     descripcion:
-      'Hago webs para negocios de Cornellà desde 500 €, publicadas en 7 días. Trabajo por mi cuenta: cuando llamas, te contesto yo.',
+      'Hago webs a medida para negocios de Cornellà, con trato directo y un presupuesto personalizado por escrito.',
     h1: 'Diseño web en Cornellà de Llobregat',
     bajada:
       'Trabajo con negocios de Cornellà y de toda España. La web se diseña desde cero, con trato directo y un presupuesto claro antes de empezar.',
-    resumen: 'Webs para negocios de Cornellà, desde 500 €.',
+    resumen: 'Webs a medida para negocios de Cornellà, con trato directo.',
     incluyeTitular: 'Por qué te interesa que sea de aquí',
     incluye: [
       'Hablas conmigo directamente, en el mismo horario y sin intermediarios.',
       'Conozco el tipo de negocio que hay aquí: comercio de barrio, clínicas, gestorías y talleres.',
       'La web se hace por teléfono y WhatsApp, sin que tengas que cerrar el local para reuniones.',
-      'Presupuesto cerrado antes de empezar, sin cuotas escondidas.',
+      'Presupuesto personalizado antes de empezar, sin cuotas escondidas.',
       'Si algún día quieres cambios, me escribes y te los hago yo.',
     ],
     datos: [
-      { cifra: '500 €', texto: 'la web entera, con presupuesto cerrado antes de empezar' },
+      { cifra: 'A medida', texto: 'el presupuesto según lo que necesita tu negocio' },
       { cifra: '7 días', texto: 'de empezar a estar publicada' },
       { cifra: '24 h', texto: 'para tener tu presupuesto por escrito, sin compromiso' },
     ],
@@ -44,7 +44,7 @@ export const ZONAS: Servicio[] = [
       {
         pregunta: '¿Cuánto cuesta y cuánto tarda?',
         respuesta:
-          'Desde 500 € la web entera y siete días desde que empezamos. El presupuesto por escrito lo tienes en 24 horas.',
+          'Depende de las páginas, contenidos y funciones que necesites. Primero hablamos y después recibes el alcance, el calendario y el presupuesto por escrito.',
       },
     ],
   },
@@ -53,7 +53,7 @@ export const ZONAS: Servicio[] = [
     nombre: 'Baix Llobregat',
     titulo: 'Diseño web en el Baix Llobregat — Sergio García Ortiz',
     descripcion:
-      'Webs para negocios del Baix Llobregat: Cornellà, Esplugues, Sant Joan Despí, Sant Just, Sant Boi, El Prat, Viladecans. Desde 500 €.',
+      'Webs a medida para negocios del Baix Llobregat: Cornellà, Esplugues, Sant Joan Despí, Sant Just, Sant Boi, El Prat y Viladecans.',
     h1: 'Diseño web en el Baix Llobregat',
     bajada:
       'Trabajo con negocios de toda la comarca: Cornellà, Esplugues, Sant Joan Despí, Sant Just Desvern, Sant Boi, El Prat, Viladecans, Gavà y Castelldefels.',
@@ -64,10 +64,10 @@ export const ZONAS: Servicio[] = [
       'Servicios profesionales: gestorías, estudios de arquitectura y autoescuelas.',
       'Comercio y hostelería de barrio: barberías, cafeterías y gimnasios.',
       'Puedes ver una web de ejemplo de cada uno de esos rubros antes de decidir nada.',
-      'Mismo precio y mismo plazo en cualquier municipio de la comarca.',
+      'El municipio no cambia el presupuesto: lo determina lo que necesita el proyecto.',
     ],
     datos: [
-      { cifra: '500 €', texto: 'la web entera, igual en cualquier municipio de la comarca' },
+      { cifra: 'A medida', texto: 'el presupuesto depende del proyecto, no del municipio' },
       { cifra: '7 días', texto: 'de empezar a estar publicada' },
       { cifra: '10', texto: 'webs de ejemplo por rubro que puedes abrir y recorrer' },
     ],
@@ -94,7 +94,7 @@ export const ZONAS: Servicio[] = [
     nombre: 'Barcelona',
     titulo: 'Diseño web en Barcelona — Sergio García Ortiz',
     descripcion:
-      'Webs a medida para negocios de Barcelona desde 500 €, publicadas en 7 días. Sin agencia en medio: hablas siempre con quien la construye.',
+      'Webs a medida para negocios de Barcelona, con presupuesto personalizado y sin agencia en medio: hablas con quien la construye.',
     h1: 'Diseño web en Barcelona',
     bajada:
       'Diseño y desarrollo a medida, con una persona responsable del proyecto de principio a fin y un presupuesto claro antes de empezar.',
@@ -102,13 +102,13 @@ export const ZONAS: Servicio[] = [
     incluyeTitular: 'La diferencia con una agencia',
     incluye: [
       'Hablas directamente con la persona que diseña y desarrolla tu web.',
-      'El presupuesto se cierra antes de empezar y no se mueve por el camino.',
+      'El alcance y el presupuesto se acuerdan por escrito antes de empezar.',
       'Para webs corporativas, trabajo con una base estática que reduce el mantenimiento y los componentes expuestos.',
       'La base técnica se prepara para cargar con agilidad y para que los buscadores puedan entender el contenido.',
       'Y si dentro de un año quieres cambios, sigues hablando con la misma persona.',
     ],
     datos: [
-      { cifra: '500 €', texto: 'la web entera, con presupuesto cerrado antes de empezar' },
+      { cifra: 'A medida', texto: 'un presupuesto según el alcance real de tu proyecto' },
       { cifra: '7 días', texto: 'de empezar a estar publicada' },
       { cifra: '1', texto: 'persona de principio a fin: la que te coge el teléfono' },
     ],

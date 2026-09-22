@@ -28,12 +28,12 @@ export const SERVICIOS: Servicio[] = [
     nombre: 'Diseño de web nueva',
     titulo: 'Diseño de páginas web para negocios — Sergio García Ortiz',
     descripcion:
-      'Tu web hecha desde cero, no una plantilla con tu logo encima. Desde 500 €, publicada en 7 días.',
+      'Tu web hecha desde cero, no una plantilla con tu logo encima. Presupuesto personalizado y todo por escrito antes de empezar.',
     h1: 'Diseño de páginas web para negocios',
     bajada:
-      'Tu web hecha desde cero, no una plantilla con tu logo encima. Desde 500 €, publicada en 7 días.',
+      'Tu web hecha desde cero, no una plantilla con tu logo encima. Primero definimos lo que necesita tu negocio y después recibes un presupuesto personalizado.',
     resumen:
-      'Tu web desde cero, con presupuesto cerrado antes de empezar y publicada en 7 días.',
+      'Tu web desde cero, con alcance y presupuesto a medida antes de empezar.',
     incluyeTitular: 'Qué incluye',
     incluye: [
       'Hasta 5 páginas diseñadas a medida de tu negocio.',
@@ -43,7 +43,7 @@ export const SERVICIOS: Servicio[] = [
       'Te acompaño en la puesta en marcha y me ocupo de los ajustes acordados.',
     ],
     datos: [
-      { cifra: '500 €', texto: 'la web entera, con presupuesto cerrado antes de empezar' },
+      { cifra: 'A medida', texto: 'un presupuesto según las páginas, contenidos y funciones que necesitas' },
       { cifra: '7 días', texto: 'de empezar a estar publicada' },
       { cifra: '24 h', texto: 'para tener tu presupuesto por escrito, sin compromiso' },
     ],
@@ -65,7 +65,7 @@ export const SERVICIOS: Servicio[] = [
       {
         pregunta: '¿Y si luego quiero cambiar cosas?',
         respuesta:
-          'Me lo dices y te lo cambio yo: 25 € una tanda de textos y fotos, 50 € una página nueva. Con mantenimiento los cambios van incluidos y las páginas nuevas salen a mitad de precio.',
+          'Me lo dices y valoramos el cambio. Te explico el alcance y el coste antes de hacerlo, porque una corrección de texto y una página nueva requieren trabajos distintos.',
       },
       {
         pregunta: '¿Por qué es más barato que una agencia?',
@@ -94,8 +94,8 @@ export const SERVICIOS: Servicio[] = [
       'Tu web actual sigue funcionando hasta el día que publicamos la nueva.',
     ],
     datos: [
-      { cifra: '500 €', texto: 'la web nueva entera, con presupuesto cerrado antes de empezar' },
-      { cifra: '100 €', texto: 'el traslado de los contenidos de tu web actual' },
+      { cifra: 'A medida', texto: 'el rediseño según el estado de tu web y lo que haya que conservar o rehacer' },
+      { cifra: 'Planificado', texto: 'el traslado de contenidos y direcciones se define antes de empezar' },
       { cifra: '7 días', texto: 'de empezar a estar publicada' },
     ],
     faq: [
@@ -117,7 +117,7 @@ export const SERVICIOS: Servicio[] = [
       {
         pregunta: '¿Y si luego quiero cambiar cosas?',
         respuesta:
-          'Me lo dices y te lo cambio yo: 25 € una tanda de textos y fotos, 50 € una página nueva. Con mantenimiento los cambios van incluidos y las páginas nuevas salen a mitad de precio.',
+          'Me lo dices y valoramos el cambio. Recibes el alcance y el coste por escrito antes de hacerlo, porque no todos los cambios requieren el mismo trabajo.',
       },
     ],
   },
@@ -126,40 +126,40 @@ export const SERVICIOS: Servicio[] = [
     nombre: 'Mantenimiento',
     titulo: 'Mantenimiento de páginas web — Sergio García Ortiz',
     descripcion:
-      'Alojamiento, copias de seguridad y tus cambios hechos por mí. Desde 50 € al mes, con 3 meses mínimo.',
+      'Alojamiento, copias de seguridad y cambios de contenido con un plan adaptado a la frecuencia y las necesidades de tu web.',
     h1: 'Mantenimiento de páginas web',
     bajada:
-      'Alojamiento, copias de seguridad y tus cambios hechos por mí. Desde 50 € al mes, con 3 meses mínimo.',
+      'Alojamiento, copias de seguridad y tus cambios hechos por mí, con un plan ajustado a lo que tu web necesita de verdad.',
     resumen:
-      'Alojamiento, copias y tus cambios hechos por mí, desde 50 € al mes.',
+      'Alojamiento, copias y cambios con un plan de mantenimiento a medida.',
     incluyeTitular: 'Qué incluye',
     incluye: [
       'Alojamiento y copias de seguridad de tu web.',
       'Los cambios de texto y fotos que necesites, hechos por mí.',
-      'Las páginas nuevas, a mitad de precio: 25 € en vez de 50 €.',
+      'Las páginas nuevas se valoran por separado antes de construirlas.',
       'Actualizaciones y vigilancia de que todo sigue funcionando.',
       'Con el plan Prioritario, además, un repaso cada mes de cómo va la web.',
     ],
     datos: [
-      { cifra: '50 €', texto: 'al mes, con tus cambios hechos en 7 días como máximo' },
-      { cifra: '75 €', texto: 'al mes, con prioridad: tus cambios en 2 días como máximo' },
-      { cifra: '3 meses', texto: 'de compromiso mínimo, y después lo dejas cuando quieras' },
+      { cifra: 'A medida', texto: 'según la frecuencia y el tipo de cambios que necesite tu web' },
+      { cifra: 'Prioridad', texto: 'acordamos los tiempos de respuesta que necesita tu negocio' },
+      { cifra: 'Por escrito', texto: 'sabes qué incluye el mantenimiento antes de contratarlo' },
     ],
     faq: [
       {
         pregunta: '¿Qué cuenta como cambio?',
         respuesta:
-          'Textos y fotos: cambiar precios, horarios, servicios, añadir fotos nuevas. Una página entera nueva va aparte, a mitad de precio: 25 €.',
+          'Textos y fotos: cambiar precios, horarios, servicios o añadir imágenes nuevas. Una página completa se valora aparte porque implica diseño, contenido y comprobaciones adicionales.',
       },
       {
         pregunta: '¿Tengo que atarme un año?',
         respuesta:
-          'No. El compromiso son 3 meses y a partir de ahí lo dejas cuando quieras, sin penalización ni papeleo.',
+          'No. Las condiciones y la duración se acuerdan contigo antes de empezar y quedan por escrito, sin letra pequeña.',
       },
       {
         pregunta: '¿Y si no quiero mantenimiento?',
         respuesta:
-          'No hace falta: la web funciona sola, sin plugins que actualizar. Si algún día quieres cambios, te los cobro sueltos: 25 € una tanda de textos y fotos, 50 € una página nueva.',
+          'No hace falta: la web funciona sin plugins que tengas que actualizar. Si algún día quieres cambios, los valoramos de forma puntual antes de hacerlos.',
       },
     ],
   },
@@ -168,7 +168,7 @@ export const SERVICIOS: Servicio[] = [
     nombre: 'Posicionamiento en Google',
     titulo: 'Posicionamiento en Google para negocios locales — Sergio García Ortiz',
     descripcion:
-      'Que te encuentren cuando busquen tu servicio en tu zona: ficha de Google, la web preparada por dentro y los datos que Google necesita. 110 €.',
+      'Que te encuentren cuando busquen tu servicio en tu zona: ficha de Google, la web preparada por dentro y los datos que Google necesita.',
     h1: 'Posicionamiento en Google para negocios locales',
     bajada:
       'Que te encuentren cuando busquen tu servicio en tu zona: ficha de Google, la web preparada por dentro y los datos que Google necesita.',
@@ -183,9 +183,9 @@ export const SERVICIOS: Servicio[] = [
       'Te explico cómo pedir reseñas, que es lo que más mueve en las búsquedas de tu barrio.',
     ],
     datos: [
-      { cifra: '110 €', texto: 'el servicio completo, junto con tu web nueva' },
+      { cifra: 'A medida', texto: 'según el punto de partida de tu web y de tu ficha de Google' },
       { cifra: '2 días', texto: 'de trabajo añadidos al plazo de la web' },
-      { cifra: '0 €', texto: 'de cuota: no es una suscripción, se hace una vez' },
+      { cifra: 'Sin cuota', texto: 'es un trabajo puntual, no una suscripción automática' },
     ],
     faq: [
       {

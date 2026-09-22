@@ -46,7 +46,17 @@ for (const [lang, path] of [['es','index.html'], ['ca','ca/index.html'], ['en','
   assert.ok(html.includes('https://wa.me/34620650597?text='), `WhatsApp: ${lang}`);
   assert.ok(html.includes('mailto:info@sergiogarciaweb.com'), `Email: ${lang}`);
   assert.ok(html.includes('tel:+34620650597'), `Phone: ${lang}`);
-  assert.ok(html.includes('https://sergiogarciaweb.com/presupuesto-web/'), `Estimate link: ${lang}`);
+  assert.ok(!html.includes('/presupuesto-web/'), `No calculator link: ${lang}`);
+  assert.doesNotMatch(html, /(?:\d[\d.,]*\s*€|€\s*\d)/, `No fixed euro amount: ${lang}`);
   assert.equal((html.match(/<script(?! type="application\/ld\+json")/g) || []).length, 0, `Home must work without runtime JavaScript: ${lang}`);
+}
+for (const [lang, path, thanks] of [
+  ['es', 'resena/index.html', '/gracias/'],
+  ['ca', 'ca/ressenya/index.html', '/ca/gracies/'],
+  ['en', 'en/review/index.html', '/en/thanks/'],
+]) {
+  const html = readFileSync(join(dist, path), 'utf8');
+  assert.ok(html.includes(`name="Idioma" value="${lang}"`), `Review language: ${lang}`);
+  assert.ok(html.includes(`name="redirect" value="https://sergiogarciaweb.com${thanks}"`), `Review redirect: ${lang}`);
 }
 console.log(`PASS: ${pages.length} generated pages; internal links, anchors, images, titles, 3 languages, national schema and contact paths.`);

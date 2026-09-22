@@ -17,6 +17,13 @@ export interface Servicio {
   incluye: string[];
   datos: { cifra: string; texto: string }[];
   faq: Faq[];
+  /** Resumen comercial breve para ayudar a elegir entre web nueva y rediseño. */
+  decision?: {
+    pregunta: string;
+    senales: string[];
+    proceso: { titulo: string; texto: string }[];
+    ejemplos: { nombre: string; tipo: string; texto: string; href: string; externo?: boolean }[];
+  };
 }
 
 // Cada texto de aquí lo ha aprobado Sergio antes de escribirse. Ver
@@ -73,6 +80,23 @@ export const SERVICIOS: Servicio[] = [
           'Porque trabajo de forma independiente y directa. El presupuesto cubre el trabajo del proyecto, sin estructura de agencia de por medio.',
       },
     ],
+    decision: {
+      pregunta: '¿Es una web nueva lo que necesitas?',
+      senales: [
+        'Tu negocio está empezando o todavía no tiene una web propia.',
+        'Tienes una idea clara, pero necesitas ordenar los contenidos y decidir qué páginas hacen falta.',
+        'Quieres que el primer contacto, las reservas o las visitas al local tengan un camino fácil.',
+      ],
+      proceso: [
+        { titulo: 'Lo aterrizamos', texto: 'Hablamos de tu negocio, de a quién quieres llegar y de lo que la web tiene que conseguir.' },
+        { titulo: 'Te propongo un plan', texto: 'Recibes las páginas, el calendario y el presupuesto por escrito antes de decidir.' },
+        { titulo: 'La construyo y publicamos', texto: 'Diseño, contenido, versión móvil y puesta en marcha; revisamos todo juntos antes de abrir.' },
+      ],
+      ejemplos: [
+        { nombre: 'Fisioymés', tipo: 'Proyecto real · Fisioterapia', texto: 'Una clínica con una estructura más clara para explicar tratamientos y llegar a la cita.', href: 'https://sergiogarciaweb.com/fisioymes/', externo: true },
+        { nombre: 'Manada', tipo: 'Concepto · Veterinaria', texto: 'Urgencias, servicios y una cita accesible sin hacer que el visitante busque de más.', href: 'https://sergiogarciaweb.com/demo-veterinaria-manada/', externo: true },
+      ],
+    },
   },
   {
     slug: 'rediseno-web',
@@ -120,6 +144,23 @@ export const SERVICIOS: Servicio[] = [
           'Me lo dices y valoramos el cambio. Recibes el alcance y el coste por escrito antes de hacerlo, porque no todos los cambios requieren el mismo trabajo.',
       },
     ],
+    decision: {
+      pregunta: '¿Tu web pide un rediseño?',
+      senales: [
+        'Tu web ya no representa cómo es tu negocio hoy o te cuesta compartirla con confianza.',
+        'En móvil se lee mal, carga despacio o llegar al contacto supone demasiado esfuerzo.',
+        'Quieres mejorarla sin perder tu dominio, tus contenidos útiles ni las direcciones que Google ya conoce.',
+      ],
+      proceso: [
+        { titulo: 'Revisamos el punto de partida', texto: 'Vemos qué funciona, qué hay que cambiar y qué contenidos o direcciones conviene conservar.' },
+        { titulo: 'Planificamos la transición', texto: 'Definimos el nuevo alcance, el traslado de contenidos y las redirecciones antes de empezar.' },
+        { titulo: 'Renovamos sin apagar la actual', texto: 'La nueva se prepara aparte; tu web sigue disponible hasta el momento de publicar.' },
+      ],
+      ejemplos: [
+        { nombre: 'Fisioymés', tipo: 'Proyecto real · Rediseño', texto: 'La web anterior tenía demasiado texto en móvil. La rehice sin tocar el sistema de reservas que ya usaban.', href: 'https://sergiogarciaweb.com/fisioymes/', externo: true },
+        { nombre: 'Sereno', tipo: 'Concepto · Clínica dental', texto: 'Una propuesta para hacer más directa una decisión que suele generar dudas: confianza, tratamiento y cita.', href: 'https://sergiogarciaweb.com/demo-dental-sereno/', externo: true },
+      ],
+    },
   },
   {
     slug: 'mantenimiento-web',

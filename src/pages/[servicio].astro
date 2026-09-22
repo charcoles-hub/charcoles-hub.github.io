@@ -3,6 +3,7 @@ import { SERVICIOS, type Servicio } from '../config/servicios';
 import { contenido } from '../config/site';
 import Layout from '../layouts/Layout.astro';
 import PaginaLarga from '../components/PaginaLarga.astro';
+import PaginaDecision from '../components/PaginaDecision.astro';
 
 export function getStaticPaths() {
   return SERVICIOS.map((s) => ({ params: { servicio: s.slug }, props: { s } }));
@@ -39,6 +40,6 @@ const servicioLd = {
   paginas={{ es: `/${s.slug}/`, en: '/en/', ca: '/ca/' }}
   datos={[servicioLd, faqLd]}
 >
-  <PaginaLarga s={s} />
+  {s.decision ? <PaginaDecision s={s} /> : <PaginaLarga s={s} />}
 </Layout>
 

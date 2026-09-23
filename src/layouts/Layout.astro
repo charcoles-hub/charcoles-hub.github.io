@@ -7,7 +7,7 @@ interface Props {
   titulo?: string;
   descripcion?: string;
   /** Rutas equivalentes en cada idioma, para los hreflang. Por defecto, la portada. */
-  paginas?: Record<Lang, string>;
+  paginas?: Partial<Record<Lang, string>>;
   noindex?: boolean;
   /** Datos estructurados propios de la página, además de los del negocio. */
   datos?: unknown[];
@@ -23,12 +23,14 @@ const {
 } = Astro.props;
 const canonica = new URL(Astro.url.pathname, Astro.site).href;
 
-// hreflang recíprocos: cada versión declara las dos rutas, y las dos existen
-// como HTML estático. Sin esto Google trata /en/ como duplicado de la raíz.
+// Solo las páginas con versiones equivalentes en varios idiomas declaran hreflang.
+// Las portadas y los formularios de reseña tienen esas versiones; servicios y
+// zonas, de momento, solo existen en español.
 const alternas = (Object.keys(paginas) as Lang[]).map((l) => ({
   codigo: l,
-  href: new URL(paginas[l], Astro.site).href,
+  href: new URL(paginas[l]!, Astro.site).href,
 }));
+const tieneAlternas = !noindex && alternas.length > 1;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -94,8 +96,8 @@ const favicon =
     <title>{titulo}</title>
     {noindex && <meta name="robots" content="noindex" />}
 
-    {alternas.map((a) => <link rel="alternate" hreflang={a.codigo} href={a.href} />)}
-    <link rel="alternate" hreflang="x-default" href={new URL(paginas.es, Astro.site).href} />
+    {tieneAlternas && alternas.map((a) => <link rel="alternate" hreflang={a.codigo} href={a.href} />)}
+    {tieneAlternas && paginas.es && <link rel="alternate" hreflang="x-default" href={new URL(paginas.es, Astro.site).href} />}
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={titulo} />

@@ -9,8 +9,8 @@ const { destacado: p, trabajo: txt } = contenido[lang];
 // EL efecto de la página — y solo hay uno. La web del cliente, capturada a
 // página completa, se recorre dentro del marco al ritmo del scroll. Es CSS
 // puro (view-timeline en .proyecto): sin JS, sin iframe, sin cross-origin.
-// OJO: /fisioymes/ redirige 301 a fisioymes.com, así que un iframe aquí sería
-// cross-origin y no se podría scrollear desde fuera — por eso la captura.
+// La web publicada del cliente vive en otro origen, así que un iframe aquí
+// sería cross-origin y no se podría scrollear desde fuera — por eso la captura.
 // El marco enseña una ventana de 1440×900 de la captura; el resto es recorrido.
 const VENTANA = 900;
 const fin = -(100 * (1 - VENTANA / p.alto)).toFixed(2);

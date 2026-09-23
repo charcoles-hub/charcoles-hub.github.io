@@ -93,7 +93,7 @@ export const SERVICIOS: Servicio[] = [
         { titulo: 'La construyo y publicamos', texto: 'Diseño, contenido, versión móvil y puesta en marcha; revisamos todo juntos antes de abrir.' },
       ],
       ejemplos: [
-        { nombre: 'Fisioymés', tipo: 'Proyecto real · Fisioterapia', texto: 'Una clínica con una estructura más clara para explicar tratamientos y llegar a la cita.', href: 'https://sergiogarciaweb.com/fisioymes/', externo: true },
+        { nombre: 'Fisioymés', tipo: 'Proyecto real · Fisioterapia', texto: 'Una clínica con una estructura más clara para explicar tratamientos y llegar a la cita.', href: '/proyectos/fisioymes/' },
         { nombre: 'Manada', tipo: 'Concepto · Veterinaria', texto: 'Urgencias, servicios y una cita accesible sin hacer que el visitante busque de más.', href: 'https://sergiogarciaweb.com/demo-veterinaria-manada/', externo: true },
       ],
     },
@@ -157,7 +157,7 @@ export const SERVICIOS: Servicio[] = [
         { titulo: 'Renovamos sin apagar la actual', texto: 'La nueva se prepara aparte; tu web sigue disponible hasta el momento de publicar.' },
       ],
       ejemplos: [
-        { nombre: 'Fisioymés', tipo: 'Proyecto real · Rediseño', texto: 'La web anterior tenía demasiado texto en móvil. La rehice sin tocar el sistema de reservas que ya usaban.', href: 'https://sergiogarciaweb.com/fisioymes/', externo: true },
+        { nombre: 'Fisioymés', tipo: 'Proyecto real · Rediseño', texto: 'La web anterior tenía demasiado texto en móvil. La rehice sin tocar el sistema de reservas que ya usaban.', href: '/proyectos/fisioymes/' },
         { nombre: 'Sereno', tipo: 'Concepto · Clínica dental', texto: 'Una propuesta para hacer más directa una decisión que suele generar dudas: confianza, tratamiento y cita.', href: 'https://sergiogarciaweb.com/demo-dental-sereno/', externo: true },
       ],
     },

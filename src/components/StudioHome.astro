@@ -2,6 +2,8 @@
 import { Image } from 'astro:assets';
 import { contenido, rutas, TELEFONO, RESENAS, type Lang } from '../config/site';
 import { studio } from '../config/studio';
+import { SERVICIOS } from '../config/servicios';
+import { ZONAS } from '../config/zonas';
 import fisio from '../assets/posters/fisioymes-full.png';
 import navaja from '../assets/posters/demo-barberia-navaja.png';
 import sereno from '../assets/posters/demo-dental-sereno.png';
@@ -58,12 +60,12 @@ const formatoResena = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : lang ===
   <section class="section wrap" id="trabajo" aria-labelledby="work-title">
     <div class="section-head"><div><p class="eyebrow">{t.workKicker}</p><h2 id="work-title">{t.workTitle}</h2></div><p>{t.workIntro}</p></div>
     <article class="case" id="caso-fisioymes">
-      <a class="case-visual" href={c.destacado.url} target="_blank" rel="noopener" aria-label={`${t.visit}: Fisioymés`}>
+      <a class="case-visual" href={c.destacado.url} aria-label={`${t.visit}: Fisioymés`}>
         <div class="case-visual-label"><span>{t.client}</span><span aria-hidden="true">↗</span></div>
         <div class="case-browser"><div class="screen-bar" aria-hidden="true"><i></i><i></i><i></i><span>fisioymés</span></div><Image src={fisio} width={1000} height={1100} fit="cover" position="top" widths={[500, 1000]} sizes="(min-width: 900px) 48vw, 90vw" format="webp" alt={`Fisioymés · ${t.caseTag}`} loading="lazy" /></div>
         <p>{t.caseTag}</p>
       </a>
-      <div class="case-copy"><p class="eyebrow">FISIOYMÉS</p><h3>{t.caseLead}</h3><p class="case-intro">{t.caseIntro}</p><dl>{t.caseSteps.map(([title, detail], i) => <div><dt><span aria-hidden="true">0{i + 1}</span>{title}</dt><dd>{detail}</dd></div>)}</dl><a class="text-link" href={c.destacado.url} target="_blank" rel="noopener">{t.visit}<span aria-hidden="true">↗</span></a></div>
+      <div class="case-copy"><p class="eyebrow">FISIOYMÉS</p><h3>{t.caseLead}</h3><p class="case-intro">{t.caseIntro}</p><dl>{t.caseSteps.map(([title, detail], i) => <div><dt><span aria-hidden="true">0{i + 1}</span>{title}</dt><dd>{detail}</dd></div>)}</dl><a class="text-link" href={c.destacado.url}>{t.visit}<span aria-hidden="true">↗</span></a></div>
     </article>
     <div class="concept-heading"><div><p class="eyebrow">{t.ideasKicker}</p><h3>{t.ideasTitle}</h3></div><p>{t.ideasIntro}</p></div>
     <div class="concept-grid" class:list={{ 'concept-grid-two': selected.length === 2 }}>{selected.map(p => <a class="concept-card" href={p.url} target="_blank" rel="noopener"><div class="concept-image"><Image src={posters[p.slug as keyof typeof posters]} width={800} height={620} fit="cover" position="top" widths={[400, 800]} sizes="(min-width: 900px) 30vw, (min-width: 600px) 45vw, 90vw" format="webp" alt={`${p.nombre}: ${p.rubro}`} loading="lazy" /><span>{t.concept}</span></div><div class="concept-name"><h4>{p.nombre}</h4><span aria-hidden="true">↗</span></div><p>{p.rubro.split(' · ')[0]}</p></a>)}</div>
@@ -116,7 +118,7 @@ const formatoResena = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : lang ===
 
   <section class="contact section" id="contacto" aria-labelledby="contact-title"><div class="wrap"><p class="eyebrow">{t.contactKicker}</p><div class="contact-grid"><h2 id="contact-title">{t.contactTitle[0]}<span>{t.contactTitle[1]}</span></h2><div><p>{t.contactText}</p><a class="button button-lime" href={wa}>{t.whatsapp}<span aria-hidden="true">↗</span></a><a class="contact-email" href={`mailto:${c.site.email}`}>{t.email}<span aria-hidden="true">↗</span></a><p class="phone">{t.call} <a href={TELEFONO.tel}>{TELEFONO.humano}</a></p></div></div></div></section>
 
-  <footer class="footer wrap"><div><a class="footer-name" href={rutas[lang]}>Sergio García<span aria-hidden="true">↗</span></a><p>{t.footer}</p></div><a class="text-link" href="#arriba">{t.top}<span aria-hidden="true">↑</span></a><div class="footer-bottom"><span>© {new Date().getFullYear()} Sergio García Ortiz</span><a href={`mailto:${c.site.email}`}>{c.site.email}</a><a href={TELEFONO.tel}>{TELEFONO.humano}</a></div></footer>
+  <footer class="footer wrap"><div><a class="footer-name" href={rutas[lang]}>Sergio García<span aria-hidden="true">↗</span></a><p>{t.footer}</p></div><a class="text-link" href="#arriba">{t.top}<span aria-hidden="true">↑</span></a>{lang === 'es' && <nav class="footer-nav" aria-label="Servicios y zonas"><div><strong>Servicios</strong>{SERVICIOS.map(s => <a href={`/${s.slug}/`}>{s.nombre}</a>)}</div><div><strong>Zonas</strong>{ZONAS.map(z => <a href={`/${z.slug}/`}>Diseño web en {z.nombre}</a>)}</div></nav>}<div class="footer-bottom"><span>© {new Date().getFullYear()} Sergio García Ortiz</span><a href={`mailto:${c.site.email}`}>{c.site.email}</a><a href={TELEFONO.tel}>{TELEFONO.humano}</a></div></footer>
 </div>
 
 <style>
@@ -331,7 +333,13 @@ const formatoResena = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : lang ===
   .footer-name { font-size: 28px; font-weight: 650; letter-spacing: -.06em; }
   .footer-name span { margin-left: 18px; font-size: 25px; }
   .footer > div > p { color: var(--muted); font-size: 10px; margin-top: 10px; }
+  .footer-nav { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; padding-top: 28px; border-top: 1px solid var(--line); }
+  .footer-nav > div { display: flex; flex-wrap: wrap; align-content: start; gap: 10px 20px; }
+  .footer-nav strong { width: 100%; margin-bottom: 4px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .footer-nav a { color: var(--muted); font-size: 11px; }
+  .footer-nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
   .footer-bottom { width: 100%; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; border-top: 1px solid var(--line); padding-top: 23px; font-size: 10px; color: var(--muted); }
+  @media (max-width: 600px) { .footer-nav { grid-template-columns: 1fr; gap: 24px; } }
   @media (min-width: 1600px) { .hero { padding-block: 95px; } }
   @media (max-width: 1100px) { .wrap { width: calc(100% - 64px); } .desktop-nav { gap: 16px; } .nav-end { gap: 17px; } .hero { gap: 32px; } .hero-actions { gap: 14px; flex-wrap: wrap; } .hero-showcase { min-height: 390px; } .case { gap: 38px; } .section-head { gap: 40px; } .quote-grid { gap: 60px; } .about { gap: 50px; } .contact-grid { gap: 65px; } }
   @media (max-width: 900px) { .desktop-nav { display: none; } .hero { padding-block: 55px; gap: 45px; } .hero h1 { font-size: 67px; } .hero { grid-template-columns: 1fr; } .hero-copy { max-width: 650px; } .hero-intro { max-width: 560px; } .hero-showcase { min-height: auto; max-width: 640px; width: 100%; padding: 25px; } .desktop-screen { margin: 22px 35px; } .desktop-screen img { aspect-ratio: 1.8; object-fit: cover; object-position: top; } .promises { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 30px; } .section { padding-block: 78px; } .section-head { display: block; margin-bottom: 36px; } .section-head > p { margin-top: 22px; max-width: 600px; } .case { gap: 38px; } .case-copy h3 { font-size: 31px; } .case-copy .eyebrow { margin-bottom: 17px; } .case-visual { padding: 20px; } .case-intro { font-size: 12px; margin-top: 17px; } .case-copy dl { margin-top: 18px; } .case-copy dl > div { padding: 11px 0; } .concept-heading { display: block; margin-top: 70px; } .concept-heading > p { margin-top: 17px; max-width: 580px; } .concept-grid { gap: 19px; } .concept-image { padding: 15px 12px 0; } .review-grid { grid-template-columns: 1fr 1fr; } .decision-chooser { grid-template-columns: 1fr; gap: 25px; margin-bottom: 54px; } .decision-chooser > div:first-child { gap: 17px; } .service-grid { gap: 25px; } .service-grid h3 { font-size: 23px; } .service-grid .text-link { font-size: 11px; gap: 10px; } .process-grid { grid-template-columns: 1fr 1fr; gap: 32px; } .quote-grid { gap: 35px; } .quote-card { padding: 28px; } .about { gap: 44px; } .faq { grid-template-columns: 1fr; gap: 30px; } .faq h2 { max-width: 600px; } .contact-grid { gap: 40px; } }

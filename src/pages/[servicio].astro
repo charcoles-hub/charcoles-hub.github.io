@@ -37,7 +37,7 @@ const servicioLd = {
   lang="es"
   titulo={s.titulo}
   descripcion={s.descripcion}
-  paginas={{ es: `/${s.slug}/`, en: '/en/', ca: '/ca/' }}
+  paginas={{ es: `/${s.slug}/` }}
   datos={[servicioLd, faqLd]}
 >
   {s.decision ? <PaginaDecision s={s} /> : <PaginaLarga s={s} />}

@@ -36,6 +36,14 @@ for (const file of pages) {
     if (src?.startsWith('/')) assert.ok(existsSync(join(dist, src)), `Missing image ${src}`);
   }
 }
+for (const slug of ['diseno-web', 'rediseno-web', 'mantenimiento-web', 'posicionamiento-google', 'diseno-web-cornella', 'diseno-web-baix-llobregat', 'diseno-web-barcelona', 'proyectos/fisioymes']) {
+  const html = readFileSync(join(dist, slug, 'index.html'), 'utf8');
+  assert.doesNotMatch(html, /<link rel="alternate" hreflang=/, `Only equivalent translations may use hreflang: ${slug}`);
+}
+const home = readFileSync(join(dist, 'index.html'), 'utf8');
+for (const slug of ['diseno-web-cornella', 'diseno-web-baix-llobregat', 'diseno-web-barcelona', 'posicionamiento-google', 'proyectos/fisioymes']) {
+  assert.ok(home.includes(`href="/${slug}/"`), `Missing home link to ${slug}`);
+}
 for (const [lang, path] of [['es','index.html'], ['ca','ca/index.html'], ['en','en/index.html']]) {
   const html = readFileSync(join(dist, path), 'utf8');
   assert.match(html, new RegExp(`<html lang="${lang}"`));

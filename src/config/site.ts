@@ -42,7 +42,7 @@ const fisioymes: Destacado = {
   descripcion:
     'Vinieron con una queja concreta: en el móvil su web era todo letra y scroll sin fin. La rehíce entera en catalán y castellano, con las lesiones en rejilla y los tratamientos en fichas — y sin tocarles el sistema de reservas que ya usaban.',
   slug: 'fisioymes',
-  url: 'https://sergiogarciaweb.com/fisioymes/',
+  url: '/proyectos/fisioymes/',
   alto: 4939,
 };
 

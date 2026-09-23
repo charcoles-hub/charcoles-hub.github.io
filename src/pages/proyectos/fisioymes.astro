@@ -52,7 +52,7 @@ const decisiones = [
 
       <section class="visual" aria-labelledby="visual-title">
         <div class="wrap visual-inner">
-          <div class="visual-copy">
+          <div class="visual-copy" data-revela>
             <p class="eyebrow">La web publicada</p>
             <h2 id="visual-title">Una estructura que se puede explorar.</h2>
             <p>La captura muestra la versión actual. La web anterior ya no está disponible.</p>
@@ -73,19 +73,19 @@ const decisiones = [
         </div>
       </section>
 
-      <section class="section wrap two-column" id="punto-de-partida" aria-labelledby="before-title">
+      <section class="section wrap two-column" id="punto-de-partida" aria-labelledby="before-title" data-revela>
         <div><p class="eyebrow">El punto de partida</p><h2 id="before-title">Lo que dificultaba el recorrido.</h2></div>
         <ol class="numbered-list">{problemas.map((problema, i) => <li><span>0{i + 1}</span><p>{problema}</p></li>)}</ol>
       </section>
 
       <section class="section decisions" aria-labelledby="decisions-title">
-        <div class="wrap two-column">
+        <div class="wrap two-column" data-revela>
           <div><p class="eyebrow">El rediseño</p><h2 id="decisions-title">Decisiones para hacerlo más claro.</h2></div>
           <ol class="numbered-list">{decisiones.map((decision, i) => <li><span>0{i + 1}</span><div><h3>{decision.titulo}</h3><p>{decision.texto}</p></div></li>)}</ol>
         </div>
       </section>
 
-      <section class="section wrap outcome" aria-labelledby="outcome-title">
+      <section class="section wrap outcome" aria-labelledby="outcome-title" data-revela>
         <p class="eyebrow">Lo que puedes comprobar</p>
         <h2 id="outcome-title">Una visita con menos obstáculos.</h2>
         <p>En la web publicada puedes recorrer las lesiones y los tratamientos, cambiar de idioma y acceder al sistema de reservas de la clínica. No presento una cifra de mejora de velocidad o de conversiones porque no hay una medición comparable de la web anterior.</p>
@@ -155,4 +155,15 @@ const decisiones = [
   .footer { display:flex; justify-content:space-between; gap:24px; padding-block:40px; font-size:12px; font-weight:750; }
   @media (max-width:800px) { .wrap { width:min(100% - 40px,1180px); } .hero { padding-block:64px 75px; } .visual-inner,.two-column,.contact-inner { grid-template-columns:1fr; gap:35px; } .visual-inner { padding-top:55px; } .visual-copy { padding-top:0; } .browser-frame { max-height:560px; } .section { padding-block:75px; } .contact { padding-block:70px; } }
   @media (max-width:480px) { .masthead { min-height:72px; } .identity { font-size:14px; } .back { font-size:11px; } .hero-actions { align-items:stretch; gap:15px; } .hero-actions .button { width:100%; } h1 { font-size:47px; } .browser-frame { max-height:450px; } }
+  .browser-frame { transition:transform .8s var(--suave),box-shadow .8s var(--suave); }
+  .numbered-list li { transition:padding-left .45s var(--suave),border-color .3s ease; }
+  .numbered-list li:hover { padding-left:12px; border-color:#71893e; }
+  @media (prefers-reduced-motion:no-preference) {
+    .hero > * { animation:case-enter .9s var(--suave) both; }
+    .hero > h1 { animation-delay:.08s; }
+    .hero > .lead { animation-delay:.16s; }
+    .hero > .hero-actions { animation-delay:.24s; }
+    .browser-frame:hover { transform:translateY(-8px) rotate(-.5deg); box-shadow:0 44px 80px -33px #435b4e; }
+  }
+  @keyframes case-enter { from { opacity:0; transform:translateY(30px); } }
 </style>

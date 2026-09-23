@@ -1,6 +1,8 @@
 ---
 import { contenido, TELEFONO } from '../config/site';
 import type { Servicio } from '../config/servicios';
+import { Image } from 'astro:assets';
+import fisio from '../assets/posters/fisioymes-full.png';
 
 const { s } = Astro.props as { s: Servicio };
 const { site } = contenido.es;
@@ -28,16 +30,31 @@ const whatsapp = `${TELEFONO.wa}?text=${encodeURIComponent(`Hola Sergio, me gust
 
     <div class="promise-bar"><div class="wrap promises"><span><i aria-hidden="true">✳</i>Diseño a medida</span><span><i aria-hidden="true">✳</i>Pensado para móvil</span><span><i aria-hidden="true">✳</i>Una persona de principio a fin</span><span><i aria-hidden="true">✳</i>Para toda España</span></div></div>
 
-    <section class="section wrap overview" id="incluye" aria-labelledby="include-title">
+    <section class="section wrap overview" id="incluye" aria-labelledby="include-title" data-revela>
       <div class="section-intro"><p class="eyebrow">El alcance</p><h2 id="include-title">{s.incluyeTitular}</h2><p>Definimos lo necesario antes de empezar. Si el proyecto necesita algo adicional, lo hablamos y queda reflejado en el presupuesto.</p></div>
       <ul class="included">{s.incluye.map((linea, index) => <li><span>0{index + 1}</span><p>{linea}</p></li>)}</ul>
     </section>
 
-    <section class="facts-section"><div class="wrap facts" aria-label="Datos principales">{s.datos.map((d, index) => <article><span>0{index + 1}</span><strong>{d.cifra}</strong><p>{d.texto}</p></article>)}</div></section>
+    <section class="showcase-section" aria-labelledby="showcase-title">
+      <div class="wrap showcase-grid">
+        <div class="showcase-copy" data-revela>
+          <p class="eyebrow">Proyecto real · Fisioymés</p>
+          <h2 id="showcase-title">Una web que guía hasta lo importante.</h2>
+          <p>La clínica necesitaba una estructura más clara en móvil y un camino directo hacia la cita. Explora cómo quedó el rediseño.</p>
+          <a class="text-link" href="/proyectos/fisioymes/">Ver el proyecto <span aria-hidden="true">↗</span></a>
+        </div>
+        <a class="showcase-screen" href="/proyectos/fisioymes/" aria-label="Ver el proyecto Fisioymés">
+          <div class="showcase-browser" aria-hidden="true"><i></i><i></i><i></i><span>fisioymes.com</span></div>
+          <Image src={fisio} width={960} height={680} fit="cover" position="top" widths={[480, 960]} sizes="(min-width: 800px) 48vw, 90vw" format="webp" alt="Vista previa de la web publicada de Fisioymés" loading="lazy" />
+        </a>
+      </div>
+    </section>
 
-    <section class="section wrap process" aria-labelledby="process-title"><div><p class="eyebrow">Sin sorpresas</p><h2 id="process-title">Claro antes, durante y después.</h2></div><div class="process-copy"><p>Primero hablamos de lo que debe conseguir la web. Como cada negocio necesita algo distinto, preparo el alcance, el calendario y el presupuesto a medida. Lo recibes todo por escrito antes de decidir.</p><a class="text-link" href={whatsapp}>Pide una propuesta a medida <span aria-hidden="true">↗</span></a></div></section>
+    <section class="facts-section"><div class="wrap facts" aria-label="Datos principales">{s.datos.map((d, index) => <article data-revela><span>0{index + 1}</span><strong>{d.cifra}</strong><p>{d.texto}</p></article>)}</div></section>
 
-    <section class="section wrap faq" aria-labelledby="faq-title"><div><p class="eyebrow">Preguntas frecuentes</p><h2 id="faq-title">Las dudas habituales, respondidas.</h2></div><div class="questions">{s.faq.map((f) => <details><summary>{f.pregunta}<span aria-hidden="true">+</span></summary><p>{f.respuesta}</p></details>)}</div></section>
+    <section class="section wrap process" aria-labelledby="process-title" data-revela><div><p class="eyebrow">Sin sorpresas</p><h2 id="process-title">Claro antes, durante y después.</h2></div><div class="process-copy"><p>Primero hablamos de lo que debe conseguir la web. Como cada negocio necesita algo distinto, preparo el alcance, el calendario y el presupuesto a medida. Lo recibes todo por escrito antes de decidir.</p><a class="text-link" href={whatsapp}>Pide una propuesta a medida <span aria-hidden="true">↗</span></a></div></section>
+
+    <section class="section wrap faq" aria-labelledby="faq-title" data-revela><div><p class="eyebrow">Preguntas frecuentes</p><h2 id="faq-title">Las dudas habituales, respondidas.</h2></div><div class="questions">{s.faq.map((f) => <details><summary>{f.pregunta}<span aria-hidden="true">+</span></summary><p>{f.respuesta}</p></details>)}</div></section>
 
     <section class="contact" id="contacto" aria-labelledby="contact-title"><div class="wrap contact-grid"><div><p class="eyebrow">El siguiente paso</p><h2 id="contact-title">Hablemos de una web<br /><span>a tu altura.</span></h2></div><div class="contact-copy"><p>Cuéntame a qué te dedicas, qué necesitas y si ya tienes una web. Te responderé con una propuesta y un presupuesto por escrito, sin compromiso.</p><a class="button button-lime" href={whatsapp}>Hablemos por WhatsApp <span aria-hidden="true">↗</span></a><a class="contact-email" href={`mailto:${site.email}`}>Prefiero escribir un email <span aria-hidden="true">↗</span></a><p class="phone">O llámame al <a href={TELEFONO.tel}>{TELEFONO.humano}</a></p></div></div></section>
   </main>
@@ -61,5 +78,26 @@ const whatsapp = `${TELEFONO.wa}?text=${encodeURIComponent(`Hola Sergio, me gust
   .footer { display:flex; align-items:flex-start; justify-content:space-between; gap:40px; padding-block:42px; } .footer div > a { font-size:16px; font-weight:750; letter-spacing:-.035em; } .footer div > a span { font-size:19px; } .footer p { margin-top:6px; color:var(--muted); font-size:11px; }
   @media (max-width:800px) { .wrap { width:min(100% - 40px,1280px); } .masthead { min-height:82px; gap:14px; } .masthead nav { display:none; } .nav-contact { gap:10px; padding:9px 11px; } .identity { font-size:14px; } .monogram { width:38px; height:38px; font-size:25px; } .hero { grid-template-columns:1fr; gap:38px; padding-block:58px; } .hero-note { min-height:250px; } .promises { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding-block:18px; font-size:10px; } .section { padding-block:75px; } .overview,.process,.faq,.contact-grid { grid-template-columns:1fr; gap:42px; } .facts { grid-template-columns:1fr; } .facts article,.facts article:first-child { min-height:auto; padding:28px 0; border:0; border-bottom:1px solid #c4cbbd; } .facts strong { margin-top:14px; } .actions { flex-wrap:wrap; } .footer { flex-direction:column; gap:12px; } }
   @media (max-width:420px) { .identity-sub { display:none; } h1 { font-size:48px; } .lead { font-size:15px; } .button { width:100%; } .actions .text-link { margin-inline:auto; } .hero-note > p { font-size:28px; } .promises { grid-template-columns:1fr; } }
+  .showcase-section { overflow:hidden; background:#dce2d4; }
+  .showcase-grid { display:grid; grid-template-columns:.78fr 1.22fr; gap:92px; align-items:center; padding-block:74px; }
+  .showcase-copy > p:not(.eyebrow) { max-width:43ch; margin-top:26px; color:var(--muted); font-size:15px; line-height:1.75; }
+  .showcase-copy .text-link { margin-top:22px; }
+  .showcase-screen { display:block; min-width:0; overflow:hidden; border:1px solid #b3c0ae; border-radius:9px; background:#fff; box-shadow:0 35px 65px -45px #243e34; transition:transform .65s var(--suave),box-shadow .65s var(--suave); }
+  .showcase-screen :global(img) { display:block; width:100%; height:auto; aspect-ratio:1.45; object-fit:cover; object-position:top; transition:transform .85s var(--suave); }
+  .showcase-browser { display:flex; align-items:center; gap:6px; height:28px; padding-inline:12px; border-bottom:1px solid #e3e8e2; }
+  .showcase-browser i { width:6px; height:6px; border-radius:50%; background:#ced9ce; }
+  .showcase-browser span { margin-left:auto; color:#647468; font-size:9px; }
+  .hero-note { position:relative; overflow:hidden; isolation:isolate; }
+  .hero-note::after { content:'✳'; position:absolute; right:-.15em; bottom:-.5em; z-index:-1; color:rgb(28 44 43 / .07); font-size:clamp(250px,31vw,430px); line-height:1; }
+  @media (prefers-reduced-motion:no-preference) {
+    .hero-copy { animation:detail-enter .85s var(--suave) both; }
+    .hero-note { animation:detail-enter .95s .12s var(--suave) both; }
+    .hero-note::after { animation:detail-star 20s linear infinite; }
+    .showcase-screen:hover { transform:translateY(-7px) rotate(-.5deg); box-shadow:0 48px 75px -40px #243e34; }
+    .showcase-screen:hover :global(img) { transform:scale(1.045); }
+  }
+  @keyframes detail-enter { from { opacity:0; transform:translateY(24px); } }
+  @keyframes detail-star { to { transform:rotate(360deg); } }
+  @media (max-width:800px) { .showcase-grid { grid-template-columns:1fr; gap:38px; padding-block:62px; } }
 </style>
 

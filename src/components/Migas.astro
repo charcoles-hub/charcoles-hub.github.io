@@ -1,0 +1,21 @@
+---
+import type { Lang } from '../config/site';
+import { COMUN } from '../config/comun';
+
+interface Props {
+  lang?: Lang;
+  /** Sin la portada: se añade sola al principio. La última es la página actual. */
+  migas: { nombre: string; url: string }[];
+}
+const { lang = 'es', migas } = Astro.props;
+const t = COMUN[lang];
+const todas = [{ nombre: t.inicio, url: '/' }, ...migas];
+---
+
+<nav aria-label={t.migas}>
+  <ol class="migas">
+    {todas.map((m, i) => (
+      <li>{i < todas.length - 1 ? <a href={m.url}>{m.nombre}</a> : <span aria-current="page">{m.nombre}</span>}</li>
+    ))}
+  </ol>
+</nav>

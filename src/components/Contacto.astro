@@ -1,46 +1,48 @@
 ---
 import { contenido, TELEFONO, type Lang } from '../config/site';
-import Pie from './Pie.astro';
-const { lang } = Astro.props as { lang: Lang };
-const { site, contacto } = contenido[lang];
+import { COMUN, enfasis, whatsapp } from '../config/comun';
+import Whatsapp from './iconos/Whatsapp.astro';
+
+interface Props {
+  lang: Lang;
+  /** Titular con el énfasis entre asteriscos. */
+  titulo?: string;
+  texto?: string;
+  waTexto?: string;
+  /** Enlace a la revisión gratuita. Por defecto, en castellano y catalán. */
+  revision?: boolean;
+  id?: string;
+}
+const { lang, id = 'contacto' } = Astro.props;
+const t = COMUN[lang];
+const titulo = Astro.props.titulo ?? t.contacto.titulo;
+const texto = Astro.props.texto ?? t.contacto.texto;
+const wa = whatsapp(Astro.props.waTexto ?? t.waTexto);
+const revision = (Astro.props.revision ?? lang !== 'en') && t.contacto.revision !== '';
+const email = contenido[lang].site.email;
 ---
-<section id="contacto" class="lejos border-t border-linea px-6 py-24 md:px-12 md:py-32">
-  <div class="mx-auto flex max-w-6xl flex-col gap-8">
-    <p data-revela class="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-acento">
-      {contacto.eyebrow}
-    </p>
-    <h2
-      data-revela
-      class="font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.04em] text-balance md:text-6xl"
-      style="font-stretch:110%"
-    >
-      {contacto.titular}
-    </h2>
-    <p data-revela class="max-w-[46ch] text-balance text-medio md:text-lg">
-      {contacto.texto}
-    </p>
 
-    {/* En móvil, de un toque: WhatsApp y llamada primero, el correo después. */}
-    <div data-revela class="flex flex-wrap items-center gap-3">
-      <a href={TELEFONO.wa} target="_blank" rel="noopener" class="boton boton--primario">
-        {contacto.whatsapp}
-      </a>
-      <a href={TELEFONO.tel} class="boton boton--borde">
-        {contacto.llamar} <span class="text-tenue">{TELEFONO.humano}</span>
-      </a>
+<section class="seccion seccion--oscura contacto" id={id} aria-labelledby={`${id}-titulo`}>
+  <div class="wrap">
+    <div class="contacto__rejilla">
+      <div>
+        <p class="etiqueta etiqueta--linea">{t.contacto.etiqueta}</p>
+        <h2 class="titulo-xl" id={`${id}-titulo`} set:html={enfasis(titulo)} />
+      </div>
+      <div class="contacto__acciones">
+        <p class="entradilla">{texto}</p>
+        <a class="boton boton--lima boton--ancho" href={wa}><Whatsapp />{t.contacto.whatsapp}</a>
+        <div class="contacto__otras">
+          <a href={`mailto:${email}`}><span>{t.contacto.email}<small>{email}</small></span><span class="icono" aria-hidden="true"></span></a>
+          <a href={TELEFONO.tel}><span>{t.contacto.llamar}<small>{TELEFONO.humano}</small></span><span class="icono" aria-hidden="true"></span></a>
+          {revision && (
+            <a href="/revision-web-gratis/" hreflang={lang === 'es' ? undefined : 'es'}>
+              <span>{t.contacto.revision}<small>{t.contacto.revisionTexto}</small></span><span class="icono" aria-hidden="true"></span>
+            </a>
+          )}
+        </div>
+        <p class="contacto__nota">{t.contacto.nota}</p>
+      </div>
     </div>
-
-    <a
-      data-revela
-      href={`mailto:${site.email}`}
-      class="group flex w-fit items-baseline gap-3 font-display text-2xl font-bold
-             tracking-[-0.03em] text-tinta underline decoration-linea decoration-2
-             underline-offset-8 transition-colors hover:decoration-acento md:text-4xl"
-    >
-      {site.email}
-      <span class="text-acento transition-transform group-hover:translate-x-1">↗</span>
-    </a>
   </div>
-
-  <Pie lang={lang} />
 </section>

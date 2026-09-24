@@ -1,34 +1,61 @@
 ---
-import { contenido, type Lang } from '../config/site';
+import { contenido, rutas, TELEFONO, type Lang } from '../config/site';
+import { COMUN } from '../config/comun';
 import { SERVICIOS } from '../config/servicios';
+import { SECTORES } from '../config/sectores';
 import { ZONAS } from '../config/zonas';
-const { lang } = Astro.props as { lang: Lang };
-const { site } = contenido[lang];
 
-// Las paginas de servicio solo existen en espanol de momento: en /en/ el pie
-// se queda con el nombre y el lugar, como estaba.
-const servicios = lang === 'es' ? SERVICIOS : [];
-const zonas = lang === 'es' ? ZONAS : [];
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = COMUN[lang].pie;
+const email = contenido[lang].site.email;
+// Servicios, sectores y zonas solo existen en castellano: desde /en/ no se
+// listan; desde /ca/ sí, marcados como enlaces a otro idioma.
+const enlaces = lang !== 'en';
+const hreflang = lang === 'es' ? undefined : 'es';
 ---
-<footer class="mx-auto mt-24 flex max-w-6xl flex-col gap-8 border-t border-linea pt-8">
-  {servicios.length > 0 && (
-    <nav aria-label="Servicios" class="flex flex-wrap gap-x-6 gap-y-3 text-sm text-medio">
-      {servicios.map((s) => (
-        <a href={`/${s.slug}/`} class="transition-colors hover:text-tinta">{s.nombre}</a>
-      ))}
-    </nav>
-  )}
 
-  {zonas.length > 0 && (
-    <nav aria-label="Zonas" class="flex flex-wrap gap-x-6 gap-y-3 text-sm text-tenue">
-      {zonas.map((z) => (
-        <a href={`/${z.slug}/`} class="transition-colors hover:text-tinta">Diseño web en {z.nombre}</a>
-      ))}
-    </nav>
-  )}
-
-  <div class="flex items-center justify-between text-xs text-tenue">
-    <span>{site.nombre}</span>
-    <span>{site.lugar}</span>
+<footer class="pie">
+  <div class="wrap">
+    <div class="pie__rejilla">
+      <div class="pie__marca">
+        <a class="marca" href={rutas[lang]}><span class="marca__nombre">Sergio García</span></a>
+        <p>{t.lema}</p>
+      </div>
+      {enlaces ? (
+        <>
+          <nav aria-labelledby="pie-servicios">
+            <h2 id="pie-servicios">{t.servicios}</h2>
+            <ul>{SERVICIOS.map((s) => <li><a href={`/${s.slug}/`} hreflang={hreflang}>{s.nombre}</a></li>)}</ul>
+          </nav>
+          <nav aria-labelledby="pie-sectores">
+            <h2 id="pie-sectores">{t.sectores}</h2>
+            <ul>{SECTORES.map((s) => <li><a href={`/${s.slug}/`} hreflang={hreflang}>{s.nombre}</a></li>)}</ul>
+          </nav>
+          <nav aria-labelledby="pie-zonas">
+            <h2 id="pie-zonas">{t.zonas}</h2>
+            <ul>{ZONAS.map((z) => <li><a href={`/${z.slug}/`} hreflang={hreflang}>Diseño web en {z.nombre}</a></li>)}</ul>
+          </nav>
+        </>
+      ) : (
+        <div>
+          <h2>{t.contacto}</h2>
+          <ul>
+            <li><a href={`mailto:${email}`}>{email}</a></li>
+            <li><a href={TELEFONO.tel}>{TELEFONO.humano}</a></li>
+          </ul>
+        </div>
+      )}
+    </div>
+    <div class="pie__base">
+      <span>© {new Date().getFullYear()} Sergio García Ortiz · {t.lugar}</span>
+      <nav aria-label={t.contacto}>
+        <a href={`mailto:${email}`}>{email}</a>
+        <a href={TELEFONO.tel}>{TELEFONO.humano}</a>
+        <a href={contenido[lang].resenas.href}>{t.resena}</a>
+      </nav>
+    </div>
   </div>
 </footer>

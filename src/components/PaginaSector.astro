@@ -1,0 +1,158 @@
+---
+import { Image } from 'astro:assets';
+import { PASOS_SECTOR, type Sector } from '../config/sectores';
+import { enfasis, whatsapp } from '../config/comun';
+import { poster } from '../config/posters';
+import Cabecera from './Cabecera.astro';
+import Migas from './Migas.astro';
+import CasoReal from './CasoReal.astro';
+import Preguntas from './Preguntas.astro';
+import Relacionados from './Relacionados.astro';
+import Contacto from './Contacto.astro';
+import Pie from './Pie.astro';
+import BarraMovil from './BarraMovil.astro';
+import Whatsapp from './iconos/Whatsapp.astro';
+
+interface Props {
+  s: Sector;
+  migas: { nombre: string; url: string }[];
+}
+const { s, migas } = Astro.props;
+const wa = whatsapp(s.waTexto);
+const demoUrl = `https://sergiogarciaweb.com/${s.demo.slug}/`;
+const nav = [
+  { texto: 'Trabajo', href: '/#trabajo' },
+  { texto: 'Servicios', href: '/#servicios' },
+  { texto: 'Sectores', href: '/#sectores' },
+  { texto: 'Revisión gratis', href: '/revision-web-gratis/' },
+];
+const nombreMinuscula = s.nombre.toLowerCase();
+---
+
+<Cabecera lang="es" nav={nav} />
+
+<main id="contenido">
+  <section class="intro wrap" aria-labelledby="titulo-pagina">
+    <Migas migas={migas} />
+    <div class="intro__rejilla">
+      <div>
+        <p class="etiqueta etiqueta--linea entra">Diseño web por sectores</p>
+        <h1 id="titulo-pagina" class="titulo-xl entra" style="--orden:1">{s.h1}</h1>
+        <p class="entradilla entra" style="--orden:2">{s.bajada}</p>
+        <div class="intro__acciones entra" style="--orden:3">
+          <a class="boton boton--oscuro" href={wa}><Whatsapp />Hablemos de tu web</a>
+          <a class="boton boton--borde" href="/revision-web-gratis/">Revisión gratuita de tu web<span class="icono" aria-hidden="true"></span></a>
+        </div>
+        <ul class="intro__datos entra" style="--orden:4">
+          <li><span class="icono icono--check" aria-hidden="true"></span>Presupuesto por escrito en 24 h</li>
+          <li><span class="icono icono--check" aria-hidden="true"></span>Hablas siempre conmigo</li>
+        </ul>
+      </div>
+      <a class="sector-demo entra" style="--orden:2" href={demoUrl} target="_blank" rel="noopener">
+        <div class="marco">
+          <div class="marco__barra" aria-hidden="true"><i></i><i></i><i></i><span>Concepto · {s.demo.nombre}</span></div>
+          <Image src={poster(s.demo.slug)} width={1100} height={688} fit="cover" position="top" format="webp" quality={80} widths={[560, 1100]} sizes="(min-width: 900px) 42vw, 92vw" alt={`Concepto ${s.demo.nombre} para ${nombreMinuscula}`} loading="eager" />
+        </div>
+        <span class="chip sector-demo__chip">Concepto de ejemplo, no un cliente</span>
+        <span class="sr-only">(se abre en otra pestaña)</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="seccion seccion--tinte" aria-labelledby="titulo-necesita">
+    <div class="wrap">
+      <div class="cabeza" data-revela>
+        <div>
+          <p class="etiqueta etiqueta--linea">Qué debe tener</p>
+          <h2 id="titulo-necesita" class="titulo-l" set:html={enfasis(s.necesitaTitulo)} />
+        </div>
+        <p>Cada punto se adapta a tu negocio. Lo que no necesites no entra en el presupuesto.</p>
+      </div>
+      <ul class="rejilla-3">
+        {s.necesita.map((n, i) => (
+          <li class="tarjeta" data-revela><span>0{i + 1}</span><h3 class="subtitulo">{n.titulo}</h3><p>{n.texto}</p></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="titulo-fallos">
+    <div class="wrap dos">
+      <div data-revela>
+        <p class="etiqueta etiqueta--linea">Lo que suele fallar</p>
+        <h2 id="titulo-fallos" class="titulo-l">¿Te suena <em>alguno</em>?</h2>
+        <p>Son los problemas que más se repiten en las webs de este sector. Si tu web tiene alguno, te lo reviso gratis y te digo cómo lo arreglaría.</p>
+        <a class="boton boton--oscuro fallos__cta" href="/revision-web-gratis/">Pedir la revisión gratuita<span class="icono" aria-hidden="true"></span></a>
+      </div>
+      <ul class="fallos">{s.fallos.map((f) => <li data-revela>{f}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="seccion seccion--oscura" aria-labelledby="titulo-demo">
+    <div class="wrap escaparate">
+      <div class="escaparate__texto" data-revela>
+        <p class="etiqueta etiqueta--linea">Concepto de diseño</p>
+        <h2 id="titulo-demo" class="titulo-l">{s.demo.nombre}</h2>
+        <p>{s.demo.texto}</p>
+        <p class="aviso-concepto">Es un concepto propio para enseñar ideas de diseño, no un encargo de un cliente. Tu web se diseña desde cero para tu negocio.</p>
+        <div class="escaparate__acciones">
+          <a class="boton boton--lima" href={demoUrl} target="_blank" rel="noopener">Abrir el concepto<span class="icono" aria-hidden="true"></span></a>
+        </div>
+      </div>
+      <div class="escaparate__visual">
+        <a class="marco" href={demoUrl} target="_blank" rel="noopener" aria-label={`Abrir el concepto ${s.demo.nombre} (se abre en otra pestaña)`}>
+          <div class="marco__barra" aria-hidden="true"><i></i><i></i><i></i><span>{s.demo.nombre}</span></div>
+          <Image src={poster(s.demo.slug)} width={1100} height={688} fit="cover" position="top" format="webp" quality={78} widths={[560, 1100]} sizes="(min-width: 900px) 55vw, 92vw" alt={`Portada del concepto ${s.demo.nombre}`} loading="lazy" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {s.casoReal && (
+    <CasoReal
+      etiqueta="Proyecto real · Fisioterapia"
+      titulo="Fisioymés: lesiones claras y la cita a mano."
+      texto="La clínica de Sant Cugat del Vallès tenía una web con demasiado texto y un recorrido largo en el móvil. Organicé las lesiones en rejilla y los tratamientos en fichas, en castellano y catalán, sin tocar el sistema de reservas que ya usaban."
+    />
+  )}
+
+  <section class="seccion" aria-labelledby="titulo-pasos">
+    <div class="wrap dos">
+      <div data-revela>
+        <p class="etiqueta etiqueta--linea">Cómo lo hacemos</p>
+        <h2 id="titulo-pasos" class="titulo-l">Tres pasos, <em>todo por escrito</em>.</h2>
+      </div>
+      <ol class="lista-num">
+        {PASOS_SECTOR.map((p, i) => <li data-revela><span>0{i + 1}</span><div><h3 class="subtitulo">{p.titulo}</h3><p>{p.texto}</p></div></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="seccion seccion--tinte" aria-labelledby="titulo-faq">
+    <div class="wrap dos">
+      <div data-revela>
+        <p class="etiqueta etiqueta--linea">Preguntas frecuentes</p>
+        <h2 id="titulo-faq" class="titulo-l">Lo que suelen <em>preguntarme</em>.</h2>
+      </div>
+      <Preguntas preguntas={s.faq} />
+    </div>
+  </section>
+
+  <Relacionados actual={s.slug} />
+
+  <Contacto lang="es" titulo={`Hablemos de la web de tu *${s.local}*.`} waTexto={s.waTexto} />
+</main>
+
+<Pie lang="es" />
+<BarraMovil lang="es" waTexto={s.waTexto} />
+
+<style>
+  .sector-demo { position: relative; display: block; padding: 0 0 28px 18px; }
+  .sector-demo .marco { transform: rotate(1.4deg); transition: transform 0.8s var(--suave); }
+  .sector-demo:hover .marco { transform: rotate(0) translateY(-6px); }
+  .sector-demo .marco img { aspect-ratio: 1100 / 688; object-fit: cover; object-position: top; }
+  .sector-demo__chip { position: absolute; left: 0; bottom: 0; }
+  .fallos__cta { margin-top: 28px; }
+  .aviso-concepto { font-size: 0.92rem; }
+  @media (max-width: 600px) { .fallos__cta { width: 100%; } .sector-demo { padding-left: 6px; } }
+</style>

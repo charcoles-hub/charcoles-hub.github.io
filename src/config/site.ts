@@ -21,29 +21,19 @@ export interface Proyecto {
   slug: string;
 }
 
-/**
- * El destacado lleva además el alto real de su captura a página completa
- * (`src/assets/posters/fisioymes-full.png`, 1440px de ancho): de ahí sale
- * cuánto recorrido tiene el scrub del marco. Si se recaptura, se re-mide.
- */
-export interface Destacado extends Proyecto {
-  alto: number;
-}
-
 // --- Proyectos ---------------------------------------------------------------
 
 // EL ÚNICO CLIENTE REAL. Va primero, destacado y con chapa de cliente.
 // Sergio confirmó el 2026-07-16 que Fisioymés dio permiso para publicarla.
 // Sin ese permiso, esto NO puede llevar su marca: se anonimiza o se saca.
 // Todo lo demás son conceptos y se declaran conceptos. Esta regla no se toca.
-const fisioymes: Destacado = {
+const fisioymes: Proyecto = {
   nombre: 'Fisioymés',
   rubro: 'Fisioterapia · Sant Cugat del Vallès',
   descripcion:
     'Vinieron con una queja concreta: en el móvil su web era todo letra y scroll sin fin. La rehíce entera en catalán y castellano, con las lesiones en rejilla y los tratamientos en fichas — y sin tocarles el sistema de reservas que ya usaban.',
   slug: 'fisioymes',
   url: '/proyectos/fisioymes/',
-  alto: 4939,
 };
 
 const demo = (slug: string, nombre: string, rubro: string, descripcion: string): Proyecto => ({
@@ -130,7 +120,7 @@ const TRADUCCIONES_CA: Record<string, { rubro: string; descripcion: string }> =
   };
 
 const demosCA: Proyecto[] = demosES.map((p) => ({ ...p, ...TRADUCCIONES_CA[p.slug] }));
-const fisioymesCA: Destacado = { ...fisioymes, ...({"rubro": "Fisioteràpia · Sant Cugat del Vallès", "descripcion": "Van venir amb una queixa concreta: al mòbil el seu web era tot lletra i scroll sense fi. El vaig refer sencer en català i castellà, amb les lesions en graella i els tractaments en fitxes — i sense tocar-los el sistema de reserves que ja feien servir."}) };
+const fisioymesCA: Proyecto = { ...fisioymes, ...({"rubro": "Fisioteràpia · Sant Cugat del Vallès", "descripcion": "Van venir amb una queixa concreta: al mòbil el seu web era tot lletra i scroll sense fi. El vaig refer sencer en català i castellà, amb les lesions en graella i els tractaments en fitxes — i sense tocar-los el sistema de reserves que ja feien servir."}) };
 
 // --- Reseñas -----------------------------------------------------------------
 
@@ -162,6 +152,13 @@ export const RESENA_FORM = {
   gracias: { es: '/gracias/', en: '/en/thanks/', ca: '/ca/gracies/' },
 } as const;
 
+/** Revisión gratuita de una web: mismo buzón de Web3Forms, otra página de gracias. */
+export const REVISION_FORM = {
+  destino: RESENA_FORM.destino,
+  clave: RESENA_FORM.clave,
+  gracias: '/gracias-revision/',
+} as const;
+
 // --- Copy --------------------------------------------------------------------
 
 export const contenido = {
@@ -170,78 +167,10 @@ export const contenido = {
       nombre: 'Sergio García Ortiz',
       rol: 'Diseñador web',
       lugar: 'Cornellà de Llobregat · Barcelona',
-      titulo: 'Diseño web a medida para negocios en España — Sergio García',
+      titulo: 'Diseñador web freelance en Barcelona · Sergio García',
       descripcion:
-        'Diseño y desarrollo web a medida para negocios y profesionales de toda España. Trato directo, webs rápidas y presupuesto personalizado.',
+        'Webs a medida, rápidas y pensadas para el móvil, para negocios de Barcelona y toda España. Trato directo, presupuesto en 24 h y revisión gratis de tu web.',
       email: 'info@sergiogarciaweb.com',
-    },
-    portada: {
-      titular: ['Webs a medida', 'que no parecen plantilla'],
-      bajada:
-        'Claras, rápidas y pensadas para leerse bien en el móvil. Las hago yo de principio a fin.',
-      dato: 'Presupuesto a medida · todo por escrito',
-      ctaPresupuesto: 'Pedir presupuesto',
-      ctaWhatsapp: 'WhatsApp',
-      ctaLlamar: 'Llamar',
-      ctaTrabajo: 'Ver trabajos ↓',
-      nav: [
-        { texto: 'Servicios', href: '#servicios' },
-        { texto: 'Trabajos', href: '#trabajo' },
-        { texto: 'Presupuesto', href: '#presupuesto' },
-        { texto: 'Cómo trabajo', href: '#metodo' },
-        { texto: 'Contacto', href: '#contacto' },
-      ],
-    },
-    trabajo: {
-      titular: 'El trabajo',
-      cliente: 'Cliente real',
-      clienteNota: 'Encargo real, en producción. Publicado aquí con su permiso.',
-      conceptosTitular: 'Diseños por sector',
-      // La honestidad es el argumento: se dice claro que son inventados, ANTES
-      // de que nadie lo pregunte. Ver spec §2: jamás presentar demo como cliente.
-      conceptosNota:
-        'Ejemplos de cómo podría verse un negocio como el tuyo. Son conceptos, no clientes, y muestran el tipo de decisiones que tomo en cada sector.',
-      concepto: 'Concepto',
-      abrir: 'Abrir de verdad ↗',
-    },
-    precio: {
-      eyebrow: 'Presupuesto personalizado',
-      titular: 'Cada web necesita algo distinto.',
-      datos: [
-        { cifra: 'A medida', texto: 'según las páginas, contenidos y funciones que realmente necesita tu negocio' },
-        { cifra: 'Por escrito', texto: 'con el alcance, el calendario y el coste claros antes de empezar' },
-        { cifra: 'Sin compromiso', texto: 'primero hablamos y después decides con toda la información' },
-      ],
-      texto:
-        'Un presupuesto automático no tiene sentido: cada negocio parte de un lugar distinto y necesita una combinación diferente de páginas, contenidos y funciones.',
-      cta: 'Cuéntame qué necesitas ↗',
-    },
-    bio: {
-      // El titular lleva el ARGUMENTO; los párrafos llevan las credenciales.
-      // OJO: aquí NO va ninguna cifra que Sergio no haya confirmado. Hubo un
-      // titular con "llevo diez años haciendo webs" que era inventado. Ver spec §2.
-      titular: 'Tu web la va a hacer quien está hablando contigo.',
-      parrafos: [
-        'Durante dos años llevé el diseño y la gestión de contenidos de la web de la EEBE, la escuela de ingeniería de la UPC, con una beca de aprendizaje. No fue una pantalla bonita y adiós: fue mantener algo vivo, todos los días, para una institución exigente.',
-        'Después pasé un año en ciberseguridad en EY. Aprendí cómo se rompen las cosas por dentro, y volví al diseño porque es lo que quiero hacer.',
-        'Ahora trabajo por mi cuenta desde Cornellà de Llobregat. Cuando me escribes, te contesto yo. Cuando hacemos la llamada, estoy yo.',
-      ],
-    },
-    metodo: {
-      titular: 'Webs rápidas, sencillas y con menos puntos débiles.',
-      parrafos: [
-        'Muchas webs dependen de un gestor y de plugins que hay que actualizar. Cuantas más piezas tienen, más mantenimiento y más puntos que vigilar.',
-        'Para una web corporativa, entrego archivos estáticos: sin base de datos pública, sin plugins y sin un panel de administración expuesto. Eso reduce el mantenimiento y la superficie de ataque.',
-        'Además, carga rápido. Una web estática se sirve desde una red distribuida y aparece antes de que el visitante se plantee irse.',
-      ],
-    },
-    contacto: {
-      eyebrow: 'Hablamos',
-      titular: '¿Tu web se parece a la de todos?',
-      texto:
-        'Cuéntame qué tienes y qué te gustaría. Te digo qué haría y cuánto cuesta, sin compromiso y sin rodeos.',
-      whatsapp: 'Escríbeme por WhatsApp',
-      llamar: 'Llámame',
     },
     resenas: {
       eyebrow: 'Reseñas',
@@ -251,7 +180,7 @@ export const contenido = {
       textoVacio:
         'Esta parte prefiero que la escriban ellos, así que de momento está vacía. Si hemos trabajado juntos, cuéntalo en dos líneas: la publico tal cual, con tu nombre y el de tu negocio.',
       nota: 'La escribes tú, la publico yo sin tocar una coma. Solo sale si me das permiso, y la quito el día que me lo pidas.',
-      cta: 'Escribir una reseña ↗',
+      cta: 'Escribir una reseña',
       href: '/resena/',
       traducida: 'traducida del español',
       deCinco: (n: number) => `${n} de 5 estrellas`,
@@ -296,72 +225,10 @@ export const contenido = {
       nombre: 'Sergio García Ortiz',
       rol: 'Web designer',
       lugar: 'Barcelona, Spain',
-      titulo: 'Custom web design for businesses in Spain — Sergio García',
+      titulo: 'Freelance web designer in Barcelona · Sergio García',
       descripcion:
-        'Custom web design and development for businesses and professionals across Spain. Direct communication, fast websites and a tailored quote.',
+        'Fast, clear, mobile-first custom websites for businesses in Barcelona and across Spain. Work directly with me and get a written quote within 24 hours.',
       email: 'info@sergiogarciaweb.com',
-    },
-    portada: {
-      titular: ['Custom websites', 'that do not look templated'],
-      bajada:
-        'Clear, fast, and designed to read well on a phone. I build them end to end.',
-      dato: 'A tailored quote · everything in writing',
-      ctaPresupuesto: 'Get a quote',
-      ctaWhatsapp: 'WhatsApp',
-      ctaLlamar: 'Call',
-      ctaTrabajo: 'See the work ↓',
-      nav: [
-        { texto: 'Work', href: '#trabajo' },
-        { texto: 'Quote', href: '#presupuesto' },
-        { texto: 'How I work', href: '#metodo' },
-        { texto: 'Contact', href: '#contacto' },
-      ],
-    },
-    trabajo: {
-      titular: 'The work',
-      cliente: 'Real client',
-      clienteNota: 'Real engagement, in production. Published here with their permission.',
-      conceptosTitular: 'Design directions by sector',
-      conceptosNota:
-        'Examples of how a business like yours could look. They are concepts, not clients, and show the decisions I make for each sector.',
-      concepto: 'Concept',
-      abrir: 'Open the real one ↗',
-    },
-    precio: {
-      eyebrow: 'A tailored quote',
-      titular: 'Every website needs something different.',
-      datos: [
-        { cifra: 'Tailored', texto: 'to the pages, content and features your business actually needs' },
-        { cifra: 'In writing', texto: 'with scope, schedule and cost made clear before work begins' },
-        { cifra: 'No obligation', texto: 'we talk first, then you decide with all the information' },
-      ],
-      texto:
-        'An automatic estimate makes little sense: every business starts somewhere different and needs its own mix of pages, content and features.',
-      cta: 'Tell me what you need ↗',
-    },
-    bio: {
-      titular: 'The person you talk to is the person who builds your site.',
-      parrafos: [
-        'For two years I ran the design and content management for the website of EEBE, a large public engineering school in Barcelona, part of the Polytechnic University of Catalonia. It was a student traineeship. It was not one pretty screen and done: it was keeping something alive, every day, for a demanding institution.',
-        'After that I spent a year in cybersecurity at EY. I learned how things break from the inside, and I came back to design because design is what I want to do.',
-        'Now I work for myself from Cornellà de Llobregat, just outside Barcelona. You email me, I answer. We get on a call, it is me on the call. There is no account manager in the middle, and no intern building your site while a salesperson shows you something else.',
-      ],
-    },
-    metodo: {
-      titular: 'Fast websites with fewer moving parts.',
-      parrafos: [
-        'Many websites depend on a CMS and plugins that need updating. The more moving parts there are, the more maintenance and potential weak points they create.',
-        'For a business website, I ship static files: no public database, no plugins and no exposed admin panel. That reduces maintenance and the attack surface.',
-        'It is fast, too. A static website is served from a distributed network and shows up before a visitor thinks about leaving.',
-      ],
-    },
-    contacto: {
-      eyebrow: "Let's talk",
-      titular: "Does your website look like everyone else's?",
-      texto:
-        'Tell me what you have and what you want. I will tell you what I would do and what it costs. No obligation, no runaround.',
-      whatsapp: 'Message me on WhatsApp',
-      llamar: 'Call me',
     },
     resenas: {
       eyebrow: 'Reviews',
@@ -371,7 +238,7 @@ export const contenido = {
       textoVacio:
         'I would rather my clients wrote this part, so for now it is empty. If we have worked together, say it in two lines: I publish it as it is, with your name and your business.',
       nota: 'You write it, I publish it without touching a comma. It only goes up with your permission, and it comes down the day you ask.',
-      cta: 'Write a review ↗',
+      cta: 'Write a review',
       href: '/en/review/',
       traducida: 'translated from Spanish',
       deCinco: (n: number) => `${n} out of 5 stars`,
@@ -421,95 +288,9 @@ export const contenido = {
       "nombre": "Sergio García Ortiz",
       "rol": "Dissenyador web",
       "lugar": "Cornellà de Llobregat · Barcelona",
-      "titulo": "Disseny web a mida per a negocis a Espanya — Sergio García",
-      "descripcion": "Disseny i desenvolupament web a mida per a negocis i professionals de tot Espanya. Tracte directe, webs ràpides i pressupost personalitzat.",
+      "titulo": "Dissenyador web freelance a Barcelona · Sergio García",
+      "descripcion": "Webs a mida, ràpides i pensades per al mòbil, per a negocis de Barcelona i tot Espanya. Tracte directe, pressupost en 24 h i revisió gratuïta del teu web.",
       "email": "info@sergiogarciaweb.com"
-    },
-    "portada": {
-      "titular": [
-        "Webs a mida",
-        "que no semblen una plantilla"
-      ],
-      "bajada": "Clares, ràpides i pensades per llegir-se bé al mòbil. Les faig jo de principi a fi.",
-      "dato": "Pressupost a mida · tot per escrit",
-      "ctaPresupuesto": "Demanar pressupost",
-      "ctaWhatsapp": "WhatsApp",
-      "ctaLlamar": "Trucar",
-      "ctaTrabajo": "Veure treballs ↓",
-      "nav": [
-        {
-          "texto": "Serveis",
-          "href": "#servicios"
-        },
-        {
-          "texto": "Treballs",
-          "href": "#trabajo"
-        },
-        {
-          "texto": "Pressupost",
-          "href": "#presupuesto"
-        },
-        {
-          "texto": "Com treballo",
-          "href": "#metodo"
-        },
-        {
-          "texto": "Contacte",
-          "href": "#contacto"
-        }
-      ]
-    },
-    "trabajo": {
-      "titular": "La feina",
-      "cliente": "Client real",
-      "clienteNota": "Encàrrec real, en producció. Publicat aquí amb el seu permís.",
-      "conceptosTitular": "Dissenys per sector",
-      "conceptosNota": "Exemples de com podria veure's un negoci com el teu. Són conceptes, no clients, i mostren les decisions que prenc a cada sector.",
-      "concepto": "Concepte",
-      "abrir": "Obrir de debò ↗"
-    },
-    "precio": {
-      "eyebrow": "Pressupost personalitzat",
-      "titular": "Cada web necessita una cosa diferent.",
-      "datos": [
-        {
-          "cifra": "A mida",
-          "texto": "segons les pàgines, els continguts i les funcions que realment necessita el teu negoci"
-        },
-        {
-          "cifra": "Per escrit",
-          "texto": "amb l'abast, el calendari i el cost clars abans de començar"
-        },
-        {
-          "cifra": "Sense compromís",
-          "texto": "primer en parlem i després decideixes amb tota la informació"
-        }
-      ],
-      "texto": "Un pressupost automàtic no té sentit: cada negoci parteix d'un lloc diferent i necessita una combinació pròpia de pàgines, continguts i funcions.",
-      "cta": "Explica'm què necessites ↗"
-    },
-    "bio": {
-      "titular": "La teva web la farà qui està parlant amb tu.",
-      "parrafos": [
-        "Durant dos anys vaig portar el disseny i la gestió de continguts del web de l'EEBE, l'escola d'enginyeria de la UPC, amb una beca d'aprenentatge. No va ser una pantalla bonica i adéu: va ser mantenir una cosa viva, cada dia, per a una institució exigent.",
-        "Després vaig passar un any a ciberseguretat a EY. Vaig aprendre com es trenquen les coses per dins, i vaig tornar al disseny perquè és el que vull fer.",
-        "Ara treballo pel meu compte des de Cornellà de Llobregat. Quan m'escrius, et contesto jo. Quan fem la trucada, hi sóc jo."
-      ]
-    },
-    "metodo": {
-      "titular": "Webs ràpides, senzilles i amb menys punts febles.",
-      "parrafos": [
-        "Molts webs depenen d'un gestor i de connectors que cal actualitzar. Com més peces tenen, més manteniment i més punts per vigilar.",
-        "Per a un web corporatiu, entrego arxius estàtics: sense base de dades pública, sense connectors i sense un tauler d'administració exposat. Això redueix el manteniment i la superfície d'atac.",
-        "A més, carrega ràpid. Un web estàtic se serveix des d'una xarxa distribuïda i apareix abans que el visitant es plantegi marxar."
-      ]
-    },
-    "contacto": {
-      "eyebrow": "En parlem",
-      "titular": "La teva web s'assembla a la de tothom?",
-      "texto": "Explica'm què tens i què t'agradaria. Et dic què faria i quant costa, sense compromís i sense voltes.",
-      "whatsapp": "Escriu-me per WhatsApp",
-      "llamar": "Truca'm"
     },
     "resenas": {
       "eyebrow": "Ressenyes",
@@ -518,7 +299,7 @@ export const contenido = {
       "titularVacio": "Aquí encara no hi ha cap ressenya.",
       "textoVacio": "Aquesta part prefereixo que l'escriguin ells, així que de moment està buida. Si hem treballat junts, explica-ho en dues línies: la publico tal qual, amb el teu nom i el del teu negoci.",
       "nota": "L'escrius tu, la publico jo sense tocar-ne una coma. Només surt si em dones permís, i la trec el dia que m'ho demanis.",
-      "cta": "Escriure una ressenya ↗",
+      "cta": "Escriure una ressenya",
       "href": "/ca/ressenya/",
       "traducida": "traduïda del castellà",
       deCinco: (n: number) => `${n} de 5 estrelles`

@@ -1,17 +1,16 @@
 ---
-import { SERVICIOS, type Servicio } from '../config/servicios';
+import { SECTORES, type Sector } from '../config/sectores';
 import Layout from '../layouts/Layout.astro';
-import PaginaLarga from '../components/PaginaLarga.astro';
-import PaginaDecision from '../components/PaginaDecision.astro';
+import PaginaSector from '../components/PaginaSector.astro';
 
 export function getStaticPaths() {
-  return SERVICIOS.map((s) => ({ params: { servicio: s.slug }, props: { s } }));
+  return SECTORES.map((s) => ({ params: { sector: s.slug }, props: { s } }));
 }
 
-const { s } = Astro.props as { s: Servicio };
+const { s } = Astro.props as { s: Sector };
 const url = new URL(`/${s.slug}/`, Astro.site).href;
 const migas = [
-  { nombre: 'Servicios', url: '/#servicios' },
+  { nombre: 'Sectores', url: '/#sectores' },
   { nombre: s.nombre, url: `/${s.slug}/` },
 ];
 
@@ -29,14 +28,15 @@ const servicioLd = {
   '@context': 'https://schema.org',
   '@type': 'Service',
   '@id': `${url}#servicio`,
-  name: s.nombre,
+  name: s.h1,
   description: s.descripcion,
-  serviceType: s.nombre,
+  serviceType: 'Diseño de páginas web',
+  audience: { '@type': 'BusinessAudience', name: s.publico },
   provider: { '@id': new URL('/#negocio', Astro.site).href },
   areaServed: { '@type': 'Country', name: 'España' },
   url,
 };
 ---
 <Layout lang="es" titulo={s.titulo} descripcion={s.descripcion} paginas={{ es: `/${s.slug}/` }} datos={[servicioLd, faqLd]} migas={migas}>
-  {s.decision ? <PaginaDecision s={s} migas={migas} /> : <PaginaLarga s={s} migas={migas} tipo="servicio" />}
+  <PaginaSector s={s} migas={migas} />
 </Layout>

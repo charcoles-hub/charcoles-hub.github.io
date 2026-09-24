@@ -5,6 +5,6 @@ import { contenido } from '../config/site';
 const f = contenido.es.formulario;
 const paginas = { es: '/resena/', en: '/en/review/', ca: '/ca/ressenya/' };
 ---
-<Layout lang="es" titulo={f.titulo} descripcion={f.descripcion} paginas={paginas}>
+<Layout lang="es" titulo={f.titulo} descripcion={f.descripcion} paginas={paginas} noindex>
   <FormResena lang="es" />
 </Layout>

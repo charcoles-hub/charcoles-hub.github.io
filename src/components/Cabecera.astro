@@ -1,0 +1,55 @@
+---
+import { rutas, type Lang } from '../config/site';
+import { COMUN } from '../config/comun';
+
+interface Enlace {
+  texto: string;
+  href: string;
+}
+interface Props {
+  lang: Lang;
+  nav: Enlace[];
+  /** Botón de la derecha. Por defecto, «Hablemos» al bloque de contacto. */
+  cta?: Enlace;
+  /** Selector de idioma: solo en páginas que existen en varios idiomas. */
+  idiomas?: Partial<Record<Lang, string>>;
+}
+const { lang, nav, idiomas } = Astro.props;
+const t = COMUN[lang];
+const cta = Astro.props.cta ?? { texto: t.hablemos, href: '#contacto' };
+const nombres: Record<Lang, string> = { es: 'Español', ca: 'Català', en: 'English' };
+---
+
+<a class="saltar" href="#contenido">{t.saltar}</a>
+<header class="cabecera">
+  <div class="wrap cabecera__dentro">
+    <a class="marca" href={rutas[lang]}>
+      <span class="marca__nombre">Sergio García</span>
+      <span class="marca__rol">{t.rol}</span>
+    </a>
+    {nav.length > 0 && (
+      <nav class="menu" aria-label={t.navPrincipal}>
+        {nav.map((n) => <a href={n.href}>{n.texto}</a>)}
+      </nav>
+    )}
+    <div class="cabecera__fin">
+      {idiomas && (
+        <nav class="idiomas" aria-label={t.idioma}>
+          {(['es', 'ca', 'en'] as Lang[])
+            .filter((l) => idiomas[l])
+            .map((l) => (
+              <a href={idiomas[l]} lang={l} hreflang={l} aria-current={l === lang ? 'page' : undefined} aria-label={nombres[l]}>
+                {l.toUpperCase()}
+              </a>
+            ))}
+        </nav>
+      )}
+      <a class="boton boton--oscuro" href={cta.href}>{cta.texto}<span class="icono" aria-hidden="true"></span></a>
+    </div>
+  </div>
+  {nav.length > 0 && (
+    <nav class="menu-movil wrap" aria-label={t.navPrincipal}>
+      {nav.map((n) => <a href={n.href}>{n.texto}</a>)}
+    </nav>
+  )}
+</header>

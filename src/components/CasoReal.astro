@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import { poster } from '../config/posters';
+
+interface Props {
+  /** Etiqueta y titular; por defecto, los genéricos del caso. */
+  etiqueta?: string;
+  titulo?: string;
+  texto?: string;
+  seccionClase?: string;
+}
+const {
+  etiqueta = 'Proyecto real · Fisioymés',
+  titulo = 'Una web que guía hasta lo importante.',
+  texto = 'La clínica necesitaba una estructura más clara en el móvil y un camino directo hacia la cita. Rehíce su web en castellano y catalán sin tocar el sistema de reservas que ya usaban.',
+  seccionClase = 'seccion seccion--tinte',
+} = Astro.props;
+---
+
+<section class={seccionClase} aria-labelledby="titulo-caso-real">
+  <div class="wrap escaparate">
+    <div class="escaparate__texto" data-revela>
+      <p class="etiqueta etiqueta--linea">{etiqueta}</p>
+      <h2 id="titulo-caso-real" class="titulo-l">{titulo}</h2>
+      <p>{texto}</p>
+      <div class="escaparate__acciones">
+        <a class="boton boton--oscuro" href="/proyectos/fisioymes/">Ver el caso completo<span class="icono" aria-hidden="true"></span></a>
+        <a class="enlace" href="https://fisioymes.com/" target="_blank" rel="noopener">Ver la web publicada<span class="icono" aria-hidden="true"></span></a>
+      </div>
+    </div>
+    <div class="escaparate__visual">
+      <a class="marco" href="/proyectos/fisioymes/" aria-label="Ver el caso de Fisioymés">
+        <div class="marco__barra" aria-hidden="true"><i></i><i></i><i></i><span>fisioymes.com</span></div>
+        <Image src={poster('fisioymes-full')} width={1100} height={688} fit="cover" position="top" format="webp" quality={78} widths={[560, 1100]} sizes="(min-width: 900px) 55vw, 92vw" alt="Portada de la web de Fisioymés, clínica de fisioterapia en Sant Cugat del Vallès" loading="lazy" />
+      </a>
+    </div>
+  </div>
+</section>

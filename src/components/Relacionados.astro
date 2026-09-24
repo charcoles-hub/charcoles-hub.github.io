@@ -1,0 +1,30 @@
+---
+import { SERVICIOS } from '../config/servicios';
+import { SECTORES } from '../config/sectores';
+import { ZONAS } from '../config/zonas';
+
+interface Props {
+  /** Slug de la página actual, para no enlazarse a sí misma. */
+  actual: string;
+}
+const { actual } = Astro.props;
+const grupos = [
+  { titulo: 'Servicios', enlaces: SERVICIOS.map((s) => ({ texto: s.nombre, href: `/${s.slug}/`, slug: s.slug })) },
+  { titulo: 'Diseño web por sector', enlaces: SECTORES.map((s) => ({ texto: s.nombre, href: `/${s.slug}/`, slug: s.slug })) },
+  { titulo: 'Zonas', enlaces: ZONAS.map((z) => ({ texto: `Diseño web en ${z.nombre}`, href: `/${z.slug}/`, slug: z.slug })) },
+].map((g) => ({ ...g, enlaces: g.enlaces.filter((e) => e.slug !== actual) }));
+---
+
+<section class="seccion" aria-labelledby="titulo-relacionados">
+  <div class="wrap relacionados-bloque">
+    <h2 id="titulo-relacionados" class="titulo-m">También te puede interesar</h2>
+    {grupos.map((g) => (
+      <div>
+        <h3>{g.titulo}</h3>
+        <ul class="relacionados">
+          {g.enlaces.map((e) => <li><a href={e.href}>{e.texto}<span class="icono" aria-hidden="true"></span></a></li>)}
+        </ul>
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,18 +1,18 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://sergiogarciaweb.com',
   base: '/',
   integrations: [
     sitemap({
-      filter: (pagina) => !/\/(gracias|thanks|gracies)\/$/.test(pagina),
+      // Fuera del sitemap: las páginas de gracias y los formularios de reseña,
+      // que llevan noindex. Lo que no se quiere indexar no se anuncia.
+      filter: (pagina) => !/\/(gracias|thanks|gracies|gracias-revision|resena|review|ressenya)\/$/.test(pagina),
     }),
   ],
   vite: {
-    plugins: [tailwindcss()],
     build: {
       // esbuild, NO lightningcss: lightningcss fusiona animation-timeline
       // dentro del shorthand `animation` (sintaxis de un borrador viejo que

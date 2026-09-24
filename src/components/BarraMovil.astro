@@ -1,0 +1,21 @@
+---
+import { TELEFONO, type Lang } from '../config/site';
+import { COMUN, whatsapp } from '../config/comun';
+import Whatsapp from './iconos/Whatsapp.astro';
+import Telefono from './iconos/Telefono.astro';
+
+interface Props {
+  lang: Lang;
+  /** Mensaje ya escrito para WhatsApp; por defecto, el genérico del idioma. */
+  waTexto?: string;
+}
+const { lang } = Astro.props;
+const t = COMUN[lang];
+const wa = whatsapp(Astro.props.waTexto ?? t.waTexto);
+---
+
+{/* Solo se ve en móvil (CSS). En escritorio el contacto ya está en la cabecera. */}
+<aside class="barra-movil" aria-label={t.rapido}>
+  <a href={wa}><Whatsapp />{t.whatsapp}</a>
+  <a href={TELEFONO.tel}><Telefono />{t.llamar}</a>
+</aside>

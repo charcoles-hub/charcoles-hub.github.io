@@ -1,6 +1,11 @@
 ---
 import '../styles/global.css';
-import { contenido, rutas, ogLocale, RESENAS, TELEFONO, type Lang } from '../config/site';
+import { contenido, rutas, ogLocale, RESENAS, type Lang } from '../config/site';
+
+interface Miga {
+  nombre: string;
+  url: string;
+}
 
 interface Props {
   lang: Lang;
@@ -11,6 +16,8 @@ interface Props {
   noindex?: boolean;
   /** Datos estructurados propios de la página, además de los del negocio. */
   datos?: unknown[];
+  /** Migas de pan de la página (sin la portada): salen como BreadcrumbList. */
+  migas?: Miga[];
 }
 const { lang } = Astro.props;
 const C = contenido[lang];
@@ -20,43 +27,43 @@ const {
   paginas = rutas,
   noindex = false,
   datos = [],
+  migas = [],
 } = Astro.props;
+const sitio = Astro.site!.href;
 const canonica = new URL(Astro.url.pathname, Astro.site).href;
+const imagen = new URL('/og.jpg', Astro.site).href;
 
 // Solo las páginas con versiones equivalentes en varios idiomas declaran hreflang.
-// Las portadas y los formularios de reseña tienen esas versiones; servicios y
-// zonas, de momento, solo existen en español.
+// Las portadas y los formularios de reseña tienen esas versiones; servicios,
+// sectores y zonas, de momento, solo existen en español.
 const alternas = (Object.keys(paginas) as Lang[]).map((l) => ({
   codigo: l,
   href: new URL(paginas[l]!, Astro.site).href,
 }));
 const tieneAlternas = !noindex && alternas.length > 1;
 
-const jsonLd = {
-  '@context': 'https://schema.org',
+// Un solo grafo: el sitio, el negocio y la persona tienen @id estable, y cada
+// página los referencia en vez de repetirlos.
+const negocio = {
   '@type': 'ProfessionalService',
-  name: C.site.nombre,
+  '@id': `${sitio}#negocio`,
+  name: contenido.es.site.nombre,
   description: C.site.descripcion,
-  url: canonica,
-  image: new URL('/og.png', Astro.site).href,
-  email: `mailto:${C.site.email}`,
+  url: sitio,
+  image: imagen,
+  logo: new URL('/apple-touch-icon.png', Astro.site).href,
+  email: C.site.email,
   telephone: '+34620650597',
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Cornellà de Llobregat',
     addressRegion: 'Barcelona',
+    postalCode: '08940',
     addressCountry: 'ES',
   },
   areaServed: { '@type': 'Country', name: 'España' },
-  founder: {
-    '@type': 'Person',
-    name: C.site.nombre,
-    jobTitle: C.site.rol,
-    alumniOf: {
-      '@type': 'CollegeOrUniversity',
-      name: 'Universitat Politècnica de Catalunya — EEBE',
-    },
-  },
+  knowsLanguage: ['es', 'ca', 'en'],
+  founder: { '@id': `${sitio}#sergio` },
   // Solo si hay reseñas reales: marcar valoraciones inventadas es penalizable
   // por Google, además de mentira. Con el array vacío no sale ni el campo.
   ...(RESENAS.length > 0 && {
@@ -75,13 +82,50 @@ const jsonLd = {
     })),
   }),
 };
-
-// Favicon: la S sobre el acento, inline. Sin peticiones extra ni binarios.
-const favicon =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1b3fa0"/><text x="32" y="45" font-family="Inter,system-ui,sans-serif" font-size="38" font-weight="800" text-anchor="middle" fill="#ffffff">S</text></svg>`
-  );
+const persona = {
+  '@type': 'Person',
+  '@id': `${sitio}#sergio`,
+  name: 'Sergio García Ortiz',
+  jobTitle: C.site.rol,
+  url: sitio,
+  worksFor: { '@id': `${sitio}#negocio` },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Universitat Politècnica de Catalunya — EEBE' },
+  knowsAbout: ['Diseño web', 'Desarrollo web', 'SEO local', 'Ciberseguridad'],
+};
+const web = {
+  '@type': 'WebSite',
+  '@id': `${sitio}#web`,
+  url: sitio,
+  name: 'Sergio García Web',
+  alternateName: ['Sergio García · Diseño web', 'sergiogarciaweb.com'],
+  inLanguage: ['es', 'ca', 'en'],
+  publisher: { '@id': `${sitio}#negocio` },
+};
+const pagina = {
+  '@type': 'WebPage',
+  '@id': `${canonica}#pagina`,
+  url: canonica,
+  name: titulo,
+  description: descripcion,
+  inLanguage: lang,
+  isPartOf: { '@id': `${sitio}#web` },
+  about: { '@id': `${sitio}#negocio` },
+  ...(migas.length > 0 && { breadcrumb: { '@id': `${canonica}#migas` } }),
+};
+const migasLd = migas.length > 0 && {
+  '@type': 'BreadcrumbList',
+  '@id': `${canonica}#migas`,
+  itemListElement: [{ nombre: 'Inicio', url: '/' }, ...migas].map((m, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: m.nombre,
+    item: new URL(m.url, Astro.site).href,
+  })),
+};
+const grafo = {
+  '@context': 'https://schema.org',
+  '@graph': [web, negocio, persona, pagina, ...(migasLd ? [migasLd] : [])],
+};
 ---
 
 <!doctype html>
@@ -89,42 +133,45 @@ const favicon =
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={descripcion} />
-    <meta name="theme-color" content="#f7f7f0" />
-    <link rel="canonical" href={canonica} />
-    <link rel="icon" href={favicon} />
     <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonica} />
     {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#f6f5ef" />
+
+    <link rel="preload" href="/fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/instrument-serif-latin-italic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     {tieneAlternas && alternas.map((a) => <link rel="alternate" hreflang={a.codigo} href={a.href} />)}
     {tieneAlternas && paginas.es && <link rel="alternate" hreflang="x-default" href={new URL(paginas.es, Astro.site).href} />}
 
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sergio García Web" />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonica} />
     <meta property="og:locale" content={ogLocale[lang]} />
-    <meta property="og:image" content={new URL('/og.png', Astro.site).href} />
+    <meta property="og:image" content={imagen} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content="Sergio García · Diseño web a medida" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content={new URL('/og.png', Astro.site).href} />
+    <meta name="twitter:title" content={titulo} />
+    <meta name="twitter:description" content={descripcion} />
+    <meta name="twitter:image" content={imagen} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;750;800&family=Inter:opsz,wght@14..32,400..800&display=swap"
-      rel="stylesheet"
-    />
-
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(grafo)} />
     {datos.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
   </head>
   <body>
     {/* Hilo de lectura: CSS puro con scroll(). Donde no se soporte, no existe. */}
     <div class="progreso" aria-hidden="true"></div>
-    <main>
-      <slot />
-    </main>
+    <slot />
   </body>
 </html>

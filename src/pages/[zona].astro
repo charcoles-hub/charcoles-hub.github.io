@@ -1,7 +1,6 @@
 ---
 import { ZONAS } from '../config/zonas';
 import type { Servicio } from '../config/servicios';
-import { contenido } from '../config/site';
 import Layout from '../layouts/Layout.astro';
 import PaginaLarga from '../components/PaginaLarga.astro';
 
@@ -10,7 +9,8 @@ export function getStaticPaths() {
 }
 
 const { s } = Astro.props as { s: Servicio };
-const { site } = contenido.es;
+const url = new URL(`/${s.slug}/`, Astro.site).href;
+const migas = [{ nombre: `Diseño web en ${s.nombre}`, url: `/${s.slug}/` }];
 
 const faqLd = {
   '@context': 'https://schema.org',
@@ -25,20 +25,15 @@ const faqLd = {
 const zonaLd = {
   '@context': 'https://schema.org',
   '@type': 'Service',
+  '@id': `${url}#servicio`,
   name: `Diseño web en ${s.nombre}`,
   description: s.descripcion,
   serviceType: 'Diseño de páginas web',
-  provider: { '@type': 'ProfessionalService', name: site.nombre, telephone: '+34620650597' },
+  provider: { '@id': new URL('/#negocio', Astro.site).href },
   areaServed: { '@type': 'Place', name: s.nombre },
-  url: new URL(`/${s.slug}/`, Astro.site).href,
+  url,
 };
 ---
-<Layout
-  lang="es"
-  titulo={s.titulo}
-  descripcion={s.descripcion}
-  paginas={{ es: `/${s.slug}/` }}
-  datos={[zonaLd, faqLd]}
->
-  <PaginaLarga s={s} />
+<Layout lang="es" titulo={s.titulo} descripcion={s.descripcion} paginas={{ es: `/${s.slug}/` }} datos={[zonaLd, faqLd]} migas={migas}>
+  <PaginaLarga s={s} migas={migas} tipo="zona" />
 </Layout>

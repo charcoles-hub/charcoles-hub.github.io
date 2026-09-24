@@ -239,6 +239,12 @@ summary::-webkit-details-marker { display: none; }
     font-size: 0.9rem; font-weight: 500; white-space: nowrap;
   }
   .menu-movil::-webkit-scrollbar { display: none; }
+  /* Difuminado a la derecha: deja ver que el menú se desliza. */
+  .menu-movil {
+    padding-right: 32px;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+  }
   .menu-movil a { padding-block: 6px; }
 }
 

@@ -170,13 +170,13 @@ const t = textos[lang];
       <p>{t.publishedIntro}</p>
     </div>
     {RESENAS.length ? (
-      <ul class="review-grid" role="list">
+      <ul class:list={['review-grid', { 'review-grid--single': RESENAS.length === 1 }]} role="list">
         {RESENAS.map((review) => {
           const text = lang === 'en' && review.textoEn ? review.textoEn : review.texto;
           return (
             <li class="tarjeta">
               <p class="review-stars" aria-label={contenido[lang].resenas.deCinco(review.estrellas)}>{'★'.repeat(review.estrellas)}<span aria-hidden="true">{'★'.repeat(5 - review.estrellas)}</span></p>
-              <blockquote>“{text}”</blockquote>
+              <blockquote lang={lang === 'en' && review.textoEn ? 'en' : 'es'}>“{text}”</blockquote>
               <footer><strong>{review.autor}</strong><span>{review.cargo} · {fecha.format(new Date(review.fecha))}</span></footer>
             </li>
           );
@@ -211,6 +211,7 @@ const t = textos[lang];
   .after-card { position: sticky; top: 110px; display: grid; gap: 8px; }
   .after-card .lista-num { margin-top: 20px; }
   .review-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; list-style: none; }
+  .review-grid--single { grid-template-columns: minmax(0, 1fr); max-width: 780px; }
   .review-grid blockquote { margin: 0; font-family: var(--serif); font-size: 1.45rem; line-height: 1.25; }
   .review-grid footer { display: grid; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--linea); font-size: 0.9rem; }
   .review-grid footer span { color: var(--tenue); }

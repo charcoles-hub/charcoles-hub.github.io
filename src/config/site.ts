@@ -182,7 +182,7 @@ export const contenido = {
     },
     resenas: {
       eyebrow: 'Reseñas',
-      titular: 'Lo que dicen los que ya la tienen.',
+      titular: 'El resultado, en palabras de mis clientes.',
       texto: 'Escritas por ellos, publicadas tal cual. Ni retocadas ni resumidas.',
       titularVacio: 'Aquí todavía no hay ninguna reseña.',
       textoVacio:
@@ -240,7 +240,7 @@ export const contenido = {
     },
     resenas: {
       eyebrow: 'Reviews',
-      titular: 'What the people who already have one say.',
+      titular: 'The result, in my clients’ own words.',
       texto: 'Written by them, published word for word. Not polished, not trimmed.',
       titularVacio: 'No reviews here yet.',
       textoVacio:
@@ -302,7 +302,7 @@ export const contenido = {
     },
     "resenas": {
       "eyebrow": "Ressenyes",
-      "titular": "Què diuen els qui ja la tenen.",
+      "titular": "El resultat, en paraules dels meus clients.",
       "texto": "Escrites per ells, publicades tal qual. Ni retocades ni resumides.",
       "titularVacio": "Aquí encara no hi ha cap ressenya.",
       "textoVacio": "Aquesta part prefereixo que l'escriguin ells, així que de moment està buida. Si hem treballat junts, explica-ho en dues línies: la publico tal qual, amb el teu nom i el del teu negoci.",

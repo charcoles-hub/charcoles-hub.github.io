@@ -9,7 +9,6 @@ import Cabecera from './Cabecera.astro';
 import Contacto from './Contacto.astro';
 import Pie from './Pie.astro';
 import BarraMovil from './BarraMovil.astro';
-import Preguntas from './Preguntas.astro';
 import Whatsapp from './iconos/Whatsapp.astro';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -17,11 +16,6 @@ const t = studio[lang];
 const c = contenido[lang];
 const fisio = poster('fisioymes-full');
 const wa = whatsapp(COMUN[lang].waTexto);
-// Tres conceptos a la vista; el resto, en un desplegable. En inglés hay dos.
-const destacados = lang === 'en'
-  ? c.proyectos
-  : ['demo-barberia-navaja', 'demo-dental-sereno', 'demo-arquitectos-traza'].map((slug) => c.proyectos.find((p) => p.slug === slug)!);
-const resto = c.proyectos.filter((p) => !destacados.some((d) => d.slug === p.slug));
 const conSectores = lang !== 'en';
 const hreflangEs = lang === 'es' ? undefined : 'es';
 const hayResenas = RESENAS.length > 0;
@@ -59,12 +53,6 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
     </a>
   </section>
 
-  <div class="compromisos seccion--oscura">
-    <ul class="wrap compromisos__lista">
-      {t.compromisos.map(([titulo, texto]) => <li><strong>{titulo}</strong><span>{texto}</span></li>)}
-    </ul>
-  </div>
-
   <section class="seccion" id="trabajo" aria-labelledby="titulo-trabajo">
     <div class="wrap">
       <div class="cabeza" data-revela>
@@ -89,11 +77,6 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
           <p class="etiqueta">{t.caso.etiqueta}</p>
           <h3 id="titulo-caso" class="titulo-m">{t.caso.titulo}</h3>
           <p class="caso__intro">{t.caso.intro}</p>
-          <ol class="lista-num">
-            {t.caso.pasos.map(([titulo, texto], i) => (
-              <li><span>0{i + 1}</span><div><h4 class="subtitulo">{titulo}</h4><p>{texto}</p></div></li>
-            ))}
-          </ol>
           <div class="caso__enlaces">
             <a class="boton boton--oscuro" href={c.destacado.url} hreflang={hreflangEs}>{t.caso.verCaso}<span class="icono" aria-hidden="true"></span></a>
             <a class="enlace" href="https://fisioymes.com/" target="_blank" rel="noopener">{t.caso.verWeb}<span class="icono" aria-hidden="true"></span></a>
@@ -101,46 +84,39 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
         </div>
       </article>
 
-      <div class="conceptos">
-        <div class="cabeza" data-revela>
-          <div>
-            <p class="etiqueta">{t.conceptos.etiqueta}</p>
-            <h3 class="titulo-m">{t.conceptos.titulo}</h3>
+      {hayResenas && (
+        <section class="testimonio seccion--oscura" id="resenas" aria-labelledby="titulo-resenas">
+          <div class="testimonio__cabeza">
+            <div>
+              <p class="etiqueta etiqueta--linea">{c.resenas.eyebrow}</p>
+              <h3 id="titulo-resenas" class="titulo-m">{c.resenas.titular}</h3>
+            </div>
+            <p>{c.resenas.texto}</p>
           </div>
-          <p>{t.conceptos.intro}</p>
-        </div>
-        <ul class:list={['conceptos__rejilla', { 'conceptos__rejilla--dos': destacados.length === 2 }]}>
-          {destacados.map((p) => (
-            <li data-revela>
-              <a class="concepto" href={p.url} target="_blank" rel="noopener">
-                <div class="concepto__imagen">
-                  <Image src={poster(p.slug)} width={880} height={620} fit="cover" position="top" format="webp" quality={78} widths={[440, 880]} sizes="(min-width: 900px) 30vw, (min-width: 600px) 46vw, 92vw" alt={`${p.nombre}: ${p.rubro}`} loading="lazy" />
-                  <span class="chip chip--concepto">{t.conceptos.marca}</span>
-                </div>
-                <div class="concepto__pie">
-                  <div><h4>{p.nombre}</h4><p>{p.rubro.split(' · ')[0]}</p></div>
-                  <span class="icono" aria-hidden="true"></span>
-                </div>
-              </a>
-            </li>
+          <ul class:list={['resenas', { 'resenas--unica': RESENAS.length === 1 }]}>
+            {RESENAS.map((r) => (
+              <li class="resena">
+                <p class="resena__estrellas" aria-label={c.resenas.deCinco(r.estrellas)}>{'★'.repeat(r.estrellas)}<span aria-hidden="true">{'★'.repeat(5 - r.estrellas)}</span></p>
+                <blockquote lang={lang === 'en' && r.textoEn ? 'en' : 'es'}>“{lang === 'en' && r.textoEn ? r.textoEn : r.texto}”</blockquote>
+                <footer>
+                  <strong>{r.url ? <a href={r.url} target="_blank" rel="noopener">{r.autor}</a> : r.autor}</strong>
+                  <span>{r.cargo} · {formatoFecha.format(new Date(r.fecha))}</span>
+                </footer>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <details class="conceptos-resumen">
+        <summary>{t.conceptos.etiqueta}: {t.conceptos.titulo}<span class="icono icono--mas" aria-hidden="true"></span></summary>
+        <p>{t.conceptos.intro}</p>
+        <ul>
+          {c.proyectos.map((p) => (
+            <li><a href={p.url} target="_blank" rel="noopener">{p.nombre}<small>{p.rubro.split(' · ')[0]} · {t.conceptos.marca}</small><span class="icono" aria-hidden="true"></span></a></li>
           ))}
         </ul>
-        {resto.length > 0 && (
-          <details class="mas-conceptos">
-            <summary>{t.conceptos.todos}<span class="icono icono--mas" aria-hidden="true"></span></summary>
-            <ul>
-              {resto.map((p) => (
-                <li>
-                  <a href={p.url} target="_blank" rel="noopener">
-                    <span>{p.nombre} <small>{p.rubro.split(' · ')[0]} · {t.conceptos.marca}</small></span>
-                    <span class="icono" aria-hidden="true"></span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </details>
-        )}
-      </div>
+      </details>
     </div>
   </section>
 
@@ -154,16 +130,9 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
           </div>
           <p>{t.sectoresIntro}</p>
         </div>
-        <ul class="sectores">
-          {SECTORES.map((s, i) => (
-            <li data-revela>
-              <a class="tarjeta sector" href={`/${s.slug}/`} hreflang={hreflangEs}>
-                <span class="sector__num">0{i + 1}</span>
-                <h3 class="sector__nombre">{s.nombre}</h3>
-                <p>{s.resumen}</p>
-                <span class="sector__ver">{t.sectoresVer}<span class="icono" aria-hidden="true"></span></span>
-              </a>
-            </li>
+        <ul class="sectores-resumen">
+          {SECTORES.map((s) => (
+            <li><a href={`/${s.slug}/`} hreflang={hreflangEs}>{s.nombre}<span class="icono" aria-hidden="true"></span></a></li>
           ))}
         </ul>
       </div>
@@ -193,90 +162,6 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
     </div>
   </section>
 
-  {t.revision.titulo && (
-    <section class="revision" aria-labelledby="titulo-revision">
-      <div class="wrap">
-        <div class="revision__caja seccion--oscura" data-revela>
-          <div>
-            <p class="etiqueta etiqueta--linea">{t.revision.etiqueta}</p>
-            <h2 id="titulo-revision" class="titulo-l" set:html={enfasis(t.revision.titulo)} />
-          </div>
-          <div class="revision__accion">
-            <p>{t.revision.texto}</p>
-            <a class="boton boton--lima" href="/revision-web-gratis/" hreflang={hreflangEs}>{t.revision.cta}<span class="icono" aria-hidden="true"></span></a>
-          </div>
-        </div>
-      </div>
-    </section>
-  )}
-
-  <section class="seccion" id="proceso" aria-labelledby="titulo-proceso">
-    <div class="wrap">
-      <div class="cabeza" data-revela>
-        <div>
-          <p class="etiqueta etiqueta--linea">{t.procesoEtiqueta}</p>
-          <h2 id="titulo-proceso" class="titulo-l" set:html={enfasis(t.procesoTitulo)} />
-        </div>
-      </div>
-      <ol class="proceso">
-        {t.proceso.map(([titulo, texto], i) => (
-          <li data-revela><span class="proceso__num" aria-hidden="true">{i + 1}</span><h3 class="subtitulo">{titulo}</h3><p>{texto}</p></li>
-        ))}
-      </ol>
-    </div>
-  </section>
-
-  <section class="seccion seccion--tinte" id="presupuesto" aria-labelledby="titulo-presupuesto">
-    <div class="wrap">
-      <div class="cabeza" data-revela>
-        <div>
-          <p class="etiqueta etiqueta--linea">{t.precioEtiqueta}</p>
-          <h2 id="titulo-presupuesto" class="titulo-l" set:html={enfasis(t.precioTitulo)} />
-        </div>
-        <p>{t.precioIntro}</p>
-      </div>
-      <div class="precio">
-        <div class="precio__caja seccion--oscura" data-revela>
-          <h3 class="titulo-m">{t.precioCaja}</h3>
-          <p>{t.precioNota}</p>
-          <ul class="lista-check">{t.precioIncluye.map((x) => <li><span class="icono icono--check" aria-hidden="true"></span>{x}</li>)}</ul>
-          <a class="boton boton--lima boton--ancho" href={wa}><Whatsapp />{t.precioCta}</a>
-        </div>
-        <ol class="lista-num precio__pasos">
-          {t.precioPasos.map(([titulo, texto], i) => (
-            <li><span>0{i + 1}</span><div><h3 class="subtitulo">{titulo}</h3><p>{texto}</p></div></li>
-          ))}
-        </ol>
-      </div>
-    </div>
-  </section>
-
-  {hayResenas && (
-    <section class="seccion" id="resenas" aria-labelledby="titulo-resenas">
-      <div class="wrap">
-        <div class="cabeza" data-revela>
-          <div>
-            <p class="etiqueta etiqueta--linea">{c.resenas.eyebrow}</p>
-            <h2 id="titulo-resenas" class="titulo-l">{c.resenas.titular}</h2>
-          </div>
-          <p>{c.resenas.texto}</p>
-        </div>
-        <ul class:list={['resenas', { 'resenas--unica': RESENAS.length === 1 }]}>
-          {RESENAS.map((r) => (
-            <li class="tarjeta resena" data-revela>
-              <p class="resena__estrellas" aria-label={c.resenas.deCinco(r.estrellas)}>{'★'.repeat(r.estrellas)}<span aria-hidden="true">{'★'.repeat(5 - r.estrellas)}</span></p>
-              <blockquote lang={lang === 'en' && r.textoEn ? 'en' : 'es'}>“{lang === 'en' && r.textoEn ? r.textoEn : r.texto}”</blockquote>
-              <footer>
-                <strong>{r.url ? <a href={r.url} target="_blank" rel="noopener">{r.autor}</a> : r.autor}</strong>
-                <span>{r.cargo} · {formatoFecha.format(new Date(r.fecha))}</span>
-              </footer>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )}
-
   <section class="seccion" id="sobre-mi" aria-labelledby="titulo-sobre">
     <div class="wrap sobre">
       <div class="sobre__texto" data-revela>
@@ -293,20 +178,6 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
           {t.credenciales.map(([titulo, texto]) => <div data-revela><dt>{titulo}</dt><dd>{texto}</dd></div>)}
         </dl>
       </div>
-      <aside class="tecnica" data-revela>
-        <h3 class="subtitulo">{t.tecnicaTitulo}</h3>
-        <p>{t.tecnicaTexto}</p>
-      </aside>
-    </div>
-  </section>
-
-  <section class="seccion seccion--tinte" id="preguntas" aria-labelledby="titulo-faq">
-    <div class="wrap faq">
-      <div data-revela>
-        <p class="etiqueta etiqueta--linea">{t.faqEtiqueta}</p>
-        <h2 id="titulo-faq" class="titulo-l" set:html={enfasis(t.faqTitulo)} />
-      </div>
-      <Preguntas preguntas={t.faqs.map(([pregunta, respuesta]) => ({ pregunta, respuesta }))} />
     </div>
   </section>
 
@@ -363,19 +234,10 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
     .portada__pie { left: 8px; font-size: 0.8rem; }
   }
 
-  /* ---- Compromisos ---- */
-  .compromisos { padding-block: 34px; }
-  .compromisos__lista { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 40px; list-style: none; }
-  .compromisos__lista li { display: grid; gap: 4px; padding-left: 18px; border-left: 1px solid var(--linea-oscura); }
-  .compromisos__lista strong { font-family: var(--serif); font-size: 1.45rem; font-weight: 400; line-height: 1.1; color: var(--lima); }
-  .compromisos__lista span { color: var(--tenue-oscuro); font-size: 0.9rem; line-height: 1.5; }
-  @media (max-width: 900px) { .compromisos__lista { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 480px) { .compromisos__lista { grid-template-columns: 1fr; } }
-
   /* ---- Caso real ---- */
   .caso { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 48px clamp(40px, 6vw, 96px); align-items: center; }
   .caso__marco { display: block; }
-  .caso__pantalla { aspect-ratio: 1100 / 1180; overflow: hidden; }
+  .caso__pantalla { aspect-ratio: 1100 / 820; overflow: hidden; }
   .caso__pantalla img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .caso__pantalla img { transition: object-position 9s cubic-bezier(0.45, 0, 0.35, 1); }
@@ -384,111 +246,62 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
   .caso__pista { margin-top: 14px; font-size: 0.85rem; color: var(--tenue); }
   @media (hover: none) { .caso__pista { display: none; } }
   .caso__intro { margin-top: 20px; color: var(--tenue); font-size: 1.08rem; }
-  .caso .lista-num { margin-top: 28px; }
-  .caso .lista-num > li { grid-template-columns: 44px 1fr; padding-block: 18px; }
   .caso__enlaces { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-top: 30px; }
-  @media (max-width: 900px) { .caso { grid-template-columns: 1fr; } .caso__pantalla { aspect-ratio: 1100 / 900; } }
+  @media (max-width: 900px) { .caso { grid-template-columns: 1fr; } }
 
-  /* ---- Conceptos ---- */
-  .conceptos { margin-top: clamp(88px, 11vw, 150px); }
-  .conceptos .cabeza { margin-bottom: 40px; }
-  .conceptos__rejilla { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; list-style: none; }
-  .conceptos__rejilla--dos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .concepto { display: block; }
-  .concepto__imagen {
-    position: relative; overflow: hidden; aspect-ratio: 880 / 620; border-radius: var(--radio);
-    background: var(--papel-2); border: 1px solid var(--linea);
-  }
-  .concepto__imagen img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.9s var(--suave); }
-  .concepto__imagen .chip { position: absolute; left: 14px; bottom: 14px; }
-  .concepto__pie { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-top: 18px; }
-  .concepto__pie h4 { font-family: var(--serif); font-size: 1.75rem; font-weight: 400; line-height: 1.1; }
-  .concepto__pie p { margin-top: 2px; font-size: 0.92rem; color: var(--tenue); }
-  .concepto__pie .icono { margin-top: 8px; transition: transform 0.35s var(--suave); }
-  @media (prefers-reduced-motion: no-preference) {
-    .concepto:hover .concepto__imagen img { transform: scale(1.035); }
-    .concepto:hover .concepto__pie .icono { transform: translate(3px, -3px); }
-  }
-  .mas-conceptos { margin-top: 40px; border-top: 1px solid var(--linea); }
-  .mas-conceptos summary { display: flex; align-items: center; justify-content: space-between; padding-block: 22px; font-weight: 600; }
-  .mas-conceptos summary .icono { width: 1.35em; height: 1.35em; transition: transform 0.35s var(--suave); }
-  .mas-conceptos[open] summary .icono { transform: rotate(45deg); }
-  .mas-conceptos ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; list-style: none; }
-  .mas-conceptos a { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 16px; border-top: 1px solid var(--linea); }
-  .mas-conceptos a:hover { color: var(--oliva); }
-  .mas-conceptos small { margin-left: 6px; font-size: 0.85rem; color: var(--tenue); }
-  @media (max-width: 900px) { .conceptos__rejilla { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 600px) { .conceptos__rejilla, .conceptos__rejilla--dos, .mas-conceptos ul { grid-template-columns: 1fr; } }
+  /* ---- Reseña ligada al caso real ---- */
+  .testimonio { margin-top: clamp(48px, 6vw, 80px); padding: clamp(28px, 5vw, 64px); border-radius: 28px; }
+  .testimonio__cabeza { display: flex; align-items: end; justify-content: space-between; gap: 24px 48px; margin-bottom: 28px; }
+  .testimonio__cabeza .etiqueta { margin-bottom: 12px; }
+  .testimonio__cabeza > p { max-width: 22em; color: var(--tenue-oscuro); font-size: 0.92rem; }
+  .resenas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; list-style: none; }
+  .resenas--unica { grid-template-columns: minmax(0, 1fr); }
+  .resena { display: flex; flex-direction: column; gap: 18px; padding-top: 24px; border-top: 1px solid var(--linea-oscura); }
+  .resena blockquote { max-width: 37em; margin: 0; font-family: var(--serif); font-size: clamp(1.55rem, 1.1rem + 1.5vw, 2.25rem); line-height: 1.2; }
+  .resena__estrellas { color: var(--lima); letter-spacing: 0.12em; }
+  .resena__estrellas span { color: var(--linea-oscura); }
+  .resena footer { display: grid; gap: 2px; margin-top: auto; font-size: 0.9rem; }
+  .resena footer span { color: var(--tenue-oscuro); }
+  .resena footer a { text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 760px) { .testimonio__cabeza { display: block; } .testimonio__cabeza > p { margin-top: 12px; } .resenas { grid-template-columns: 1fr; } }
+
+  /* ---- Conceptos opcionales ---- */
+  .conceptos-resumen { margin-top: 30px; border-block: 1px solid var(--linea); }
+  .conceptos-resumen summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 18px; font-weight: 600; }
+  .conceptos-resumen summary .icono { transition: transform 0.3s var(--suave); }
+  .conceptos-resumen[open] summary .icono { transform: rotate(45deg); }
+  .conceptos-resumen > p { max-width: 48em; padding-bottom: 18px; color: var(--tenue); font-size: 0.95rem; }
+  .conceptos-resumen ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; list-style: none; padding-bottom: 16px; }
+  .conceptos-resumen a { display: flex; align-items: center; gap: 8px; padding-block: 12px; border-top: 1px solid var(--linea); font-weight: 600; }
+  .conceptos-resumen a:hover { color: var(--oliva); }
+  .conceptos-resumen a .icono { margin-left: auto; }
+  .conceptos-resumen small { color: var(--tenue); font-size: 0.82rem; font-weight: 400; }
+  @media (max-width: 700px) { .conceptos-resumen ul { grid-template-columns: 1fr; } .conceptos-resumen a { flex-wrap: wrap; } }
 
   /* ---- Sectores ---- */
-  .sectores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; list-style: none; }
-  .sectores li { display: flex; }
-  .sector { width: 100%; min-height: 250px; }
-  .sector__num { font-size: 0.85rem; font-weight: 600; color: var(--oliva); font-variant-numeric: tabular-nums; }
-  .sector__nombre { margin-top: 44px; font-family: var(--serif); font-size: clamp(1.9rem, 1.5rem + 1vw, 2.5rem); font-weight: 400; line-height: 1.05; }
-  .sector p { color: var(--tenue); }
-  .sector__ver { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; font-size: 0.92rem; font-weight: 600; }
-  .sector__ver .icono { transition: transform 0.35s var(--suave); }
-  .sector:hover .sector__ver .icono { transform: translate(3px, -3px); }
-  @media (max-width: 900px) { .sectores { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 560px) { .sectores { grid-template-columns: 1fr; } .sector { min-height: 0; } .sector__nombre { margin-top: 20px; } }
+  #sectores { padding-block: clamp(56px, 6vw, 88px); }
+  #sectores .cabeza { margin-bottom: 28px; }
+  .sectores-resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; }
+  .sectores-resumen a { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 72px; padding: 14px 20px; border: 1px solid var(--linea); border-radius: var(--radio-s); background: var(--blanco); font-weight: 600; }
+  .sectores-resumen a:hover { border-color: var(--linea-fuerte); color: var(--oliva); }
+  @media (max-width: 900px) { .sectores-resumen { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .sectores-resumen { grid-template-columns: 1fr; } .sectores-resumen a { min-height: 0; } }
 
   /* ---- Servicios ---- */
   .servicios { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; list-style: none; }
   .servicios li { display: flex; }
-  .servicio { width: 100%; min-height: 300px; background: transparent; }
+  .servicio { width: 100%; min-height: 240px; background: transparent; }
   .servicio:hover { background: var(--blanco); }
   .servicio__num { font-size: 0.85rem; font-weight: 600; color: var(--oliva); }
-  .servicio h3 { margin-top: 52px; }
+  .servicio h3 { margin-top: 20px; }
   .servicio p { max-width: 34em; color: var(--tenue); }
   .servicio__mas { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 6px; font-size: 0.92rem; font-weight: 600; }
   .servicio__mas .icono { transition: transform 0.35s var(--suave); }
   .servicio:hover .servicio__mas .icono { transform: translate(3px, -3px); }
-  @media (max-width: 760px) { .servicios { grid-template-columns: 1fr; } .servicio { min-height: 0; } .servicio h3 { margin-top: 24px; } }
-
-  /* ---- Revisión gratuita ---- */
-  .revision { padding-bottom: 0; }
-  .revision__caja {
-    position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 32px 72px; align-items: end;
-    padding: clamp(32px, 6vw, 80px); border-radius: 32px;
-  }
-  .revision__caja::after {
-    content: ''; position: absolute; right: -10%; top: -60%; width: 60%; aspect-ratio: 1; border-radius: 50%;
-    background: radial-gradient(closest-side, rgb(212 239 106 / 0.16), transparent); pointer-events: none;
-  }
-  .revision__accion { position: relative; z-index: 1; display: grid; gap: 24px; justify-items: start; }
-  .revision__accion p { color: var(--tenue-oscuro); font-size: 1.08rem; }
-  @media (max-width: 860px) { .revision__caja { grid-template-columns: 1fr; } }
-  @media (max-width: 600px) { .revision__accion .boton { width: 100%; white-space: normal; } }
-
-  /* ---- Proceso ---- */
-  .proceso { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px 28px; list-style: none; counter-reset: paso; }
-  .proceso li { position: relative; padding-top: 30px; border-top: 1px solid var(--linea-fuerte); }
-  .proceso__num { display: block; margin-bottom: 28px; font-family: var(--serif); font-size: 3.4rem; line-height: 1; color: var(--oliva); }
-  .proceso h3 { margin-bottom: 10px; }
-  .proceso p { color: var(--tenue); font-size: 0.98rem; }
-  @media (max-width: 900px) { .proceso { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 520px) { .proceso { grid-template-columns: 1fr; } .proceso__num { margin-bottom: 16px; font-size: 2.8rem; } }
-
-  /* ---- Presupuesto ---- */
-  .precio { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px clamp(40px, 7vw, 110px); align-items: center; }
-  .precio__caja { display: grid; gap: 22px; padding: clamp(28px, 4vw, 48px); border-radius: 28px; box-shadow: var(--sombra); }
-  .precio__caja > p { color: var(--tenue-oscuro); }
-  .precio__caja .lista-check { padding-block: 22px; border-block: 1px solid var(--linea-oscura); }
-  .precio__pasos > li { padding-block: 26px; }
-  @media (max-width: 900px) { .precio { grid-template-columns: 1fr; } }
-
-  /* ---- Reseñas ---- */
-  .resenas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; list-style: none; }
-  .resenas--unica { grid-template-columns: minmax(0, 1fr); max-width: 780px; }
-  .resena blockquote { margin: 0; font-family: var(--serif); font-size: 1.5rem; line-height: 1.25; }
-  .resena__estrellas { color: var(--oliva); letter-spacing: 0.12em; }
-  .resena__estrellas span { color: var(--linea-fuerte); }
-  .resena footer { display: grid; gap: 2px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--linea); font-size: 0.9rem; }
-  .resena footer span { color: var(--tenue); }
-  @media (max-width: 900px) { .resenas { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .servicios { grid-template-columns: 1fr; } .servicio { min-height: 0; } }
 
   /* ---- Sobre mí ---- */
+  #sobre-mi { padding-top: clamp(24px, 3vw, 48px); }
   .sobre { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px clamp(40px, 7vw, 110px); align-items: start; }
   .sobre .entradilla { margin-block: 26px 18px; }
   .sobre__lado { display: grid; gap: 28px; }
@@ -497,14 +310,5 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
   .credenciales div:first-child { border-top: 1px solid var(--linea); }
   .credenciales dt { font-family: var(--serif); font-size: 1.6rem; line-height: 1.15; }
   .credenciales dd { margin-top: 6px; color: var(--tenue); }
-  .tecnica {
-    grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 16px 48px; align-items: baseline;
-    padding: clamp(24px, 3.5vw, 40px); border: 1px solid var(--linea); border-radius: var(--radio); background: var(--blanco);
-  }
-  .tecnica p { color: var(--tenue); }
-  @media (max-width: 900px) { .sobre, .tecnica { grid-template-columns: 1fr; } }
-
-  /* ---- Preguntas ---- */
-  .faq { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 40px clamp(40px, 7vw, 110px); align-items: start; }
-  @media (max-width: 900px) { .faq { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .sobre { grid-template-columns: 1fr; } }
 </style>

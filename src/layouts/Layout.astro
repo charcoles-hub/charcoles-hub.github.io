@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { contenido, rutas, ogLocale, RESENAS, type Lang } from '../config/site';
+import { contenido, rutas, ogLocale, type Lang } from '../config/site';
 
 interface Miga {
   nombre: string;
@@ -64,23 +64,7 @@ const negocio = {
   areaServed: { '@type': 'Country', name: 'España' },
   knowsLanguage: ['es', 'ca', 'en'],
   founder: { '@id': `${sitio}#sergio` },
-  // Solo si hay reseñas reales: marcar valoraciones inventadas es penalizable
-  // por Google, además de mentira. Con el array vacío no sale ni el campo.
-  ...(RESENAS.length > 0 && {
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: (RESENAS.reduce((s, r) => s + r.estrellas, 0) / RESENAS.length).toFixed(1),
-      reviewCount: RESENAS.length,
-      bestRating: 5,
-    },
-    review: RESENAS.map((r) => ({
-      '@type': 'Review',
-      reviewBody: r.texto,
-      datePublished: r.fecha,
-      author: { '@type': 'Person', name: r.autor },
-      reviewRating: { '@type': 'Rating', ratingValue: r.estrellas, bestRating: 5 },
-    })),
-  }),
+  // Las reseñas propias se muestran en HTML: Google no admite estrellas autogestionadas para este negocio.
 };
 const persona = {
   '@type': 'Person',

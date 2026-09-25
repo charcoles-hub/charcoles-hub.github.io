@@ -46,8 +46,12 @@ for (const file of pages) {
     const src = attrs.match(/\bsrc="([^"]+)"/)?.[1];
     if (src?.startsWith('/')) assert.ok(existsSync(join(dist, src)), `Missing image ${src}`);
   }
-  // Nada de valoraciones sin reseñas reales detrás.
-  assert.ok(nodes(html).every((n) => !n.aggregateRating), `Unverified review rating: ${file}`);
+  // La valoración estructurada debe corresponder a la reseña publicada.
+  const rated = nodes(html).filter((n) => n.aggregateRating);
+  assert.equal(rated.length, 1, `One rated business: ${file}`);
+  assert.equal(rated[0].aggregateRating.reviewCount, 1, `Real review count: ${file}`);
+  assert.equal(rated[0].aggregateRating.ratingValue, '5.0', `Real review rating: ${file}`);
+  assert.equal(rated[0].review?.[0]?.reviewBody?.startsWith('Muy buen trato y gran profesionalidad.'), true, `Real review text: ${file}`);
 }
 
 // Recursos compartidos: fuentes precargadas, iconos e imagen para redes.
@@ -93,8 +97,8 @@ for (const [lang, path] of [['es', 'index.html'], ['ca', 'ca/index.html'], ['en'
   assert.ok(!html.includes('/presupuesto-web/'), `No calculator link: ${lang}`);
   assert.doesNotMatch(html, /(?:\d[\d.,]*\s*€|€\s*\d)/, `No fixed euro amount: ${lang}`);
   assert.equal((html.match(/<script(?! type="application\/ld\+json")/g) || []).length, 0, `Home must work without runtime JavaScript: ${lang}`);
-  // Con la lista de reseñas vacía, la portada no anuncia que no hay reseñas.
-  assert.doesNotMatch(html, /id="resenas"/, `No empty reviews section: ${lang}`);
+  assert.match(html, /id="resenas"/, `Published reviews section: ${lang}`);
+  assert.ok(html.includes('Muy buen trato y gran profesionalidad.'), `Diana's review on home: ${lang}`);
 }
 
 for (const [lang, path, thanks] of [
@@ -106,6 +110,7 @@ for (const [lang, path, thanks] of [
   assert.ok(html.includes(`name="Idioma" value="${lang}"`), `Review language: ${lang}`);
   assert.ok(html.includes(`name="redirect" value="https://sergiogarciaweb.com${thanks}"`), `Review redirect: ${lang}`);
   assert.match(html, /<meta name="robots" content="noindex"/, `Review form is noindex: ${lang}`);
+  assert.ok(html.includes('Muy buen trato y gran profesionalidad.'), `Diana's review on review page: ${lang}`);
 }
 
 const revision = readFileSync(join(dist, 'revision-web-gratis/index.html'), 'utf8');

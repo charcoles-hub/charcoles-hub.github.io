@@ -261,11 +261,11 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
           </div>
           <p>{c.resenas.texto}</p>
         </div>
-        <ul class="resenas">
+        <ul class:list={['resenas', { 'resenas--unica': RESENAS.length === 1 }]}>
           {RESENAS.map((r) => (
             <li class="tarjeta resena" data-revela>
               <p class="resena__estrellas" aria-label={c.resenas.deCinco(r.estrellas)}>{'★'.repeat(r.estrellas)}<span aria-hidden="true">{'★'.repeat(5 - r.estrellas)}</span></p>
-              <blockquote>“{lang === 'en' && r.textoEn ? r.textoEn : r.texto}”</blockquote>
+              <blockquote lang={lang === 'en' && r.textoEn ? 'en' : 'es'}>“{lang === 'en' && r.textoEn ? r.textoEn : r.texto}”</blockquote>
               <footer>
                 <strong>{r.url ? <a href={r.url} target="_blank" rel="noopener">{r.autor}</a> : r.autor}</strong>
                 <span>{r.cargo} · {formatoFecha.format(new Date(r.fecha))}</span>
@@ -480,6 +480,7 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
 
   /* ---- Reseñas ---- */
   .resenas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; list-style: none; }
+  .resenas--unica { grid-template-columns: minmax(0, 1fr); max-width: 780px; }
   .resena blockquote { margin: 0; font-family: var(--serif); font-size: 1.5rem; line-height: 1.25; }
   .resena__estrellas { color: var(--oliva); letter-spacing: 0.12em; }
   .resena__estrellas span { color: var(--linea-fuerte); }

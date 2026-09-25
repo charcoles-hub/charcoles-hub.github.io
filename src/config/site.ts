@@ -136,10 +136,18 @@ export interface Resena {
   fecha: string;
 }
 
-// MISMA REGLA QUE LOS PROYECTOS: aquí solo entran reseñas REALES, con permiso
-// explícito de quien las escribe. Nada inventado, ni «de ejemplo». Mientras
-// esté vacío, la sección enseña la invitación a escribir y ninguna tarjeta.
-export const RESENAS: Resena[] = [];
+// Solo se publican reseñas reales con permiso explícito de quien las escribe.
+// El formulario no añade reseñas automáticamente: se revisan antes de incluirlas aquí.
+export const RESENAS: Resena[] = [
+  {
+    texto: 'Muy buen trato y gran profesionalidad. Sergio es una persona muy atenta, cercana y pendiente de todos los detalles que necesita tu web. Siempre dispuesto a ayudarte y a buscar la mejor solución. Muy satisfecha con el trabajo realizado y, sobre todo, con los resultados que estamos obteniendo. ¡Totalmente recomendable!',
+    autor: 'Diana',
+    cargo: 'Fisioymés - Fisioterapia en Sant Cugat',
+    estrellas: 5,
+    url: 'https://fisioymes.com/es/',
+    fecha: '2026-09-24',
+  },
+];
 
 // Web3Forms y NO FormSubmit: Protección Digital de Movistar bloquea
 // formsubmit.co como phishing (verificado el 13-09-2026 desde la línea de
@@ -339,4 +347,3 @@ export const contenido = {
 } as const;
 
 export type Contenido = (typeof contenido)[Lang];
-

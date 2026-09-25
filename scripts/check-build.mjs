@@ -46,12 +46,8 @@ for (const file of pages) {
     const src = attrs.match(/\bsrc="([^"]+)"/)?.[1];
     if (src?.startsWith('/')) assert.ok(existsSync(join(dist, src)), `Missing image ${src}`);
   }
-  // La valoración estructurada debe corresponder a la reseña publicada.
-  const rated = nodes(html).filter((n) => n.aggregateRating);
-  assert.equal(rated.length, 1, `One rated business: ${file}`);
-  assert.equal(rated[0].aggregateRating.reviewCount, 1, `Real review count: ${file}`);
-  assert.equal(rated[0].aggregateRating.ratingValue, '5.0', `Real review rating: ${file}`);
-  assert.equal(rated[0].review?.[0]?.reviewBody?.startsWith('Muy buen trato y gran profesionalidad.'), true, `Real review text: ${file}`);
+  // Google no admite estrellas autogestionadas para ProfessionalService.
+  assert.ok(nodes(html).every((n) => !n.aggregateRating && !n.review), `No self-serving review markup: ${file}`);
 }
 
 // Recursos compartidos: fuentes precargadas, iconos e imagen para redes.
@@ -99,6 +95,7 @@ for (const [lang, path] of [['es', 'index.html'], ['ca', 'ca/index.html'], ['en'
   assert.equal((html.match(/<script(?! type="application\/ld\+json")/g) || []).length, 0, `Home must work without runtime JavaScript: ${lang}`);
   assert.match(html, /id="resenas"/, `Published reviews section: ${lang}`);
   assert.ok(html.includes('Muy buen trato y gran profesionalidad.'), `Diana's review on home: ${lang}`);
+  assert.doesNotMatch(html, /<meta name="robots" content="noindex"/, `Published review is indexable on home: ${lang}`);
 }
 
 for (const [lang, path, thanks] of [
@@ -120,6 +117,7 @@ for (const campo of ['Web', 'Nombre', 'email']) assert.match(revision, new RegEx
 assert.match(readFileSync(join(dist, 'gracias-revision/index.html'), 'utf8'), /<meta name="robots" content="noindex"/, 'Thanks page is noindex');
 
 const sitemap = readFileSync(join(dist, 'sitemap-0.xml'), 'utf8');
+for (const portada of ['/', '/ca/', '/en/']) assert.ok(sitemap.includes(`https://sergiogarciaweb.com${portada}<`), `Sitemap lists ${portada}`);
 for (const excluida of ['/gracias/', '/gracias-revision/', '/resena/', '/en/review/', '/ca/ressenya/', '/en/thanks/', '/ca/gracies/']) {
   assert.ok(!sitemap.includes(`https://sergiogarciaweb.com${excluida}<`), `Sitemap must skip noindex page ${excluida}`);
 }

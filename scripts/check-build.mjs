@@ -51,7 +51,7 @@ for (const file of pages) {
 }
 
 // Recursos compartidos: fuentes precargadas, iconos e imagen para redes.
-for (const asset of ['fonts/inter-latin-wght.woff2', 'fonts/instrument-serif-latin.woff2', 'fonts/instrument-serif-latin-italic.woff2', 'favicon.svg', 'favicon.ico', 'apple-touch-icon.png', 'og.jpg']) {
+for (const asset of ['fonts/archivo-latin-var.woff2', 'favicon.svg', 'favicon.ico', 'apple-touch-icon.png', 'og.jpg']) {
   assert.ok(existsSync(join(dist, asset)), `Missing asset: ${asset}`);
 }
 assert.ok(statSync(join(dist, 'og.jpg')).size < 300_000, 'og.jpg must stay under 300 KB or WhatsApp may skip the preview');
@@ -92,7 +92,13 @@ for (const [lang, path] of [['es', 'index.html'], ['ca', 'ca/index.html'], ['en'
   assert.ok(html.includes('tel:+34620650597'), `Phone: ${lang}`);
   assert.ok(!html.includes('/presupuesto-web/'), `No calculator link: ${lang}`);
   assert.doesNotMatch(html, /(?:\d[\d.,]*\s*€|€\s*\d)/, `No fixed euro amount: ${lang}`);
-  assert.equal((html.match(/<script(?! type="application\/ld\+json")/g) || []).length, 0, `Home must work without runtime JavaScript: ${lang}`);
+  // Mejora progresiva: el JS solo añade movimiento. Scripts permitidos: datos
+  // estructurados, módulos diferidos y el marcador en línea de «hay movimiento».
+  const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];
+  const noPermitidos = scripts.filter(([, attrs, cuerpo]) => !/type="(application\/ld\+json|module)"/.test(attrs) && !/classList\.add\('mov'\)/.test(cuerpo));
+  assert.equal(noPermitidos.length, 0, `Only structured data, deferred modules and the motion flag may run: ${lang}`);
+  assert.doesNotMatch(html, /<html[^>]*class="[^"]*\bmov\b/, `Content must be visible without JavaScript: ${lang}`);
+  assert.doesNotMatch(html, /style="[^"]*(visibility:\s*hidden|opacity:\s*0[;"])/, `No content hidden in the HTML: ${lang}`);
   assert.match(html, /id="resenas"/, `Published reviews section: ${lang}`);
   assert.ok(html.includes('Muy buen trato y gran profesionalidad.'), `Diana's review on home: ${lang}`);
   assert.doesNotMatch(html, /<meta name="robots" content="noindex"/, `Published review is indexable on home: ${lang}`);

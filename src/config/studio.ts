@@ -20,6 +20,10 @@ const es = {
   ctaPrincipal: 'Pide presupuesto sin compromiso',
   ctaSecundario: { texto: 'Revisión gratuita de tu web', href: '/revision-web-gratis/' },
   datos: ['Presupuesto por escrito en 24 h', 'Web y dominio a tu nombre', 'Sin intermediarios'],
+  datosTitulo: 'Cómo trabajo',
+  fondoPausar: 'Pausar el fondo animado',
+  fondoReanudar: 'Reanudar el fondo animado',
+  cursorVer: 'Ver',
   heroChip: 'Proyecto real',
   heroIdiomas: 'Castellano · Català',
   heroPie: ['Fisioymés', 'Clínica de fisioterapia en Sant Cugat del Vallès'],
@@ -56,6 +60,7 @@ const es = {
       'Propuestas de diseño propias para distintos sectores. Son conceptos, no encargos de clientes: muestran las decisiones que tomaría con un negocio como el tuyo.',
     marca: 'Concepto',
     todos: 'Ver todos los conceptos',
+    mas: 'Más conceptos',
   },
 
   sectoresEtiqueta: 'Sectores',
@@ -73,6 +78,7 @@ const es = {
     ['Mantenimiento', 'Alojamiento, copias de seguridad y tus cambios hechos por mí, con un plan ajustado a lo que tu web necesita de verdad.', '/mantenimiento-web/'],
   ],
   serviciosVer: 'Más información',
+  serviciosIdioma: '',
 
   revision: {
     etiqueta: 'Revisión gratuita',
@@ -145,6 +151,10 @@ const en: typeof es = {
   ctaPrincipal: 'Get a quote, no obligation',
   ctaSecundario: { texto: 'See my work', href: '#trabajo' },
   datos: ['A written quote within 24 hours', 'Website and domain in your name', 'No middlemen'],
+  datosTitulo: 'How I work',
+  fondoPausar: 'Pause the animated background',
+  fondoReanudar: 'Resume the animated background',
+  cursorVer: 'View',
   heroChip: 'Client project',
   heroIdiomas: 'Spanish · Catalan',
   heroPie: ['Fisioymés', 'Physical therapy clinic in Sant Cugat del Vallès'],
@@ -181,6 +191,7 @@ const en: typeof es = {
       'Independent concepts exploring different sectors. These are design proposals, not client commissions: they show the decisions I would make for a business like yours.',
     marca: 'Concept',
     todos: 'See all concepts',
+    mas: 'More concepts',
   },
 
   sectoresEtiqueta: '',
@@ -197,6 +208,7 @@ const en: typeof es = {
     ['Maintenance', 'Hosting, backups and content changes made by me, with a plan that fits what your website actually needs.', '/mantenimiento-web/'],
   ],
   serviciosVer: 'More information (Spanish)',
+  serviciosIdioma: 'in Spanish',
 
   revision: { etiqueta: '', titulo: '', texto: '', cta: '' },
 
@@ -264,6 +276,10 @@ const ca: typeof es = {
   ctaPrincipal: 'Demana pressupost sense compromís',
   ctaSecundario: { texto: 'Revisió gratuïta del teu web', href: '/revision-web-gratis/' },
   datos: ['Pressupost per escrit en 24 h', 'Web i domini al teu nom', 'Sense intermediaris'],
+  datosTitulo: 'Com treballo',
+  fondoPausar: 'Pausar el fons animat',
+  fondoReanudar: 'Reprendre el fons animat',
+  cursorVer: 'Veure',
   heroChip: 'Projecte real',
   heroIdiomas: 'Castellano · Català',
   heroPie: ['Fisioymés', 'Clínica de fisioteràpia a Sant Cugat del Vallès'],
@@ -300,6 +316,7 @@ const ca: typeof es = {
       'Propostes de disseny pròpies per a diferents sectors. Són conceptes, no encàrrecs de clients: mostren les decisions que prendria amb un negoci com el teu.',
     marca: 'Concepte',
     todos: 'Veure tots els conceptes',
+    mas: 'Més conceptes',
   },
 
   sectoresEtiqueta: 'Sectors',
@@ -317,6 +334,7 @@ const ca: typeof es = {
     ['Manteniment', 'Allotjament, còpies de seguretat i els teus canvis fets per mi, amb un pla ajustat al que el teu web necessita de debò.', '/mantenimiento-web/'],
   ],
   serviciosVer: 'Més informació (castellà)',
+  serviciosIdioma: 'en castellà',
 
   revision: {
     etiqueta: 'Revisió gratuïta',

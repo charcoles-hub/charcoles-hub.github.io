@@ -3,8 +3,8 @@ import { Image } from 'astro:assets';
 import { contenido, rutas, RESENAS, type Lang } from '../config/site';
 import { studio } from '../config/studio';
 import { SECTORES } from '../config/sectores';
-import { COMUN, enfasis, whatsapp } from '../config/comun';
-import { poster, fotoSergio } from '../config/posters';
+import { COMUN, plano, whatsapp } from '../config/comun';
+import { poster } from '../config/posters';
 import Cabecera from './Cabecera.astro';
 import Contacto from './Contacto.astro';
 import Pie from './Pie.astro';
@@ -15,168 +15,203 @@ const { lang } = Astro.props as { lang: Lang };
 const t = studio[lang];
 const c = contenido[lang];
 const fisio = poster('fisioymes-full');
+const fisioMovil = poster('fisioymes-movil');
 const wa = whatsapp(COMUN[lang].waTexto);
 const conSectores = lang !== 'en';
 const hreflangEs = lang === 'es' ? undefined : 'es';
 const hayResenas = RESENAS.length > 0;
 const formatoFecha = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : lang === 'ca' ? 'ca-ES' : 'es-ES', { month: 'long', year: 'numeric' });
 const nav = t.nav.map(([texto, href]) => ({ texto, href }));
+const [abre, cierra] = lang === 'en' ? ['“', '”'] : ['«', '»'];
+
+// Conceptos con captura. En castellano y catalán, uno por sector (enlazan a la
+// página del sector); en inglés, los conceptos en inglés (enlazan a la demo).
+// Todos se declaran conceptos: el único cliente real es Fisioymés.
+const tarjetas = conSectores
+  ? SECTORES.map((s) => ({ href: `/${s.slug}/`, titulo: s.nombre, demo: s.demo.nombre, imagen: poster(s.demo.slug), externo: false }))
+  : c.proyectos.map((p) => ({ href: p.url, titulo: p.rubro.split(' · ')[0], demo: p.nombre, imagen: poster(p.slug), externo: true }));
+const enTarjetas = new Set(conSectores ? SECTORES.map((s) => s.demo.slug) : c.proyectos.map((p) => p.slug));
+const otrosConceptos = c.proyectos.filter((p) => !enTarjetas.has(p.slug));
 ---
 
-<Cabecera lang={lang} nav={nav} idiomas={rutas} />
+<Cabecera lang={lang} nav={nav} idiomas={rutas} sobre />
 
 <main id="contenido">
-  <section class="portada wrap" aria-labelledby="titulo-portada">
-    <div class="portada__texto">
-      <p class="disponible entra"><span class="punto" aria-hidden="true"></span>{t.disponible}</p>
-      <h1 id="titulo-portada" class="titulo-xl entra" style="--orden:1" set:html={enfasis(t.h1)} />
-      <p class="entradilla entra" style="--orden:2">{t.intro}</p>
-      <div class="portada__acciones entra" style="--orden:3">
-        <a class="boton boton--oscuro" href={wa}><Whatsapp />{t.ctaPrincipal}</a>
-        <a class="boton boton--borde" href={t.ctaSecundario.href} hreflang={t.ctaSecundario.href.startsWith('/') ? hreflangEs : undefined}>
-          {t.ctaSecundario.texto}<span class:list={['icono', { 'icono--abajo': t.ctaSecundario.href.startsWith('#') }]} aria-hidden="true"></span>
-        </a>
+  {/* 1 · Portada: la ciudad en tiempo real y el titular enorme */}
+  <section class="portada" data-portada aria-labelledby="titulo-portada">
+    <canvas class="portada__ciudad" data-noche aria-hidden="true"></canvas>
+    <div class="portada__velo" aria-hidden="true"></div>
+    <div class="wrap portada__contenido" data-portada-contenido>
+      <h1 id="titulo-portada" class="titulo-xl portada__titulo" data-titulo-portada>{plano(t.h1)}</h1>
+      <div class="portada__pie">
+        <p class="portada__intro" data-sube>{t.intro}</p>
+        <div class="portada__acciones" data-sube>
+          <a class="boton boton--oscuro" href={wa} data-iman><Whatsapp />{t.ctaPrincipal}</a>
+          <a class="boton boton--borde" href={t.ctaSecundario.href} hreflang={t.ctaSecundario.href.startsWith('/') ? hreflangEs : undefined}>
+            {t.ctaSecundario.texto}{t.ctaSecundario.href.startsWith('#') && <span class="icono icono--abajo" aria-hidden="true"></span>}
+          </a>
+        </div>
+        <ul class="portada__datos" data-sube aria-label={t.datosTitulo}>
+          {t.datos.map((d) => <li><span class="icono icono--check" aria-hidden="true"></span>{d}</li>)}
+        </ul>
       </div>
-      <ul class="portada__datos entra" style="--orden:4">
-        {t.datos.map((d) => <li><span class="icono icono--check" aria-hidden="true"></span>{d}</li>)}
-      </ul>
     </div>
-
-    <a class="portada__visual entra" style="--orden:2" href="#caso-fisioymes">
-      <div class="marco">
-        <div class="marco__barra" aria-hidden="true"><i></i><i></i><i></i><span>fisioymes.com</span></div>
-        <Image src={fisio} width={1120} height={760} fit="cover" position="top" format="webp" quality={82} widths={[560, 840, 1120]} sizes="(min-width: 1000px) 46vw, 92vw" alt="" loading="eager" fetchpriority="high" />
-      </div>
-      <span class="chip portada__chip portada__chip--arriba" aria-hidden="true"><span class="punto"></span>{t.heroChip}</span>
-      <span class="chip portada__chip portada__chip--abajo" aria-hidden="true">{t.heroIdiomas}</span>
-      <span class="portada__pie"><span><strong>{t.heroPie[0]}</strong>{t.heroPie[1]}</span><span class="icono icono--abajo" aria-hidden="true"></span></span>
-    </a>
+    <button class="portada__pausa" type="button" data-pausa-fondo hidden aria-pressed="false" data-pausar={t.fondoPausar} data-reanudar={t.fondoReanudar}>
+      <span class="portada__pausa-icono" aria-hidden="true"></span><span class="sr-only" data-texto>{t.fondoPausar}</span>
+    </button>
   </section>
 
-  <section class="seccion" id="trabajo" aria-labelledby="titulo-trabajo">
-    <div class="wrap">
-      <div class="cabeza" data-revela>
-        <div>
-          <p class="etiqueta etiqueta--linea">{t.trabajoEtiqueta}</p>
-          <h2 id="titulo-trabajo" class="titulo-l" set:html={enfasis(t.trabajoTitulo)} />
-        </div>
-        <p>{t.trabajoIntro}</p>
-      </div>
+  {/* 2 · Manifiesto y caso real anclado */}
+  <section class="trabajo" id="trabajo" aria-labelledby="titulo-trabajo">
+    <div class="wrap manifiesto">
+      <h2 id="titulo-trabajo" class="titulo-l manifiesto__titulo" data-enciende>{plano(t.trabajoTitulo)}</h2>
+      <p class="manifiesto__texto">{t.trabajoIntro}</p>
+    </div>
 
-      <article class="caso" id="caso-fisioymes" aria-labelledby="titulo-caso">
-        <div class="caso__visual" data-revela>
-          <a class="marco caso__marco" href={c.destacado.url} hreflang={hreflangEs} aria-label={`${t.caso.verCaso}: Fisioymés`}>
-            <div class="marco__barra" aria-hidden="true"><i></i><i></i><i></i><span>fisioymes.com</span></div>
-            <div class="caso__pantalla">
-              <Image src={fisio} width={1100} format="webp" quality={72} widths={[560, 820, 1100]} sizes="(min-width: 1000px) 50vw, 92vw" alt={t.caso.alt} loading="lazy" />
+    <div class="caso-anclado" data-caso>
+      <article class="wrap caso" id="caso-fisioymes" aria-labelledby="titulo-caso">
+        <a class="dispositivos" href={c.destacado.url} hreflang={hreflangEs} aria-label={`${t.caso.verCaso}: Fisioymés`} data-cursor={t.cursorVer}>
+          <div class="portatil">
+            <div class="portatil__tapa">
+              <div class="portatil__pantalla" data-pantalla>
+                <Image src={fisio} width={1100} format="webp" quality={74} widths={[700, 1100]} sizes="(min-width: 1000px) 46vw, 88vw" alt={t.caso.alt} loading="lazy" />
+              </div>
             </div>
-          </a>
-          <p class="caso__pista">{t.caso.pista}</p>
-        </div>
+            <div class="portatil__base" aria-hidden="true"></div>
+          </div>
+          <div class="telefono">
+            <div class="telefono__pantalla" data-pantalla>
+              <Image src={fisioMovil} width={390} format="webp" quality={74} widths={[390]} sizes="220px" alt="" loading="lazy" />
+            </div>
+          </div>
+        </a>
         <div class="caso__texto">
-          <p class="etiqueta">{t.caso.etiqueta}</p>
+          <p class="etiqueta">{t.caso.etiqueta.split(' · ')[0]}: Fisioymés</p>
           <h3 id="titulo-caso" class="titulo-m">{t.caso.titulo}</h3>
-          <p class="caso__intro">{t.caso.intro}</p>
+          <div class="caso__recorrido">
+            <span class="caso__progreso" data-caso-progreso aria-hidden="true"></span>
+            <ol class="caso__pasos">
+              {t.caso.pasos.map(([titulo, texto]) => <li data-paso><h4>{titulo}</h4><p>{texto}</p></li>)}
+            </ol>
+          </div>
           <div class="caso__enlaces">
-            <a class="boton boton--oscuro" href={c.destacado.url} hreflang={hreflangEs}>{t.caso.verCaso}<span class="icono" aria-hidden="true"></span></a>
+            <a class="boton boton--oscuro" href={c.destacado.url} hreflang={hreflangEs} data-iman>{t.caso.verCaso}</a>
             <a class="enlace" href="https://fisioymes.com/" target="_blank" rel="noopener">{t.caso.verWeb}<span class="icono" aria-hidden="true"></span></a>
           </div>
         </div>
       </article>
-
-      {hayResenas && (
-        <section class="testimonio seccion--oscura" id="resenas" aria-labelledby="titulo-resenas">
-          <div class="testimonio__cabeza">
-            <div>
-              <p class="etiqueta etiqueta--linea">{c.resenas.eyebrow}</p>
-              <h3 id="titulo-resenas" class="titulo-m">{c.resenas.titular}</h3>
-            </div>
-            <p>{c.resenas.texto}</p>
-          </div>
-          <ul class:list={['resenas', { 'resenas--unica': RESENAS.length === 1 }]}>
-            {RESENAS.map((r) => (
-              <li class="resena">
-                <p class="resena__estrellas" aria-label={c.resenas.deCinco(r.estrellas)}>{'★'.repeat(r.estrellas)}<span aria-hidden="true">{'★'.repeat(5 - r.estrellas)}</span></p>
-                <blockquote lang={lang === 'en' && r.textoEn ? 'en' : 'es'}>“{lang === 'en' && r.textoEn ? r.textoEn : r.texto}”</blockquote>
-                <footer>
-                  <strong>{r.url ? <a href={r.url} target="_blank" rel="noopener">{r.autor}</a> : r.autor}</strong>
-                  <span>{r.cargo} · {formatoFecha.format(new Date(r.fecha))}</span>
-                </footer>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <details class="conceptos-resumen">
-        <summary>{t.conceptos.etiqueta}: {t.conceptos.titulo}<span class="icono icono--mas" aria-hidden="true"></span></summary>
-        <p>{t.conceptos.intro}</p>
-        <ul>
-          {c.proyectos.map((p) => (
-            <li><a href={p.url} target="_blank" rel="noopener">{p.nombre}<small>{p.rubro.split(' · ')[0]} · {t.conceptos.marca}</small><span class="icono" aria-hidden="true"></span></a></li>
-          ))}
-        </ul>
-      </details>
     </div>
   </section>
 
-  {conSectores && (
-    <section class="seccion seccion--tinte" id="sectores" aria-labelledby="titulo-sectores">
+  {/* 3 · La reseña, que se enciende palabra a palabra */}
+  {hayResenas && (
+    <section class="resena-grande" id="resenas" aria-labelledby="titulo-resenas">
       <div class="wrap">
-        <div class="cabeza" data-revela>
-          <div>
-            <p class="etiqueta etiqueta--linea">{t.sectoresEtiqueta}</p>
-            <h2 id="titulo-sectores" class="titulo-l" set:html={enfasis(t.sectoresTitulo)} />
-          </div>
-          <p>{t.sectoresIntro}</p>
-        </div>
-        <ul class="sectores-resumen">
-          {SECTORES.map((s) => (
-            <li><a href={`/${s.slug}/`} hreflang={hreflangEs}>{s.nombre}<span class="icono" aria-hidden="true"></span></a></li>
-          ))}
-        </ul>
+        <h2 id="titulo-resenas" class="etiqueta">{c.resenas.titular}</h2>
+        {RESENAS.map((r) => (
+          <figure class="resena">
+            <blockquote lang={lang === 'en' && r.textoEn ? 'en' : 'es'}>
+              <p class="cita resena__texto" data-enciende>{abre}{lang === 'en' && r.textoEn ? r.textoEn : r.texto}{cierra}</p>
+            </blockquote>
+            <figcaption>
+              <span class="resena__estrellas" role="img" aria-label={c.resenas.deCinco(r.estrellas)}>{'★'.repeat(r.estrellas)}</span>
+              <strong>{r.url ? <a href={r.url} target="_blank" rel="noopener">{r.autor}</a> : r.autor}</strong>
+              <span>{r.cargo}</span>
+              <span>{formatoFecha.format(new Date(r.fecha))}</span>
+            </figcaption>
+          </figure>
+        ))}
+        <p class="resena__nota">{c.resenas.texto}</p>
       </div>
     </section>
   )}
 
-  <section class="seccion" id="servicios" aria-labelledby="titulo-servicios">
-    <div class="wrap">
-      <div class="cabeza" data-revela>
-        <div>
-          <p class="etiqueta etiqueta--linea">{t.serviciosEtiqueta}</p>
-          <h2 id="titulo-servicios" class="titulo-l" set:html={enfasis(t.serviciosTitulo)} />
+  {/* 4 · Conceptos por sector: galería horizontal */}
+  <section class="galeria" id={conSectores ? 'sectores' : 'conceptos'} data-galeria aria-labelledby="titulo-galeria">
+    <div class="galeria__marco">
+      <div class="wrap galeria__cabeza">
+        <h2 id="titulo-galeria" class="titulo-l">{plano(conSectores ? t.sectoresTitulo : t.conceptos.titulo)}</h2>
+        <div class="galeria__textos">
+          <p>{conSectores ? t.sectoresIntro : t.conceptos.intro}</p>
+          {conSectores && <p class="galeria__aviso">{t.conceptos.intro}</p>}
         </div>
       </div>
-      <ul class="servicios">
-        {t.servicios.map(([titulo, texto, href], i) => (
-          <li data-revela>
-            <a class="tarjeta servicio" href={href} hreflang={hreflangEs}>
-              <span class="servicio__num">0{i + 1}</span>
-              <h3 class="titulo-m">{titulo}</h3>
-              <p>{texto}</p>
-              <span class="servicio__mas">{t.serviciosVer}<span class="icono" aria-hidden="true"></span></span>
+      <ul class="galeria__pista" data-pista>
+        {tarjetas.map((s) => (
+          <li class="pieza">
+            <a class="pieza__enlace" href={s.href} hreflang={s.externo ? undefined : hreflangEs} target={s.externo ? '_blank' : undefined} rel={s.externo ? 'noopener' : undefined} data-cursor={t.cursorVer}>
+              <span class="marco pieza__marco">
+                <Image src={s.imagen} width={960} height={600} fit="cover" position="top" format="webp" quality={72} widths={[480, 720, 960]} sizes="(min-width: 1000px) 42vw, 82vw" alt="" loading="lazy" />
+              </span>
+              <span class="pieza__pie">
+                <span class="pieza__titulo">{s.titulo}</span>
+                <span class="pieza__demo">{t.conceptos.marca}: {s.demo}</span>
+              </span>
             </a>
           </li>
         ))}
       </ul>
     </div>
   </section>
+  {otrosConceptos.length > 0 && (
+    <div class="wrap conceptos__mas">
+      <p>
+        <strong>{t.conceptos.mas}:</strong>{' '}
+        {otrosConceptos.map((p, i) => (
+          <>
+            <a href={p.url} target="_blank" rel="noopener">{p.nombre}</a> <span class="conceptos__rubro">({p.rubro.split(' · ')[0].toLowerCase()})</span>{i < otrosConceptos.length - 1 ? ', ' : '.'}
+          </>
+        ))}
+      </p>
+    </div>
+  )}
 
-  <section class="seccion" id="sobre-mi" aria-labelledby="titulo-sobre">
-    <div class="wrap sobre">
-      <div class="sobre__texto" data-revela>
-        <p class="etiqueta etiqueta--linea">{t.sobreEtiqueta}</p>
-        <h2 id="titulo-sobre" class="titulo-l" set:html={enfasis(t.sobreTitulo)} />
-        <p class="entradilla">{t.sobreTexto}</p>
-        <a class="enlace" href={`mailto:${c.site.email}`}>{c.site.email}<span class="icono" aria-hidden="true"></span></a>
+  {/* 5 · Servicios: índice tipográfico */}
+  <section class="seccion servicios" id="servicios" aria-labelledby="titulo-servicios">
+    <div class="wrap">
+      <div class="cabeza">
+        <h2 id="titulo-servicios" class="titulo-l">{plano(t.serviciosTitulo)}</h2>
       </div>
-      <div class="sobre__lado">
-        {fotoSergio && (
-          <Image class="sobre__foto" src={fotoSergio} width={640} height={760} fit="cover" format="webp" widths={[320, 640]} sizes="(min-width: 900px) 30vw, 80vw" alt={t.sobreFoto} loading="lazy" />
-        )}
-        <dl class="credenciales">
-          {t.credenciales.map(([titulo, texto]) => <div data-revela><dt>{titulo}</dt><dd>{texto}</dd></div>)}
-        </dl>
+      <ul class="servicios__lista">
+        {t.servicios.map(([titulo, texto, href]) => (
+          <li class="servicio">
+            <h3 class="servicio__titulo"><a href={href} hreflang={hreflangEs}>{titulo}</a></h3>
+            <p class="servicio__texto">{texto}{t.serviciosIdioma && <span class="servicio__idioma"> ({t.serviciosIdioma})</span>}</p>
+            <span class="icono icono--derecha servicio__flecha" aria-hidden="true"></span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* 6 · Proceso: tarjetas que se apilan (secuencia real, va numerada) */}
+  <section class="seccion proceso" id="proceso" aria-labelledby="titulo-proceso">
+    <div class="wrap">
+      <div class="cabeza">
+        <h2 id="titulo-proceso" class="titulo-l">{plano(t.procesoTitulo)}</h2>
+      </div>
+      <ol class="proceso__lista">
+        {t.proceso.map(([titulo, texto], i) => (
+          <li class="paso" data-apila style={`--i:${i}`}>
+            <span class="paso__num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="titulo-m">{titulo}</h3>
+            <p>{texto}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {/* 7 · Sobre mí */}
+  <section class="seccion sobre" id="sobre-mi" aria-labelledby="titulo-sobre">
+    <div class="wrap sobre__rejilla">
+      <h2 id="titulo-sobre" class="titulo-l">{plano(t.sobreTitulo)}</h2>
+      <div>
+        <p class="cita sobre__manifiesto" data-enciende>{t.sobreTexto}</p>
+        <ol class="trayectoria">
+          {t.credenciales.map(([titulo, texto]) => <li><h3>{titulo}</h3><p>{texto}</p></li>)}
+        </ol>
+        <a class="enlace sobre__email" href={`mailto:${c.site.email}`}>{c.site.email}</a>
       </div>
     </div>
   </section>
@@ -188,127 +223,213 @@ const nav = t.nav.map(([texto, href]) => ({ texto, href }));
 <BarraMovil lang={lang} />
 
 <style>
-  /* ---- Portada ---- */
+  /* ---- 1 · Portada ---- */
   .portada {
-    display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr); gap: 40px clamp(40px, 5vw, 80px);
-    align-items: center; padding-block: clamp(48px, 7vw, 104px) clamp(64px, 8vw, 120px);
+    position: relative; isolation: isolate; overflow: hidden;
+    display: grid; align-items: end;
+    min-height: max(100svh, 700px);
+    padding-block: 150px clamp(36px, 6vh, 72px);
+    background: radial-gradient(120% 80% at 50% 0%, #11141f, var(--noche) 70%);
   }
-  .disponible {
-    display: inline-flex; align-items: center; gap: 10px; margin-bottom: 28px;
-    padding: 7px 14px 7px 12px; border: 1px solid var(--linea); border-radius: 999px; background: var(--blanco);
-    font-size: 0.85rem; font-weight: 500; color: var(--tinta-2);
+  .portada__ciudad { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; opacity: 0; transition: opacity 1.6s ease; }
+  :global(.noche-viva) .portada__ciudad { opacity: 1; }
+  .portada__velo {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(180deg, rgb(8 9 13 / 0.6) 0%, transparent 26%, transparent 42%, rgb(8 9 13 / 0.84) 76%, var(--noche) 100%);
   }
-  .portada h1 { font-size: clamp(3.2rem, 1.2rem + 5.6vw, 6.4rem); max-width: 10.5em; }
-  .portada .entradilla { margin-top: 28px; max-width: 33em; }
-  .portada__acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
-  .portada__datos { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 30px; list-style: none; font-size: 0.92rem; color: var(--tenue); }
-  .portada__datos li { display: flex; align-items: center; gap: 8px; }
-  .portada__datos .icono { color: var(--oliva); }
-
-  .portada__visual { position: relative; display: block; padding: 28px 0 44px 24px; }
-  .portada__visual::before {
-    content: ''; position: absolute; inset: 0 -4% 12% 10%; z-index: -1; border-radius: 32px;
-    background: radial-gradient(120% 90% at 80% 10%, #e3ead2 0%, var(--papel-3) 45%, transparent 75%);
-  }
-  .portada__visual .marco { transform: rotate(-1.6deg); transition: transform 0.8s var(--suave), box-shadow 0.8s var(--suave); }
-  .portada__visual:hover .marco { transform: rotate(0deg) translateY(-6px); }
-  .portada__visual img { aspect-ratio: 1120 / 760; object-fit: cover; object-position: top; }
-  .portada__chip { position: absolute; z-index: 2; }
-  .portada__chip--arriba { top: 6px; left: 0; }
-  .portada__chip--abajo { right: -8px; bottom: 76px; }
+  .portada__titulo { max-width: 11em; }
   .portada__pie {
-    position: absolute; left: 24px; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    font-size: 0.88rem; color: var(--tenue);
+    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 4.2fr) minmax(0, 2.8fr); gap: 28px 48px; align-items: end;
+    margin-top: clamp(28px, 4.5vh, 56px); padding-top: 28px; border-top: 1px solid rgb(237 233 225 / 0.16);
   }
-  .portada__pie strong { margin-right: 8px; color: var(--tinta); font-weight: 600; }
-
-  @media (max-width: 999px) {
-    .portada { grid-template-columns: minmax(0, 1fr); }
-    .portada__visual { max-width: 680px; }
+  .portada__intro { max-width: 31em; color: var(--luz-2); font-size: clamp(1.02rem, 0.95rem + 0.3vw, 1.15rem); }
+  .portada__acciones { display: flex; flex-wrap: wrap; gap: 12px; }
+  .portada__datos { list-style: none; display: grid; gap: 8px; font-size: 0.95rem; color: var(--luz-2); }
+  .portada__datos li { display: flex; align-items: center; gap: 10px; }
+  .portada__datos .icono { color: var(--farola); }
+  .portada__pausa {
+    position: absolute; z-index: 3; top: 104px; right: var(--margen);
+    display: grid; place-items: center; width: 44px; height: 44px;
+    border: 1px solid rgb(237 233 225 / 0.22); border-radius: 50%; background: rgb(8 9 13 / 0.35); color: var(--luz-2);
+    transition: border-color 0.2s ease, color 0.2s ease;
   }
-  @media (max-width: 600px) {
-    .disponible { margin-bottom: 22px; font-size: 0.8rem; }
+  .portada__pausa[hidden] { display: none; }
+  .portada__pausa:hover { border-color: var(--luz); color: var(--luz); }
+  .portada__pausa-icono { width: 12px; height: 12px; background: linear-gradient(to right, currentColor 0 35%, transparent 35% 65%, currentColor 65%); }
+  .portada__pausa[aria-pressed='true'] .portada__pausa-icono { background: currentColor; clip-path: polygon(15% 0, 100% 50%, 15% 100%); }
+  @media (max-width: 1100px) {
+    .portada__pie { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .portada__intro { grid-column: 1 / -1; }
+  }
+  @media (max-width: 899px) { .portada__pausa { top: 128px; } }
+  @media (max-width: 640px) {
+    .portada { padding-top: 140px; }
+    .portada__pie { grid-template-columns: minmax(0, 1fr); }
     .portada__acciones .boton { width: 100%; }
-    .portada__visual { padding: 22px 0 40px 8px; }
-    .portada__chip--abajo { right: -4px; bottom: 64px; }
-    .portada__pie { left: 8px; font-size: 0.8rem; }
   }
 
-  /* ---- Caso real ---- */
-  .caso { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 48px clamp(40px, 6vw, 96px); align-items: center; }
-  .caso__marco { display: block; }
-  .caso__pantalla { aspect-ratio: 1100 / 820; overflow: hidden; }
-  .caso__pantalla img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .caso__pantalla img { transition: object-position 9s cubic-bezier(0.45, 0, 0.35, 1); }
-    .caso__marco:hover .caso__pantalla img, .caso__marco:focus-visible .caso__pantalla img { object-position: 50% 100%; transition-duration: 11s; }
+  /* ---- 2 · Manifiesto y caso ---- */
+  .trabajo { position: relative; padding-top: clamp(96px, 12vw, 190px); }
+  .manifiesto { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 28px 64px; margin-bottom: clamp(40px, 6vw, 96px); }
+  .manifiesto__titulo { grid-column: 1 / -1; font-size: clamp(3rem, 1rem + 8vw, 9.4rem); line-height: 0.88; letter-spacing: -0.055em; }
+  .manifiesto__texto { grid-column: 2; max-width: 27em; color: var(--luz-2); font-size: 1.12rem; }
+  @media (max-width: 900px) { .manifiesto { grid-template-columns: 1fr; } .manifiesto__texto { grid-column: 1; } }
+
+  .caso-anclado { display: grid; align-items: center; min-height: 100svh; padding-block: 72px; }
+  .caso { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 48px clamp(40px, 5vw, 100px); align-items: center; }
+  .dispositivos { position: relative; display: block; padding: 0 9% 9% 0; }
+  .portatil__tapa {
+    position: relative; padding: 2.2% 2.2% 3%;
+    border-radius: 22px 22px 8px 8px;
+    background: linear-gradient(180deg, #2b2e37, #15171d);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.09), 0 60px 140px -50px rgb(0 0 0 / 0.95), 0 0 140px -40px rgb(255 178 74 / 0.22);
   }
-  .caso__pista { margin-top: 14px; font-size: 0.85rem; color: var(--tenue); }
-  @media (hover: none) { .caso__pista { display: none; } }
-  .caso__intro { margin-top: 20px; color: var(--tenue); font-size: 1.08rem; }
-  .caso__enlaces { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-top: 30px; }
-  @media (max-width: 900px) { .caso { grid-template-columns: 1fr; } }
+  .portatil__tapa::before { content: ''; position: absolute; top: 0.9%; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #07080b; }
+  .portatil__pantalla, .telefono__pantalla { position: relative; overflow: hidden; background: #fff; }
+  .portatil__pantalla { aspect-ratio: 16 / 10; border-radius: 6px; }
+  .portatil__pantalla :global(img), .telefono__pantalla :global(img) { width: 100%; height: auto; will-change: transform; }
+  .portatil__pantalla::after, .telefono__pantalla::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(118deg, rgb(255 255 255 / 0.1) 0%, transparent 36%);
+  }
+  .portatil__base {
+    position: relative; left: -7%; width: 114%; height: 15px; margin-top: -1px;
+    border-radius: 0 0 26px 26px / 0 0 14px 14px;
+    background: linear-gradient(180deg, #454852, #1d1f25 60%, #0d0e12);
+    box-shadow: 0 34px 40px -22px rgb(0 0 0 / 0.95);
+  }
+  .portatil__base::before { content: ''; position: absolute; top: 0; left: 50%; width: 15%; height: 5px; margin-left: -7.5%; border-radius: 0 0 8px 8px; background: #17181d; }
+  .telefono {
+    position: absolute; right: 0; bottom: 0; width: 25%; padding: 6px;
+    border-radius: 30px; background: linear-gradient(160deg, #353843, #111217);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 44px 90px -30px rgb(0 0 0 / 0.95);
+  }
+  .telefono__pantalla { aspect-ratio: 9 / 19.5; border-radius: 24px; }
+  .telefono__pantalla::before { content: ''; position: absolute; z-index: 2; top: 7px; left: 50%; width: 34%; height: 15px; margin-left: -17%; border-radius: 10px; background: #000; }
+  .dispositivos:focus-visible { outline-offset: 8px; }
 
-  /* ---- Reseña ligada al caso real ---- */
-  .testimonio { margin-top: clamp(48px, 6vw, 80px); padding: clamp(28px, 5vw, 64px); border-radius: 28px; }
-  .testimonio__cabeza { display: flex; align-items: end; justify-content: space-between; gap: 24px 48px; margin-bottom: 28px; }
-  .testimonio__cabeza .etiqueta { margin-bottom: 12px; }
-  .testimonio__cabeza > p { max-width: 22em; color: var(--tenue-oscuro); font-size: 0.92rem; }
-  .resenas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; list-style: none; }
-  .resenas--unica { grid-template-columns: minmax(0, 1fr); }
-  .resena { display: flex; flex-direction: column; gap: 18px; padding-top: 24px; border-top: 1px solid var(--linea-oscura); }
-  .resena blockquote { max-width: 37em; margin: 0; font-family: var(--serif); font-size: clamp(1.55rem, 1.1rem + 1.5vw, 2.25rem); line-height: 1.2; }
-  .resena__estrellas { color: var(--lima); letter-spacing: 0.12em; }
-  .resena__estrellas span { color: var(--linea-oscura); }
-  .resena footer { display: grid; gap: 2px; margin-top: auto; font-size: 0.9rem; }
-  .resena footer span { color: var(--tenue-oscuro); }
-  .resena footer a { text-decoration: underline; text-underline-offset: 3px; }
-  @media (max-width: 760px) { .testimonio__cabeza { display: block; } .testimonio__cabeza > p { margin-top: 12px; } .resenas { grid-template-columns: 1fr; } }
+  .caso__texto .titulo-m { margin-bottom: 30px; }
+  .caso__recorrido { position: relative; padding-left: 28px; border-left: 1px solid var(--linea-fuerte); }
+  .caso__progreso { position: absolute; top: 0; left: -1px; width: 2px; height: 100%; background: var(--farola); transform-origin: top; }
+  .caso__pasos { list-style: none; display: grid; gap: 26px; }
+  .caso__pasos h4 { font-size: 1.12rem; font-weight: 580; letter-spacing: -0.01em; }
+  .caso__pasos p { margin-top: 6px; color: var(--luz-2); }
+  .caso__enlaces { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 28px; margin-top: 36px; }
+  @media (max-width: 999px) {
+    .caso-anclado { min-height: 0; padding-block: 24px 0; }
+    .caso { grid-template-columns: minmax(0, 1fr); }
+  }
 
-  /* ---- Conceptos opcionales ---- */
-  .conceptos-resumen { margin-top: 30px; border-block: 1px solid var(--linea); }
-  .conceptos-resumen summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 18px; font-weight: 600; }
-  .conceptos-resumen summary .icono { transition: transform 0.3s var(--suave); }
-  .conceptos-resumen[open] summary .icono { transform: rotate(45deg); }
-  .conceptos-resumen > p { max-width: 48em; padding-bottom: 18px; color: var(--tenue); font-size: 0.95rem; }
-  .conceptos-resumen ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; list-style: none; padding-bottom: 16px; }
-  .conceptos-resumen a { display: flex; align-items: center; gap: 8px; padding-block: 12px; border-top: 1px solid var(--linea); font-weight: 600; }
-  .conceptos-resumen a:hover { color: var(--oliva); }
-  .conceptos-resumen a .icono { margin-left: auto; }
-  .conceptos-resumen small { color: var(--tenue); font-size: 0.82rem; font-weight: 400; }
-  @media (max-width: 700px) { .conceptos-resumen ul { grid-template-columns: 1fr; } .conceptos-resumen a { flex-wrap: wrap; } }
+  /* ---- 3 · Reseña ---- */
+  .resena-grande { position: relative; padding-block: clamp(110px, 13vw, 200px); }
+  .resena-grande::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(50% 60% at 12% 30%, rgb(255 178 74 / 0.08), transparent 70%);
+  }
+  .resena-grande .etiqueta { margin-bottom: 36px; }
+  .resena { margin: 0; }
+  .resena blockquote { margin: 0; }
+  .resena__texto { max-width: 23em; font-size: clamp(1.7rem, 1.05rem + 2.3vw, 3.4rem); line-height: 1.16; hanging-punctuation: first; }
+  .resena figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 20px; margin-top: 40px; color: var(--luz-2); }
+  .resena__estrellas { color: var(--farola); letter-spacing: 0.14em; }
+  .resena figcaption strong { color: var(--luz); font-weight: 600; }
+  .resena figcaption a { display: inline-block; padding: 12px 4px; margin: -12px -4px; text-decoration: underline; text-decoration-color: var(--farola); text-underline-offset: 5px; }
+  .resena__nota { margin-top: 18px; color: var(--tenue); font-size: 0.95rem; }
 
-  /* ---- Sectores ---- */
-  #sectores { padding-block: clamp(56px, 6vw, 88px); }
-  #sectores .cabeza { margin-bottom: 28px; }
-  .sectores-resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; }
-  .sectores-resumen a { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 72px; padding: 14px 20px; border: 1px solid var(--linea); border-radius: var(--radio-s); background: var(--blanco); font-weight: 600; }
-  .sectores-resumen a:hover { border-color: var(--linea-fuerte); color: var(--oliva); }
-  @media (max-width: 900px) { .sectores-resumen { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 560px) { .sectores-resumen { grid-template-columns: 1fr; } .sectores-resumen a { min-height: 0; } }
+  /* ---- 4 · Galería de conceptos ---- */
+  .galeria { position: relative; overflow: hidden; background: var(--noche-2); }
+  .galeria__marco { display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; gap: clamp(36px, 5vh, 64px); min-height: 100svh; padding-block: clamp(100px, 11vh, 140px) clamp(64px, 8vh, 110px); }
+  .galeria__cabeza { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px 64px; align-items: end; }
+  .galeria__textos { display: grid; gap: 12px; max-width: 32em; color: var(--luz-2); }
+  .galeria__aviso { color: var(--tenue); font-size: 0.95rem; }
+  /* Sin movimiento (o sin JS) la pista se desliza en horizontal; con movimiento,
+     el script la ancla y la mueve con el scroll (.galeria--anclada). */
+  .galeria__pista {
+    display: flex; gap: clamp(20px, 2.4vw, 36px); list-style: none;
+    overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--linea-fuerte) transparent;
+    padding: 0 max(var(--margen), (100vw - var(--ancho)) / 2) 14px; scroll-padding-inline: max(var(--margen), (100vw - var(--ancho)) / 2);
+  }
+  :global(.galeria--anclada) .galeria__pista { width: max-content; overflow: visible; scroll-snap-type: none; padding-bottom: 0; }
+  .pieza { flex: none; width: clamp(300px, 40vw, 640px); scroll-snap-align: start; }
+  .pieza__enlace { display: block; }
+  .pieza__marco { --c: var(--corte-l); }
+  .pieza__marco :global(img) { aspect-ratio: 16 / 10; object-fit: cover; object-position: top; transition: transform 1.2s var(--ease-expo); }
+  .pieza__enlace:hover .pieza__marco :global(img) { transform: scale(1.05); }
+  .pieza__enlace:focus-visible { outline-offset: 6px; }
+  .pieza__pie { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; margin-top: 18px; }
+  .pieza__titulo { font-size: clamp(1.2rem, 1rem + 0.6vw, 1.6rem); font-weight: 520; letter-spacing: -0.02em; transition: color 0.3s ease; }
+  .pieza__enlace:hover .pieza__titulo { color: var(--farola); }
+  .pieza__demo { color: var(--tenue); font-size: 0.92rem; }
+  .conceptos__mas { padding-block: 32px clamp(24px, 4vw, 48px); color: var(--luz-2); }
+  .conceptos__mas a { display: inline-block; padding: 11px 4px; margin: -11px -4px; color: var(--luz); text-decoration: underline; text-decoration-color: var(--farola); text-underline-offset: 5px; }
+  .conceptos__mas a:hover { color: var(--farola); }
+  .conceptos__rubro { color: var(--tenue); }
+  @media (max-width: 999px) {
+    .galeria__marco { min-height: 0; }
+    .galeria__cabeza { grid-template-columns: minmax(0, 1fr); }
+    .galeria__pista { scrollbar-width: none; padding-inline: var(--margen); scroll-padding-inline: var(--margen); padding-bottom: 6px; }
+    .galeria__pista::-webkit-scrollbar { display: none; }
+    .pieza { width: 82vw; }
+  }
 
-  /* ---- Servicios ---- */
-  .servicios { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; list-style: none; }
-  .servicios li { display: flex; }
-  .servicio { width: 100%; min-height: 240px; background: transparent; }
-  .servicio:hover { background: var(--blanco); }
-  .servicio__num { font-size: 0.85rem; font-weight: 600; color: var(--oliva); }
-  .servicio h3 { margin-top: 20px; }
-  .servicio p { max-width: 34em; color: var(--tenue); }
-  .servicio__mas { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 6px; font-size: 0.92rem; font-weight: 600; }
-  .servicio__mas .icono { transition: transform 0.35s var(--suave); }
-  .servicio:hover .servicio__mas .icono { transform: translate(3px, -3px); }
-  @media (max-width: 760px) { .servicios { grid-template-columns: 1fr; } .servicio { min-height: 0; } }
+  /* ---- 5 · Servicios ---- */
+  .servicios__lista { list-style: none; border-top: 1px solid var(--linea); }
+  .servicio {
+    position: relative; isolation: isolate;
+    display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr) 44px; gap: 14px 48px; align-items: center;
+    padding-block: clamp(26px, 3vw, 42px); border-bottom: 1px solid var(--linea);
+  }
+  .servicio::before {
+    content: ''; position: absolute; z-index: -1; inset: 0 calc(-1 * var(--margen));
+    background: linear-gradient(90deg, rgb(255 178 74 / 0.12), rgb(255 178 74 / 0.02) 70%);
+    transform: scaleY(0); transform-origin: bottom; transition: transform 0.7s var(--ease-expo);
+  }
+  .servicio:hover::before, .servicio:focus-within::before { transform: scaleY(1); }
+  .servicio__titulo {
+    font-size: clamp(1.9rem, 1rem + 2.5vw, 3.5rem); font-weight: 470; line-height: 1; letter-spacing: -0.045em;
+    font-stretch: 100%; transition: font-stretch 0.7s var(--ease-expo), color 0.3s ease;
+  }
+  .servicio__titulo a::after { content: ''; position: absolute; inset: 0; }
+  .servicio__titulo a:focus-visible { outline: none; }
+  .servicio:has(a:focus-visible) { outline: 2px solid var(--farola); outline-offset: 4px; }
+  .servicio__texto { max-width: 32em; color: var(--luz-2); }
+  .servicio__idioma { color: var(--tenue); }
+  .servicio__flecha { width: 34px; height: 34px; color: var(--luz-2); transition: transform 0.6s var(--ease-expo), color 0.3s ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .servicio__titulo { white-space: nowrap; }
+    .servicio:hover .servicio__titulo { font-stretch: 110%; color: var(--farola); }
+    .servicio:hover .servicio__flecha { transform: translateX(8px); color: var(--farola); }
+  }
+  @media (max-width: 860px) { .servicio { grid-template-columns: minmax(0, 1fr); } .servicio__flecha { display: none; } .servicio__titulo { white-space: normal; } }
 
-  /* ---- Sobre mí ---- */
-  #sobre-mi { padding-top: clamp(24px, 3vw, 48px); }
-  .sobre { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px clamp(40px, 7vw, 110px); align-items: start; }
-  .sobre .entradilla { margin-block: 26px 18px; }
-  .sobre__lado { display: grid; gap: 28px; }
-  .sobre__foto { width: 100%; max-width: 420px; height: auto; border-radius: var(--radio); }
-  .credenciales div { padding-block: 22px; border-bottom: 1px solid var(--linea); }
-  .credenciales div:first-child { border-top: 1px solid var(--linea); }
-  .credenciales dt { font-family: var(--serif); font-size: 1.6rem; line-height: 1.15; }
-  .credenciales dd { margin-top: 6px; color: var(--tenue); }
-  @media (max-width: 900px) { .sobre { grid-template-columns: 1fr; } }
+  /* ---- 6 · Proceso ---- */
+  .proceso { background: radial-gradient(60% 50% at 90% 10%, rgb(255 178 74 / 0.07), transparent 70%); }
+  .proceso__lista { list-style: none; display: grid; gap: 22px; }
+  .paso {
+    position: sticky; top: calc(112px + var(--i) * 18px);
+    display: grid; grid-template-columns: 120px minmax(0, 1fr) minmax(0, 1fr); gap: 16px 48px; align-items: start;
+    min-height: 230px; padding: clamp(28px, 3.5vw, 48px);
+    border: 1px solid var(--linea-fuerte); border-radius: var(--corte-l); corner-shape: bevel;
+    background: linear-gradient(160deg, var(--superficie-2), var(--noche-2));
+    box-shadow: 0 -30px 60px -30px rgb(0 0 0 / 0.85);
+    transform-origin: top center;
+  }
+  .paso__num { font-size: 1rem; font-weight: 600; font-stretch: 118%; color: var(--farola); font-variant-numeric: tabular-nums; }
+  .paso .titulo-m { max-width: 11em; }
+  .paso p { max-width: 30em; color: var(--luz-2); }
+  @media (max-width: 760px) { .paso { position: relative; top: auto; grid-template-columns: minmax(0, 1fr); min-height: 0; } }
+
+  /* ---- 7 · Sobre mí ---- */
+  .sobre__rejilla { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px clamp(40px, 6vw, 110px); align-items: start; }
+  .sobre__manifiesto { font-size: clamp(1.6rem, 1.05rem + 1.9vw, 2.8rem); line-height: 1.18; color: var(--luz); }
+  .trayectoria { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-top: 64px; padding-top: 30px; border-top: 1px solid var(--linea-fuerte); }
+  .trayectoria li { position: relative; }
+  .trayectoria li::before {
+    content: ''; position: absolute; top: -35px; left: 0; width: 10px; height: 10px; background: var(--farola);
+    clip-path: polygon(3px 0, 7px 0, 10px 3px, 10px 7px, 7px 10px, 3px 10px, 0 7px, 0 3px);
+  }
+  .trayectoria h3 { font-size: 1.05rem; font-weight: 600; }
+  .trayectoria p { margin-top: 6px; color: var(--luz-2); font-size: 0.97rem; }
+  .sobre__email { margin-top: 40px; }
+  @media (max-width: 900px) { .sobre__rejilla { grid-template-columns: minmax(0, 1fr); } .trayectoria { grid-template-columns: minmax(0, 1fr); } }
 </style>

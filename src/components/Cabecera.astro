@@ -13,15 +13,17 @@ interface Props {
   cta?: Enlace;
   /** Selector de idioma: solo en páginas que existen en varios idiomas. */
   idiomas?: Partial<Record<Lang, string>>;
+  /** Flota transparente sobre la portada y se vuelve sólida al bajar. */
+  sobre?: boolean;
 }
-const { lang, nav, idiomas } = Astro.props;
+const { lang, nav, idiomas, sobre = false } = Astro.props;
 const t = COMUN[lang];
 const cta = Astro.props.cta ?? { texto: t.hablemos, href: '#contacto' };
 const nombres: Record<Lang, string> = { es: 'Español', ca: 'Català', en: 'English' };
 ---
 
 <a class="saltar" href="#contenido">{t.saltar}</a>
-<header class="cabecera">
+<header class:list={['cabecera', { 'cabecera--sobre': sobre }]}>
   <div class="wrap cabecera__dentro">
     <a class="marca" href={rutas[lang]}>
       <span class="marca__nombre">Sergio García</span>
@@ -44,7 +46,7 @@ const nombres: Record<Lang, string> = { es: 'Español', ca: 'Català', en: 'Engl
             ))}
         </nav>
       )}
-      <a class="boton boton--oscuro" href={cta.href}>{cta.texto}<span class="icono" aria-hidden="true"></span></a>
+      <a class="boton boton--oscuro" href={cta.href} data-iman>{cta.texto}<span class="icono" aria-hidden="true"></span></a>
     </div>
   </div>
   {nav.length > 0 && (

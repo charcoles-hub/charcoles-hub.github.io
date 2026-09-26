@@ -121,11 +121,20 @@ const grafo = {
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonica} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#f6f5ef" />
+    <meta name="theme-color" content="#08090d" />
 
-    <link rel="preload" href="/fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/instrument-serif-latin-italic.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/inter-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/newsreader-latin-italic-var.woff2" as="font" type="font/woff2" crossorigin />
+
+    {/* Mejora progresiva: solo si va a haber movimiento se ocultan los estados
+        iniciales de la entrada; si el módulo no arranca en 2,5 s, se enseña todo. */}
+    <script is:inline>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var r = document.documentElement;
+        r.classList.add('mov');
+        setTimeout(function () { if (!r.classList.contains('mov-listo')) r.classList.remove('mov'); }, 2500);
+      }
+    </script>
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -157,5 +166,8 @@ const grafo = {
     {/* Hilo de lectura: CSS puro con scroll(). Donde no se soporte, no existe. */}
     <div class="progreso" aria-hidden="true"></div>
     <slot />
+    <script>
+      import '../scripts/premium';
+    </script>
   </body>
 </html>

@@ -150,12 +150,25 @@ if (!reducir) {
   // ---- 9. Proceso: tarjetas que se apilan ----
   mm.add('(min-width: 760px)', () => {
     const tarjetas = gsap.utils.toArray<HTMLElement>('[data-apila]');
+    const lista = tarjetas[0]?.parentElement;
+    if (!lista) return;
+    const tope = (el: HTMLElement) => parseFloat(getComputedStyle(el).top) || 0;
+    const posicion = (k: number) => {
+      const hueco = parseFloat(getComputedStyle(lista).rowGap) || 0;
+      return tarjetas.slice(0, k).reduce((suma, el) => suma + el.offsetHeight + hueco, 0);
+    };
     tarjetas.forEach((t, i) => {
       const siguiente = tarjetas[i + 1];
       if (!siguiente) return;
-      gsap.to(t, {
-        scale: 0.94, filter: 'brightness(0.42)', ease: 'none',
-        scrollTrigger: { trigger: siguiente, start: 'top 85%', end: 'top 25%', scrub: true },
+      gsap.fromTo(t, { scale: 1, filter: 'brightness(1)' }, {
+        scale: 0.94, filter: 'brightness(0.55)', ease: 'none',
+        scrollTrigger: {
+          trigger: lista,
+          start: () => `top ${tope(t) + t.offsetHeight - posicion(i + 1)}px`,
+          end: () => `top ${tope(siguiente) - posicion(i + 1)}px`,
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
       });
     });
   });

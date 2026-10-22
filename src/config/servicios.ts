@@ -45,19 +45,19 @@ export const SERVICIOS: Servicio[] = [
     incluye: [
       'Las páginas que necesite tu proyecto, diseñadas a medida de tu negocio.',
       'Diseñada para que se lea y se use con comodidad en móvil.',
-      'Tu dominio pagado el primer año y la web puesta en marcha.',
+      'Tu web publicada en tu propio dominio, a tu nombre.',
       'Formulario de contacto, botón de WhatsApp y mapa para llegar a tu local.',
       'Te acompaño en la puesta en marcha y me ocupo de los ajustes acordados.',
     ],
     datos: [
       { cifra: 'A medida', texto: 'un presupuesto según las páginas, contenidos y funciones que necesitas' },
-      { cifra: '7 días', texto: 'de empezar a estar publicada' },
+      { cifra: '7 días', texto: 'hasta tenerla publicada, desde que tengo tus textos y fotos' },
       { cifra: '24 h', texto: 'para tener tu presupuesto por escrito, sin compromiso' },
     ],
     faq: [
       {
         pregunta: '¿Cuánto tarda?',
-        respuesta: 'Siete días desde que empezamos. El presupuesto por escrito lo tienes en 24 horas.',
+        respuesta: 'Siete días desde que tengo tus textos y fotos. El presupuesto por escrito lo tienes en 24 horas.',
       },
       {
         pregunta: '¿Qué necesitas de mí?',
@@ -67,7 +67,12 @@ export const SERVICIOS: Servicio[] = [
       {
         pregunta: '¿La web es mía?',
         respuesta:
-          'Sí. El dominio va a tu nombre y la web es tuya; yo solo la administro mientras quieras.',
+          'Sí. El dominio va a tu nombre y la web es tuya. Si además quieres que me encargue yo de todo, para eso está el mantenimiento.',
+      },
+      {
+        pregunta: '¿Tengo que pagar algo cada mes?',
+        respuesta:
+          'No. Si solo me encargas el diseño, lo único que pagas después es la renovación anual del dominio (tu dirección web), que va a tu nombre. Si prefieres que me encargue yo de todo, está el mantenimiento: Básico, 50 €/mes, o Prioritario, 75 €/mes.',
       },
       {
         pregunta: '¿Y si luego quiero cambiar cosas?',
@@ -75,9 +80,9 @@ export const SERVICIOS: Servicio[] = [
           'Me lo dices y valoramos el cambio. Te explico el alcance y el coste antes de hacerlo, porque una corrección de texto y una página nueva requieren trabajos distintos.',
       },
       {
-        pregunta: '¿Por qué es más barato que una agencia?',
+        pregunta: '¿Qué diferencia hay con una agencia?',
         respuesta:
-          'Porque trabajo de forma independiente y directa. El presupuesto cubre el trabajo del proyecto, sin estructura de agencia de por medio.',
+          'Que trabajo de forma independiente y directa: hablas con quien diseña tu web, y el presupuesto cubre el trabajo del proyecto, sin estructura de agencia de por medio.',
       },
     ],
     decision: {
@@ -88,9 +93,10 @@ export const SERVICIOS: Servicio[] = [
         'Quieres que el primer contacto, las reservas o las visitas al local tengan un camino fácil.',
       ],
       proceso: [
-        { titulo: 'Lo aterrizamos', texto: 'Hablamos de tu negocio, de a quién quieres llegar y de lo que la web tiene que conseguir.' },
-        { titulo: 'Te propongo un plan', texto: 'Recibes las páginas, el calendario y el presupuesto por escrito antes de decidir.' },
-        { titulo: 'La construyo y publicamos', texto: 'Diseño, contenido, versión móvil y puesta en marcha; revisamos todo juntos antes de abrir.' },
+        { titulo: 'Hablamos de tu negocio', texto: 'Me cuentas qué haces, a quién te diriges y qué necesita conseguir tu web.' },
+        { titulo: 'Cerramos el plan', texto: 'Recibes alcance, precio y plazo por escrito. Sabes qué incluye antes de empezar.' },
+        { titulo: 'Diseño y construyo', texto: 'Ordeno el contenido, diseño la web y la preparo para móvil y escritorio. Revisamos el resultado juntos.' },
+        { titulo: 'Revisamos y publicamos', texto: 'Comprobamos contenido, enlaces y contacto. La web se publica cuando está lista y tienes claro cómo seguir.' },
       ],
       ejemplos: [
         { nombre: 'Fisioymés', tipo: 'Proyecto real · Fisioterapia', texto: 'Una clínica con una estructura más clara para explicar tratamientos y llegar a la cita.', href: '/proyectos/fisioymes/' },
@@ -112,26 +118,26 @@ export const SERVICIOS: Servicio[] = [
     incluyeTitular: 'Qué incluye',
     incluye: [
       'La web rehecha desde cero, no un parche encima de la que tienes.',
-      'Te quedas con tu dominio y con las direcciones que ya estaban en Google.',
+      'Te quedas con tu dominio y con las direcciones de tus páginas (lo que sale en la barra del navegador), para que quien te encuentre en Google no acabe en una página de error.',
       'Traslado de tus textos y fotos a la web nueva.',
       'Una experiencia móvil clara, revisada desde el principio.',
       'Tu web actual sigue funcionando hasta el día que publicamos la nueva.',
     ],
     datos: [
       { cifra: 'A medida', texto: 'el rediseño según el estado de tu web y lo que haya que conservar o rehacer' },
-      { cifra: 'Planificado', texto: 'el traslado de contenidos y direcciones se define antes de empezar' },
-      { cifra: '7 días', texto: 'de empezar a estar publicada' },
+      { cifra: 'Planificado', texto: 'el traslado de textos, fotos y páginas se define antes de empezar' },
+      { cifra: '7 días', texto: 'hasta tenerla publicada, desde que tengo tus textos y fotos' },
     ],
     faq: [
       {
         pregunta: '¿Pierdo el posicionamiento que tengo?',
         respuesta:
-          'No. Se mantienen las direcciones que Google ya conoce, y las que cambien se redirigen a la página nueva que les corresponde.',
+          'No. Conservo las direcciones de tus páginas (lo que sale en la barra del navegador), y si alguna cambia, la redirijo a la nueva, para que quien te encuentre en Google no acabe en una página de error.',
       },
       {
         pregunta: '¿Me quedo con mi dominio?',
         respuesta:
-          'Sí, el dominio es tuyo y sigue a tu nombre. Yo solo lo administro mientras quieras.',
+          'Sí, el dominio es tuyo y sigue a tu nombre.',
       },
       {
         pregunta: '¿Mi web actual se cae mientras trabajas?',
@@ -149,16 +155,16 @@ export const SERVICIOS: Servicio[] = [
       senales: [
         'Tu web ya no representa cómo es tu negocio hoy o te cuesta compartirla con confianza.',
         'En móvil se lee mal, carga despacio o llegar al contacto supone demasiado esfuerzo.',
-        'Quieres mejorarla sin perder tu dominio, tus contenidos útiles ni las direcciones que Google ya conoce.',
+        'Quieres mejorarla sin perder tu dominio, tus contenidos útiles ni lo que ya tienes en Google.',
       ],
       proceso: [
-        { titulo: 'Revisamos el punto de partida', texto: 'Vemos qué funciona, qué hay que cambiar y qué contenidos o direcciones conviene conservar.' },
-        { titulo: 'Planificamos la transición', texto: 'Definimos el nuevo alcance, el traslado de contenidos y las redirecciones antes de empezar.' },
+        { titulo: 'Revisamos el punto de partida', texto: 'Vemos qué funciona, qué hay que cambiar y qué contenidos y páginas conviene conservar.' },
+        { titulo: 'Planificamos la transición', texto: 'Definimos el nuevo alcance, el traslado de contenidos y qué pasa con cada dirección antigua antes de empezar.' },
         { titulo: 'Renovamos sin apagar la actual', texto: 'La nueva se prepara aparte; tu web sigue disponible hasta el momento de publicar.' },
       ],
       ejemplos: [
         { nombre: 'Fisioymés', tipo: 'Proyecto real · Rediseño', texto: 'La web anterior tenía demasiado texto en móvil. La rehice sin tocar el sistema de reservas que ya usaban.', href: '/proyectos/fisioymes/' },
-        { nombre: 'Sereno', tipo: 'Concepto · Clínica dental', texto: 'Una propuesta para hacer más directa una decisión que suele generar dudas: confianza, tratamiento y cita.', href: 'https://sergiogarciaweb.com/demo-dental-sereno/', externo: true },
+        { nombre: 'Sereno', tipo: 'Concepto · Clínica dental', texto: 'Una clínica dental donde enseguida ves en quién confiar, qué tratamiento necesitas y cómo pedir cita.', href: 'https://sergiogarciaweb.com/demo-dental-sereno/', externo: true },
       ],
     },
   },
@@ -170,27 +176,27 @@ export const SERVICIOS: Servicio[] = [
       'Alojamiento, copias de seguridad y cambios de contenido con un plan adaptado a la frecuencia y las necesidades de tu web.',
     h1: 'Mantenimiento de páginas web',
     bajada:
-      'Alojamiento, copias de seguridad y tus cambios hechos por mí, con un plan ajustado a lo que tu web necesita de verdad.',
+      'Alojamiento (el servidor donde vive tu web), copias de seguridad y tus cambios hechos por mí, con un plan ajustado a lo que tu web necesita de verdad.',
     resumen:
-      'Alojamiento, copias y cambios con un plan de mantenimiento a medida.',
+      'Básico, 50 €/mes, o Prioritario, 75 €/mes. Lo que pagas es la rapidez con la que hago tus cambios.',
     incluyeTitular: 'Qué incluye',
     incluye: [
-      'Alojamiento y copias de seguridad de tu web.',
+      'Alojamiento, para que tu web esté siempre online, y copias de seguridad.',
       'Los cambios de texto y fotos que necesites, hechos por mí.',
-      'Las páginas nuevas se valoran por separado antes de construirlas.',
-      'Actualizaciones y vigilancia de que todo sigue funcionando.',
-      'Con el plan Prioritario, además, un repaso cada mes de cómo va la web.',
+      'Las páginas nuevas, a mitad de precio: 25 € en vez de 50 €.',
+      'Vigilo que todo siga funcionando: el candado de seguridad, los formularios y los enlaces.',
+      'Dos planes. Básico, 50 €/mes: tus cambios hechos en 7 días como máximo. Prioritario, 75 €/mes: en 2 días como máximo y, además, un repaso cada mes de cómo va la web.',
     ],
     datos: [
-      { cifra: 'A medida', texto: 'según la frecuencia y el tipo de cambios que necesite tu web' },
-      { cifra: 'Prioridad', texto: 'acordamos los tiempos de respuesta que necesita tu negocio' },
+      { cifra: '50 / 75 €', texto: 'al mes, según lo rápido que necesites tus cambios' },
+      { cifra: '7 o 2 días', texto: 'como máximo para tener hecho cada cambio, según el plan' },
       { cifra: 'Por escrito', texto: 'sabes qué incluye el mantenimiento antes de contratarlo' },
     ],
     faq: [
       {
         pregunta: '¿Qué cuenta como cambio?',
         respuesta:
-          'Textos y fotos: cambiar precios, horarios, servicios o añadir imágenes nuevas. Una página completa se valora aparte porque implica diseño, contenido y comprobaciones adicionales.',
+          'Textos y fotos: cambiar precios, horarios, servicios o añadir imágenes nuevas. Una página completa no entra en la cuota porque implica diseño, contenido y comprobaciones adicionales: con el mantenimiento te cuesta 25 € en vez de 50 €.',
       },
       {
         pregunta: '¿Tengo que atarme un año?',
@@ -209,23 +215,23 @@ export const SERVICIOS: Servicio[] = [
     nombre: 'Posicionamiento en Google',
     titulo: 'Posicionamiento en Google para negocios locales — Sergio García Ortiz',
     descripcion:
-      'Que te encuentren cuando busquen tu servicio en tu zona: ficha de Google, la web preparada por dentro y los datos que Google necesita.',
+      'Que te encuentren cuando busquen tu servicio en tu zona: tu ficha de Google (la que aparece en Google Maps con tu horario y reseñas) y lo que sale de tu web en los resultados.',
     h1: 'Posicionamiento en Google para negocios locales',
     bajada:
-      'Que te encuentren cuando busquen tu servicio en tu zona: ficha de Google, la web preparada por dentro y los datos que Google necesita.',
+      'Que te encuentren cuando busquen tu servicio en tu zona: tu ficha de Google (la que aparece en Google Maps con tu horario y reseñas) y lo que sale de tu web en los resultados.',
     resumen:
       'Que te encuentren en Google cuando busquen tu servicio en tu zona.',
     incluyeTitular: 'Qué incluye',
     incluye: [
       'Tu ficha de Google creada y rellenada: servicios, zonas, horario y fotos.',
-      'La web preparada por dentro: títulos, descripciones y los datos que Google lee.',
-      'El sitio declarado a Google para que sepa qué páginas tienes.',
-      'Una web rápida, que es de lo poco que Google mide y compara de verdad.',
+      'Ajusto el título y la descripción que salen de tu web en los resultados de Google.',
+      'Doy de alta tu web en Search Console, la herramienta de Google, para que conozca todas tus páginas.',
+      'Una web rápida, que es una de las cosas que Google tiene en cuenta.',
       'Te explico cómo pedir reseñas, que es lo que más mueve en las búsquedas de tu barrio.',
     ],
     datos: [
       { cifra: 'A medida', texto: 'según el punto de partida de tu web y de tu ficha de Google' },
-      { cifra: '2 días', texto: 'de trabajo añadidos al plazo de la web' },
+      { cifra: '2 días', texto: 'de trabajo si va junto a una web nueva; sobre una web que ya tienes, lo vemos en el presupuesto' },
       { cifra: 'Sin cuota', texto: 'es un trabajo puntual, no una suscripción automática' },
     ],
     faq: [

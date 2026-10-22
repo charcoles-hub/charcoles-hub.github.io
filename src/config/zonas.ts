@@ -17,9 +17,9 @@ export const ZONAS: Servicio[] = [
     bajada:
       'Trabajo con negocios de Cornellà y de toda España. La web se diseña desde cero, con trato directo y un presupuesto claro antes de empezar.',
     resumen: 'Webs a medida para negocios de Cornellà, con trato directo.',
-    incluyeTitular: 'Por qué te interesa que sea de aquí',
+    incluyeTitular: 'Cómo trabajo con negocios de Cornellà',
     incluye: [
-      'Hablas conmigo directamente, en el mismo horario y sin intermediarios.',
+      'Hablas conmigo directamente, sin intermediarios.',
       'Conozco el tipo de negocio que hay aquí: comercio de barrio, clínicas, gestorías y talleres.',
       'La web se hace por teléfono y WhatsApp, sin que tengas que cerrar el local para reuniones.',
       'Presupuesto personalizado antes de empezar, sin cuotas escondidas.',
@@ -27,7 +27,7 @@ export const ZONAS: Servicio[] = [
     ],
     datos: [
       { cifra: 'A medida', texto: 'el presupuesto según lo que necesita tu negocio' },
-      { cifra: '7 días', texto: 'de empezar a estar publicada' },
+      { cifra: '7 días', texto: 'hasta tenerla publicada, desde que tengo tus textos y fotos' },
       { cifra: '24 h', texto: 'para tener tu presupuesto por escrito, sin compromiso' },
     ],
     faq: [
@@ -61,15 +61,15 @@ export const ZONAS: Servicio[] = [
     incluyeTitular: 'Qué tipo de negocios llevo por aquí',
     incluye: [
       'Clínicas y centros de salud: fisioterapia, dental, psicología y veterinaria.',
-      'Servicios profesionales: gestorías, estudios de arquitectura y autoescuelas.',
+      'Servicios profesionales: gestorías y estudios de arquitectura.',
       'Comercio y hostelería de barrio: barberías, cafeterías y gimnasios.',
       'Puedes ver una web de ejemplo de cada uno de esos rubros antes de decidir nada.',
       'El municipio no cambia el presupuesto: lo determina lo que necesita el proyecto.',
     ],
     datos: [
       { cifra: 'A medida', texto: 'el presupuesto depende del proyecto, no del municipio' },
-      { cifra: '7 días', texto: 'de empezar a estar publicada' },
-      { cifra: '10', texto: 'webs de ejemplo por rubro que puedes abrir y recorrer' },
+      { cifra: '7 días', texto: 'hasta tenerla publicada, desde que tengo tus textos y fotos' },
+      { cifra: '9', texto: 'webs de ejemplo por rubro que puedes abrir y recorrer' },
     ],
     faq: [
       {
@@ -80,7 +80,7 @@ export const ZONAS: Servicio[] = [
       {
         pregunta: '¿Tienes algún ejemplo de mi sector?',
         respuesta:
-          'Probablemente sí: hay ejemplos de barbería, clínica dental, veterinaria, fisioterapia, gestoría, psicología, cafetería, gimnasio, arquitectura y autoescuela. Todos se pueden abrir y recorrer.',
+          'Probablemente sí: hay ejemplos de barbería, clínica dental, veterinaria, fisioterapia, gestoría, psicología, cafetería, gimnasio y arquitectura. Todos se pueden abrir y recorrer.',
       },
       {
         pregunta: '¿Trabajas con negocios que ya tienen web?',
@@ -109,12 +109,12 @@ export const ZONAS: Servicio[] = [
     ],
     datos: [
       { cifra: 'A medida', texto: 'un presupuesto según el alcance real de tu proyecto' },
-      { cifra: '7 días', texto: 'de empezar a estar publicada' },
+      { cifra: '7 días', texto: 'hasta tenerla publicada, desde que tengo tus textos y fotos' },
       { cifra: '1', texto: 'persona de principio a fin: la que te coge el teléfono' },
     ],
     faq: [
       {
-        pregunta: '¿Por qué cuesta tanto menos que en una agencia?',
+        pregunta: '¿Qué diferencia hay con una agencia?',
         respuesta:
           'Trabajo de forma independiente. Eso permite concentrar el presupuesto en el alcance del proyecto y mantener una comunicación directa.',
       },

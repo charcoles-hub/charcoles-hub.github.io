@@ -71,7 +71,7 @@ export const SECTORES: Sector[] = [
     faq: [
       { pregunta: '¿Puedo mantener mi sistema de citas actual?', respuesta: 'Sí. Si ya usas una agenda online o un programa de gestión con reservas, la web lo enlaza o lo integra para que no cambies tu forma de trabajar. Lo revisamos antes de cerrar el presupuesto.' },
       { pregunta: '¿Me ayudas con los textos de los tratamientos?', respuesta: 'Te ayudo a ordenarlos: me pasas la información de cada tratamiento y la estructuro para que un paciente la entienda en el móvil. Tú revisas y apruebas cada texto antes de publicar, porque la información clínica la firmas tú.' },
-      { pregunta: '¿Aparecerá mi clínica en Google?', respuesta: 'La web se entrega preparada por dentro: títulos, descripciones, datos estructurados y velocidad. La ficha de Google y el posicionamiento local se presupuestan aparte. Nadie puede garantizarte una posición: depende también de la competencia de tu zona y de tus reseñas.' },
+      { pregunta: '¿Aparecerá mi clínica en Google?', respuesta: 'La web se entrega lista para Google: el título y la descripción de cada página, los datos que Google lee y una carga rápida. La ficha de Google y el posicionamiento local se presupuestan aparte. Nadie puede garantizarte una posición: depende también de la competencia de tu zona y de tus reseñas.' },
       { pregunta: '¿Cuánto cuesta la web de una clínica dental?', respuesta: 'Depende sobre todo de cuántos tratamientos quieras explicar, de si la necesitas en más de un idioma y de cómo se conecte tu sistema de citas. Primero hablamos y después recibes el alcance, el plazo y el precio por escrito.' },
     ],
     publico: 'Clínicas dentales',
@@ -90,7 +90,7 @@ export const SECTORES: Sector[] = [
       'Quien busca fisio suele tener dolor y prisa. Tu web tiene que decirle en segundos si tratas lo suyo, dónde estás y cómo pedir cita. Es justo lo que trabajé con Fisioymés.',
     necesitaTitulo: 'Lo que necesita la web de una *clínica de fisioterapia*.',
     necesita: [
-      { titulo: 'Lesiones fáciles de encontrar', texto: 'Cervicalgia, lumbalgia, esguinces, tendinopatías… Que cada paciente encuentre su problema en una rejilla clara, sin leer párrafos, y llegue a su tratamiento en un toque.' },
+      { titulo: 'Lesiones fáciles de encontrar', texto: 'Cervicalgia, lumbalgia, esguinces, tendinopatías… Que cada paciente encuentre su problema en un cuadro claro, sin leer párrafos, y llegue a su tratamiento en un toque.' },
       { titulo: 'La cita en un toque', texto: 'Reserva online, WhatsApp y teléfono visibles en el móvil. Si ya usas un sistema de reservas, se mantiene: en Fisioymés lo conservé tal cual.' },
       { titulo: 'Tu equipo y tu forma de tratar', texto: 'Quién atiende, su formación y número de colegiado, y cómo es una primera sesión contigo.' },
       { titulo: 'Tarifas, bonos y mutuas', texto: 'Si trabajas con mutuas, tienes bonos o haces primera valoración, que se sepa antes de llamar.' },
@@ -110,7 +110,7 @@ export const SECTORES: Sector[] = [
     },
     casoReal: true,
     faq: [
-      { pregunta: '¿Has hecho webs para clínicas de fisioterapia?', respuesta: 'Sí. Fisioymés, una clínica de Sant Cugat del Vallès, es un proyecto real que puedes explorar: rehíce su web en castellano y catalán, con las lesiones en rejilla y los tratamientos en fichas, sin tocar el sistema de reservas que ya usaban.' },
+      { pregunta: '¿Has hecho webs para clínicas de fisioterapia?', respuesta: 'Sí. Fisioymés, una clínica de Sant Cugat del Vallès, es un proyecto real que puedes explorar: rehice su web en castellano y catalán, con las lesiones ordenadas en un cuadro y cada tratamiento explicado aparte, sin tocar el sistema de reservas que ya usaban.' },
       { pregunta: '¿Puedo seguir usando mi programa de reservas?', respuesta: 'Sí. La web lo enlaza o lo integra, como hice con Fisioymés. Lo comprobamos al principio para que no tengas que cambiar tu forma de trabajar.' },
       { pregunta: '¿La web puede estar en castellano y catalán?', respuesta: 'Sí. Cada idioma tiene sus propias páginas, bien marcadas para Google, y el paciente cambia de idioma con un toque.' },
       { pregunta: '¿Cuánto cuesta la web de una clínica de fisioterapia?', respuesta: 'Depende del número de lesiones y tratamientos que quieras explicar, de los idiomas y de las clases o reservas que haya que conectar. Primero hablamos y recibes el alcance, el plazo y el precio por escrito.' },
@@ -281,9 +281,10 @@ export const SECTORES: Sector[] = [
   },
 ];
 
-/** Los tres pasos que se repiten en las páginas de sector (texto ya aprobado en /diseno-web/). */
+/** Los cuatro pasos que se repiten en las páginas de sector (los mismos de la portada y de /diseno-web/). */
 export const PASOS_SECTOR = [
-  { titulo: 'Lo aterrizamos', texto: 'Hablamos de tu negocio, de a quién quieres llegar y de lo que la web tiene que conseguir.' },
-  { titulo: 'Te propongo un plan', texto: 'Recibes las páginas, el calendario y el presupuesto por escrito antes de decidir.' },
-  { titulo: 'La construyo y publicamos', texto: 'Diseño, contenido, versión móvil y puesta en marcha; revisamos todo juntos antes de abrir.' },
+  { titulo: 'Hablamos de tu negocio', texto: 'Me cuentas qué haces, a quién te diriges y qué necesita conseguir tu web.' },
+  { titulo: 'Cerramos el plan', texto: 'Recibes alcance, precio y plazo por escrito. Sabes qué incluye antes de empezar.' },
+  { titulo: 'Diseño y construyo', texto: 'Ordeno el contenido, diseño la web y la preparo para móvil y escritorio. Revisamos el resultado juntos.' },
+  { titulo: 'Revisamos y publicamos', texto: 'Comprobamos contenido, enlaces y contacto. La web se publica cuando está lista y tienes claro cómo seguir.' },
 ];

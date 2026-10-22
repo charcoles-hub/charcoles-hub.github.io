@@ -31,7 +31,7 @@ const fisioymes: Proyecto = {
   nombre: 'Fisioymés',
   rubro: 'Fisioterapia · Sant Cugat del Vallès',
   descripcion:
-    'Vinieron con una queja concreta: en el móvil su web era todo letra y scroll sin fin. La rehíce entera en catalán y castellano, con las lesiones en rejilla y los tratamientos en fichas — y sin tocarles el sistema de reservas que ya usaban.',
+    'Vinieron con una queja concreta: en el móvil su web era todo letra y scroll sin fin. La rehice entera en catalán y castellano, con las lesiones ordenadas en un cuadro para que cada paciente vaya directo a la suya y cada tratamiento explicado aparte — y sin tocarles el sistema de reservas que ya usaban.',
   slug: 'fisioymes',
   url: '/proyectos/fisioymes/',
 };
@@ -63,8 +63,6 @@ const demosES: Proyecto[] = [
     'Entrenar con propósito, sin fotos de stock sudando: horarios claros y precios a la vista.'),
   demo('demo-arquitectos-traza', 'Traza', 'Arquitectura · Sant Just Desvern',
     'Un estudio que enseña obra, no palabrería: vivienda, reforma integral y dirección de obra.'),
-  demo('demo-autoescuela-traza', 'Traza', 'Autoescuela · Sant Just Desvern',
-    'El mismo profesor de principio a fin, y la primera clase reservada desde la propia web.'),
 ];
 
 const demosEN: Proyecto[] = [
@@ -112,15 +110,11 @@ const TRADUCCIONES_CA: Record<string, { rubro: string; descripcion: string }> =
     "demo-arquitectos-traza": {
       "rubro": "Arquitectura · Sant Just Desvern",
       "descripcion": "Un estudi que ensenya obra, no paraules: habitatge, reforma integral i direcció d'obra."
-    },
-    "demo-autoescuela-traza": {
-      "rubro": "Autoescola · Sant Just Desvern",
-      "descripcion": "El mateix professor de principi a fi, i la primera classe reservada des del mateix web."
     }
   };
 
 const demosCA: Proyecto[] = demosES.map((p) => ({ ...p, ...TRADUCCIONES_CA[p.slug] }));
-const fisioymesCA: Proyecto = { ...fisioymes, ...({"rubro": "Fisioteràpia · Sant Cugat del Vallès", "descripcion": "Van venir amb una queixa concreta: al mòbil el seu web era tot lletra i scroll sense fi. El vaig refer sencer en català i castellà, amb les lesions en graella i els tractaments en fitxes — i sense tocar-los el sistema de reserves que ja feien servir."}) };
+const fisioymesCA: Proyecto = { ...fisioymes, ...({"rubro": "Fisioteràpia · Sant Cugat del Vallès", "descripcion": "Van venir amb una queixa concreta: al mòbil el seu web era tot lletra i scroll sense fi. El vaig refer sencer en català i castellà, amb les lesions ordenades en un quadre perquè cada pacient vagi directe a la seva i cada tractament explicat a part — i sense tocar-los el sistema de reserves que ja feien servir."}) };
 
 // --- Reseñas -----------------------------------------------------------------
 
@@ -287,7 +281,7 @@ export const contenido = {
       ...fisioymes,
       rubro: 'Physical therapy · Barcelona, Spain',
       descripcion:
-        'They came with one specific complaint: on a phone, their site was all text and endless scrolling. I rebuilt it from scratch in Catalan and Spanish, with injuries in a grid and treatments on cards — and without touching the booking system they already used.',
+        'They came with one specific complaint: on a phone, their site was all text and endless scrolling. I rebuilt it from scratch in Catalan and Spanish, with injuries laid out in a simple chart so each patient goes straight to theirs and each treatment explained separately — and without touching the booking system they already used.',
     },
   },
 

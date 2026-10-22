@@ -57,8 +57,8 @@ const nav = [
   <section class="seccion seccion--tinte" id="encaja" aria-labelledby="titulo-encaja">
     <div class="wrap dos">
       <div data-revela>
-        <p class="etiqueta etiqueta--linea">Puede encajarte si…</p>
-        <h2 id="titulo-encaja" class="titulo-l">Partes de <em>aquí</em>.</h2>
+        <p class="etiqueta etiqueta--linea">¿Te encaja?</p>
+        <h2 id="titulo-encaja" class="titulo-l">Es para <em>ti</em> si…</h2>
       </div>
       <ol class="lista-num">{decision.senales.map((senal, i) => <li data-revela><span>0{i + 1}</span><p>{senal}</p></li>)}</ol>
     </div>
@@ -79,7 +79,7 @@ const nav = [
     <div class="wrap dos">
       <div data-revela>
         <p class="etiqueta etiqueta--linea">Así lo hacemos</p>
-        <h2 id="titulo-proceso" class="titulo-l">Tres pasos, <em>sin humo</em>.</h2>
+        <h2 id="titulo-proceso" class="titulo-l">{decision.proceso.length === 4 ? 'Cuatro' : 'Tres'} pasos, <em>sin humo</em>.</h2>
       </div>
       <ol class="pasos">
         {decision.proceso.map((paso, i) => (

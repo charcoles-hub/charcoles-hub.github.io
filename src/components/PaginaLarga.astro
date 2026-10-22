@@ -59,7 +59,7 @@ const nav = [
       <div data-revela>
         <p class="etiqueta etiqueta--linea">El alcance</p>
         <h2 id="titulo-incluye" class="titulo-l">{s.incluyeTitular}</h2>
-        <p>Definimos lo necesario antes de empezar. Si el proyecto necesita algo adicional, lo hablamos y queda reflejado en el presupuesto.</p>
+        {tipo === 'servicio' && <p>Definimos lo necesario antes de empezar. Si el proyecto necesita algo adicional, lo hablamos y queda reflejado en el presupuesto.</p>}
       </div>
       <ol class="lista-num">
         {s.incluye.map((linea, i) => <li data-revela><span>0{i + 1}</span><p>{linea}</p></li>)}
@@ -75,9 +75,9 @@ const nav = [
     </div>
   </section>
 
-  <CasoReal />
+  {tipo === 'zona' && <CasoReal />}
 
-  <section class="seccion" aria-labelledby="titulo-proceso">
+  {tipo === 'zona' && <section class="seccion" aria-labelledby="titulo-proceso">
     <div class="wrap dos">
       <div data-revela>
         <p class="etiqueta etiqueta--linea">Sin sorpresas</p>
@@ -88,7 +88,7 @@ const nav = [
         <a class="enlace" href={wa}>Pide una propuesta a medida<span class="icono" aria-hidden="true"></span></a>
       </div>
     </div>
-  </section>
+  </section>}
 
   <section class="seccion seccion--tinte" aria-labelledby="titulo-faq">
     <div class="wrap dos">

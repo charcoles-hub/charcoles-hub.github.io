@@ -213,9 +213,9 @@ export const SERVICIOS: Servicio[] = [
   {
     slug: 'posicionamiento-google',
     nombre: 'Posicionamiento en Google',
-    titulo: 'Posicionamiento en Google para negocios locales — Sergio García Ortiz',
+    titulo: 'Posicionamiento en Google local — Sergio García Ortiz',
     descripcion:
-      'Que te encuentren cuando busquen tu servicio en tu zona: tu ficha de Google (la que aparece en Google Maps con tu horario y reseñas) y lo que sale de tu web en los resultados.',
+      'Que te encuentren cuando busquen tu servicio en tu zona: tu ficha de Google Maps, con horario y reseñas, y lo que sale de tu web en los resultados.',
     h1: 'Posicionamiento en Google para negocios locales',
     bajada:
       'Que te encuentren cuando busquen tu servicio en tu zona: tu ficha de Google (la que aparece en Google Maps con tu horario y reseñas) y lo que sale de tu web en los resultados.',

@@ -42,7 +42,7 @@ export const SECTORES: Sector[] = [
     slug: 'diseno-web-clinicas-dentales',
     nombre: 'Clínicas dentales',
     resumen: 'Tratamientos que se entienden y la cita a un toque.',
-    titulo: 'Diseño web para clínicas dentales · Sergio García',
+    titulo: 'Diseño web para clínicas dentales · Sergio García Ortiz',
     descripcion:
       'Webs para clínicas dentales que transmiten confianza y facilitan pedir cita: tratamientos explicados sin tecnicismos, el equipo con nombre y cita a un toque.',
     h1: 'Diseño web para clínicas dentales',
@@ -82,7 +82,7 @@ export const SECTORES: Sector[] = [
     slug: 'diseno-web-fisioterapeutas',
     nombre: 'Fisioterapia',
     resumen: 'Que cada paciente encuentre su lesión y pida cita.',
-    titulo: 'Diseño web para fisioterapeutas · Sergio García',
+    titulo: 'Diseño web para fisioterapeutas · Sergio García Ortiz',
     descripcion:
       'Webs para fisioterapeutas: lesiones y tratamientos fáciles de encontrar en el móvil, cita a un toque y la web preparada para búsquedas locales.',
     h1: 'Diseño web para fisioterapeutas',
@@ -123,7 +123,7 @@ export const SECTORES: Sector[] = [
     slug: 'diseno-web-psicologos',
     nombre: 'Psicología',
     resumen: 'Un primer contacto fácil, discreto y sin presión.',
-    titulo: 'Diseño web para psicólogos · Sergio García',
+    titulo: 'Diseño web para psicólogos · Sergio García Ortiz',
     descripcion:
       'Webs para psicólogos y centros de psicología: un tono cercano, tus áreas de trabajo explicadas con claridad y un primer contacto discreto, presencial u online.',
     h1: 'Diseño web para psicólogos',
@@ -163,7 +163,7 @@ export const SECTORES: Sector[] = [
     slug: 'diseno-web-veterinarias',
     nombre: 'Veterinarias',
     resumen: 'Urgencias claras y la cita en un toque.',
-    titulo: 'Diseño web para clínicas veterinarias · Sergio García',
+    titulo: 'Diseño web para clínicas veterinarias · Sergio García Ortiz',
     descripcion:
       'Webs para clínicas veterinarias: urgencias visibles sin dramatismo, servicios bien explicados, cita en un toque y tu clínica fácil de encontrar en el barrio.',
     h1: 'Diseño web para clínicas veterinarias',
@@ -203,7 +203,7 @@ export const SECTORES: Sector[] = [
     slug: 'diseno-web-gestorias',
     nombre: 'Gestorías y asesorías',
     resumen: 'Orden, cercanía y la primera consulta fácil.',
-    titulo: 'Diseño web para gestorías y asesorías · Sergio García',
+    titulo: 'Diseño web para gestorías y asesorías · Sergio García Ortiz',
     descripcion:
       'Webs para gestorías y asesorías que transmiten orden y cercanía: servicios por tipo de cliente, primera consulta fácil y contenido útil que atrae búsquedas.',
     h1: 'Diseño web para gestorías y asesorías',
@@ -243,7 +243,7 @@ export const SECTORES: Sector[] = [
     slug: 'diseno-web-arquitectos',
     nombre: 'Arquitectura',
     resumen: 'Un portfolio que enseña obra, no palabrería.',
-    titulo: 'Diseño web para arquitectos · Sergio García',
+    titulo: 'Diseño web para arquitectos · Sergio García Ortiz',
     descripcion:
       'Webs para arquitectos y estudios: proyectos con fotos grandes que cargan rápido, tu proceso explicado y un contacto que llega con la información necesaria.',
     h1: 'Diseño web para arquitectos',

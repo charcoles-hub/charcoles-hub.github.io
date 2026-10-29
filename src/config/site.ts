@@ -169,7 +169,7 @@ export const contenido = {
       nombre: 'Sergio García Ortiz',
       rol: 'Diseñador web',
       lugar: 'Cornellà de Llobregat · Barcelona',
-      titulo: 'Diseñador web freelance en Barcelona · Sergio García',
+      titulo: 'Diseñador web freelance en Barcelona · Sergio García Ortiz',
       descripcion:
         'Webs a medida, rápidas y pensadas para el móvil, para negocios de Barcelona y toda España. Trato directo, presupuesto en 24 h y revisión gratis de tu web.',
       email: 'info@sergiogarciaweb.com',
@@ -227,7 +227,7 @@ export const contenido = {
       nombre: 'Sergio García Ortiz',
       rol: 'Web designer',
       lugar: 'Barcelona, Spain',
-      titulo: 'Freelance web designer in Barcelona · Sergio García',
+      titulo: 'Freelance web designer in Barcelona · Sergio García Ortiz',
       descripcion:
         'Fast, clear, mobile-first custom websites for businesses in Barcelona and across Spain. Work directly with me and get a written quote within 24 hours.',
       email: 'info@sergiogarciaweb.com',
@@ -290,7 +290,7 @@ export const contenido = {
       "nombre": "Sergio García Ortiz",
       "rol": "Dissenyador web",
       "lugar": "Cornellà de Llobregat · Barcelona",
-      "titulo": "Dissenyador web freelance a Barcelona · Sergio García",
+      "titulo": "Dissenyador web freelance a Barcelona · Sergio García Ortiz",
       "descripcion": "Webs a mida, ràpides i pensades per al mòbil, per a negocis de Barcelona i tot Espanya. Tracte directe, pressupost en 24 h i revisió gratuïta del teu web.",
       "email": "info@sergiogarciaweb.com"
     },
